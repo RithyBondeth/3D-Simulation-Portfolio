@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#eaf0ec" />
+    <meta
+      name="description"
+      content="Take a drive through Bondeth's interactive outdoor 3D portfolio. Explore real projects, web and mobile development, AI engineering, and the person behind the work."
+    />
+    <meta
+      property="og:title"
+      content="Bondeth Island | Full Stack Developer & AI Engineer"
+    />
+    <meta
+      property="og:description"
+      content="Take the scenic route. Explore Rithy Bondeth's work in an interactive 3D portfolio."
+    />
+    <title>Bondeth Island | Full Stack Developer & AI Engineer</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem("bondeth-island-theme") || "light";
+      } catch {
+        document.documentElement.dataset.theme = "light";
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
