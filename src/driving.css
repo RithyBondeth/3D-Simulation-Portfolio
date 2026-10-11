@@ -1,0 +1,1115 @@
+/* Outdoor driving experience. The world stays full bleed in both camera modes. */
+:root {
+  --bg: #edf1ec;
+  --surface: #fbfcf7;
+  --surface-subtle: #e4ebe5;
+  --ink: #243b40;
+  --muted: #596e70;
+  --line: #c8d5d1;
+  --coral: #236889;
+  --coral-soft: #dceaf0;
+  --sage-soft: #e0e8db;
+  --button: #236889;
+  --button-text: #fff;
+  --glass: #f8fbf1e8;
+  --shadow: 0 12px 40px #314f4814;
+}
+[data-theme="dark"] {
+  --bg: #20313a;
+  --surface: #243a44;
+  --surface-subtle: #2f4851;
+  --ink: #ecf3eb;
+  --muted: #b5c8c8;
+  --line: #4c656e;
+  --coral: #9dcbdc;
+  --coral-soft: #345461;
+  --button: #b0d9e5;
+  --button-text: #20353c;
+  --glass: #263d47ec;
+  --shadow: 0 14px 40px #12283125;
+}
+.driving-app {
+  min-height: 620px;
+}
+.driving-app .site-header {
+  height: 88px;
+  padding: 0 36px;
+  max-width: none;
+}
+.driving-app .brand {
+  font-size: 20px;
+}
+.driving-app .brand-mark {
+  background: var(--glass);
+  border-color: var(--ink);
+  border-radius: 11px;
+}
+.driving-app .brand-studio {
+  color: var(--ink);
+}
+.driving-app .brand-separator {
+  color: var(--muted);
+}
+.driving-app .header-nav {
+  background: var(--glass);
+  backdrop-filter: blur(18px);
+  border-color: #fff9;
+  box-shadow: var(--shadow);
+}
+.driving-app .header-actions {
+  gap: 22px;
+}
+.driving-app .view-switch {
+  background: var(--glass);
+  border-radius: 40px;
+  padding: 11px 15px;
+  backdrop-filter: blur(18px);
+}
+.driving-app .contact-button {
+  background: var(--ink);
+  color: var(--surface);
+  border: 0;
+  padding: 13px 20px;
+  gap: 22px;
+  box-shadow: var(--shadow);
+}
+.driving-app .contact-button:hover {
+  background: var(--coral);
+  color: var(--button-text);
+  transform: translateY(-2px);
+}
+.driving-app .outdoor-main {
+  max-width: none;
+}
+.driving-app .world-shell {
+  inset: -88px 0 -35px;
+  min-height: 0;
+  transition: none;
+}
+.driving-app .site-footer {
+  height: 35px;
+  min-height: 35px;
+  padding: 0 36px;
+  max-width: none;
+  background: var(--glass);
+  backdrop-filter: blur(14px);
+  font-size: 9px;
+}
+.driving-app .world-tools {
+  top: 26px;
+  right: 36px;
+  background: var(--glass);
+  border: 1px solid #fff8;
+  border-radius: 40px;
+  padding: 5px;
+  backdrop-filter: blur(18px);
+}
+.driving-app .world-tools .icon-button {
+  width: 32px;
+  height: 32px;
+}
+.island-intro {
+  position: absolute;
+  left: 36px;
+  top: 29px;
+  z-index: 16;
+  pointer-events: none;
+}
+.island-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 1.6px;
+  color: var(--ink);
+}
+.island-kicker > span {
+  width: 6px;
+  height: 6px;
+  background: var(--coral);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px #ffffff45;
+}
+.island-intro h1 {
+  font-family: "Sora Variable", sans-serif;
+  font-size: clamp(36px, 3.5vw, 54px);
+  font-weight: 600;
+  letter-spacing: -0.06em;
+  line-height: 1.09;
+  margin: 19px 0 16px;
+  color: var(--ink);
+}
+.island-intro h1 em {
+  font-weight: 380;
+  font-style: normal;
+}
+.island-intro p {
+  font-size: 11px;
+  font-weight: 550;
+  line-height: 1.8;
+  color: var(--muted);
+  margin: 0 0 21px;
+}
+.camera-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--glass);
+  padding: 12px 15px;
+  border: 1px solid #ffffff80;
+  border-radius: 40px;
+  box-shadow: var(--shadow);
+  font-size: 11px;
+  pointer-events: auto;
+  backdrop-filter: blur(12px);
+}
+.camera-switch:hover {
+  background: var(--surface);
+  transform: translateY(-2px);
+}
+.drive-dashboard {
+  position: absolute;
+  left: 36px;
+  bottom: 125px;
+  width: 244px;
+  z-index: 20;
+  background: var(--glass);
+  border: 1px solid #fff9;
+  border-radius: 20px;
+  padding: 18px 19px 14px;
+  box-shadow:
+    var(--shadow),
+    inset 0 1px 0 #fff7;
+  backdrop-filter: blur(20px);
+}
+.vehicle-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Sora Variable", sans-serif;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: -0.2px;
+}
+.vehicle-name > span:last-child {
+  font-family: "Manrope Variable", sans-serif;
+  font-size: 7px;
+  font-weight: 650;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+.m-stripes {
+  display: flex;
+  gap: 1px;
+  transform: skew(-22deg);
+}
+.m-stripes i {
+  display: block;
+  height: 11px;
+  width: 4px;
+  background: #64b1d8;
+}
+.m-stripes i:nth-child(2) {
+  background: #284c84;
+}
+.m-stripes i:nth-child(3) {
+  background: #c45653;
+}
+.speedometer {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 11px;
+}
+.speed-value {
+  font-family: "Sora Variable", sans-serif;
+  font-size: 52px;
+  font-weight: 450;
+  line-height: 1.1;
+  letter-spacing: -3px;
+  font-variant-numeric: tabular-nums;
+}
+.speed-unit {
+  font-size: 9px;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 4px;
+}
+.speed-unit > span {
+  color: var(--ink);
+  font-weight: 750;
+  font-size: 11px;
+}
+.drive-status {
+  margin-left: auto;
+  font-size: 7px;
+  letter-spacing: 0.8px;
+  font-weight: 750;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.drive-status i {
+  width: 5px;
+  height: 5px;
+  background: #5c886b;
+  border-radius: 50%;
+}
+.drive-status.offroad i {
+  background: #b57c43;
+}
+.drive-meter {
+  height: 3px;
+  background: var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 13px 0 11px;
+}
+.drive-meter > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: left;
+  background: var(--coral);
+  transition: transform 0.12s linear;
+}
+.vehicle-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 8px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.vehicle-footer > span:last-child {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.vehicle-footer kbd {
+  font-size: 6px;
+  height: 15px;
+  padding: 0 4px;
+}
+.island-minimap {
+  position: absolute;
+  right: 36px;
+  bottom: 125px;
+  width: 216px;
+  z-index: 20;
+  background: var(--glass);
+  border: 1px solid #fff9;
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+}
+.minimap-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 15px 10px;
+  width: 100%;
+  font-size: 10px;
+  font-weight: 650;
+}
+.minimap-title > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.minimap-title:hover {
+  color: var(--coral);
+}
+.minimap-board {
+  position: relative;
+  margin: 0 11px;
+  background: #b9d6d4;
+  border-radius: 10px;
+  aspect-ratio: 130/110;
+  overflow: hidden;
+}
+.minimap-board svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.minimap-stop {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 23px;
+  height: 23px;
+  border-radius: 7px;
+  background: #f9fbf2;
+  color: #33494d;
+  box-shadow: 0 2px 6px #304e4320;
+  font-size: 8px;
+  font-weight: 750;
+}
+.minimap-stop:hover,
+.minimap-stop.visited {
+  background: #236889;
+  color: #fff;
+}
+.minimap-stop:active {
+  transform: translate(-50%, -50%) scale(0.95);
+}
+.map-north {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 7px;
+  color: #385a60;
+}
+.next-stop {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-align: left;
+  width: 100%;
+  padding: 12px 12px 14px;
+}
+.next-stop > svg {
+  margin-left: auto;
+}
+.next-stop-icon {
+  width: 29px;
+  height: 29px;
+  display: grid;
+  place-items: center;
+  background: var(--coral-soft);
+  border-radius: 9px;
+  color: var(--coral);
+}
+.next-stop small {
+  display: block;
+  font-size: 6px;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+.next-stop strong {
+  display: block;
+  font-size: 10px;
+  font-weight: 650;
+}
+.next-stop:hover {
+  background: var(--surface-subtle);
+}
+.driving-app .studio-bottom {
+  width: min(830px, calc(100% - 72px));
+  bottom: 17px;
+  padding: 12px 8px 6px;
+  border-radius: 22px;
+  background: var(--glass);
+  border: 1px solid #fff9;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(20px);
+}
+.driving-app .dock-heading {
+  margin: 0 13px 7px;
+  font-size: 9px;
+}
+.driving-app .destination-dock {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  border-radius: 15px;
+}
+.driving-app .destination-dock > button {
+  border-radius: 13px;
+  padding: 10px 9px;
+  gap: 9px;
+}
+.driving-app .destination-icon {
+  background: var(--coral-soft);
+  color: var(--coral);
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+}
+.driving-app .destination-copy strong {
+  font-size: 10px;
+  font-weight: 650;
+}
+.driving-app .destination-copy > span {
+  font-size: 8px;
+  margin-top: 4px;
+}
+.driving-app .destination-key {
+  font-size: 8px;
+}
+.driving-app .near-prompt {
+  left: 50%;
+  bottom: 128px;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--surface);
+  border: 1px solid #ffffff60;
+  border-radius: 40px;
+  padding: 11px 17px;
+  gap: 10px;
+  font-size: 10px;
+}
+.driving-app .near-prompt kbd {
+  color: var(--surface);
+  border-color: #ffffff60;
+}
+.map-marker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fbf4f2;
+  color: #2c444b;
+  border: 1px solid #ffffffd0;
+  border-radius: 12px;
+  padding: 5px 11px 5px 5px;
+  white-space: nowrap;
+  box-shadow: 0 5px 20px #244b4a25;
+  font-size: 11px;
+  backdrop-filter: blur(14px);
+}
+.marker-number {
+  background: #236889;
+  color: #fff;
+  border-radius: 8px;
+  width: 29px;
+  height: 29px;
+  display: grid;
+  place-items: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+}
+.marker-name {
+  font-weight: 650;
+}
+.map-marker:hover {
+  background: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px #244b4a35;
+}
+.map-marker:focus-visible,
+.minimap-stop:focus-visible {
+  outline: 3px solid #185b7b;
+  outline-offset: 4px;
+}
+.drive-touch-controls {
+  display: none;
+}
+.driving-app .world-loading {
+  background: var(--bg);
+  position: fixed;
+  inset: 0;
+  z-index: 22;
+}
+.driving-app .loading-model {
+  color: var(--coral);
+}
+@media (max-width: 1200px) {
+  .island-intro h1 {
+    font-size: 42px;
+  }
+  .drive-dashboard {
+    width: 210px;
+    padding: 15px;
+  }
+  .island-minimap {
+    width: 180px;
+  }
+  .vehicle-name {
+    font-size: 10px;
+    gap: 6px;
+  }
+  .vehicle-name > span:last-child {
+    font-size: 6px;
+  }
+  .speed-value {
+    font-size: 44px;
+  }
+  .drive-status {
+    font-size: 6px;
+  }
+  .island-intro p {
+    font-size: 10px;
+  }
+}
+@media (max-width: 900px) {
+  .driving-app .site-header {
+    padding: 0 24px;
+    height: 76px;
+  }
+  .driving-app .world-shell {
+    inset: -76px 0 -34px;
+  }
+  .driving-app .header-nav {
+    display: none;
+  }
+  .driving-app .site-footer {
+    padding: 0 24px;
+    height: 34px;
+    min-height: 34px;
+  }
+  .driving-app .header-actions {
+    gap: 12px;
+  }
+  .driving-app .contact-button {
+    gap: 12px;
+  }
+  .island-intro {
+    left: 24px;
+    top: 23px;
+  }
+  .island-intro h1 {
+    font-size: 36px;
+  }
+  .island-kicker {
+    font-size: 7px;
+    letter-spacing: 1px;
+  }
+  .driving-app .world-tools {
+    right: 24px;
+    top: 22px;
+  }
+  .drive-dashboard {
+    left: 24px;
+    width: 195px;
+    bottom: 122px;
+  }
+  .island-minimap {
+    right: 24px;
+    width: 160px;
+    bottom: 122px;
+  }
+  .driving-app .studio-bottom {
+    width: calc(100% - 48px);
+  }
+  .driving-app .destination-copy > span,
+  .driving-app .destination-key {
+    display: none;
+  }
+  .driving-app .destination-copy strong {
+    font-size: 9px;
+  }
+  .driving-app .destination-dock > button {
+    gap: 7px;
+  }
+  .driving-app .near-prompt {
+    bottom: 300px;
+    font-size: 9px;
+  }
+}
+@media (max-width: 600px) {
+  .driving-app {
+    min-height: 640px;
+  }
+  .driving-app .site-header {
+    height: 70px;
+    padding: 0 19px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .driving-app .brand {
+    font-size: 18px;
+    gap: 8px;
+  }
+  .driving-app .brand-mark {
+    width: 31px;
+    height: 31px;
+    font-size: 25px;
+  }
+  .driving-app .brand-studio,
+  .driving-app .brand-separator {
+    display: none;
+  }
+  .driving-app .header-actions {
+    gap: 8px;
+  }
+  .driving-app .view-switch {
+    padding: 9px 10px;
+    font-size: 9px;
+    gap: 5px;
+  }
+  .driving-app .view-switch svg {
+    width: 14px;
+  }
+  .driving-app .contact-button {
+    font-size: 9px;
+    padding: 10px 12px;
+    gap: 7px;
+  }
+  .driving-app .contact-button svg {
+    width: 13px;
+  }
+  .driving-app .world-shell {
+    inset: -70px 0 -28px;
+  }
+  .driving-app .site-footer {
+    height: 28px;
+    min-height: 28px;
+    padding: 0 20px;
+    font-size: 7px;
+  }
+  .driving-app .control-legend {
+    display: none;
+  }
+  .driving-app .footer-location {
+    display: none;
+  }
+  .driving-app .footer-credit {
+    display: block;
+  }
+  .island-intro {
+    left: 20px;
+    top: 19px;
+  }
+  .island-kicker {
+    font-size: 6px;
+    letter-spacing: 1px;
+    gap: 6px;
+  }
+  .island-kicker > span {
+    width: 4px;
+    height: 4px;
+    box-shadow: 0 0 0 3px #fff5;
+  }
+  .island-intro h1 {
+    font-size: 31px;
+    line-height: 1.12;
+    margin: 14px 0 11px;
+    letter-spacing: -1.7px;
+  }
+  .island-intro p {
+    font-size: 8px;
+    line-height: 1.7;
+    margin-bottom: 13px;
+  }
+  .camera-switch {
+    font-size: 8px;
+    padding: 9px 11px;
+    gap: 8px;
+  }
+  .camera-switch svg {
+    width: 13px;
+  }
+  .driving-app .world-tools {
+    right: 18px;
+    top: 19px;
+    flex-direction: column;
+    padding: 5px;
+    border-radius: 30px;
+    gap: 3px;
+  }
+  .driving-app .world-tools .icon-button {
+    width: 28px;
+    height: 28px;
+  }
+  .driving-app .world-tools .icon-button svg {
+    width: 16px;
+  }
+  .driving-app .tool-divider {
+    height: 1px;
+    width: 16px;
+    margin: 2px 0;
+  }
+  .drive-dashboard {
+    left: 20px;
+    bottom: 146px;
+    width: 153px;
+    padding: 12px;
+    border-radius: 15px;
+  }
+  .vehicle-name {
+    font-size: 9px;
+    gap: 6px;
+  }
+  .vehicle-name > span:last-child {
+    display: none;
+  }
+  .m-stripes i {
+    height: 9px;
+    width: 3px;
+  }
+  .speedometer {
+    gap: 6px;
+    margin-top: 7px;
+  }
+  .speed-value {
+    font-size: 37px;
+    letter-spacing: -2px;
+  }
+  .speed-unit {
+    font-size: 7px;
+    gap: 3px;
+  }
+  .speed-unit > span {
+    font-size: 9px;
+  }
+  .drive-status {
+    font-size: 5px;
+    letter-spacing: 0;
+    gap: 3px;
+  }
+  .drive-status i {
+    width: 4px;
+    height: 4px;
+  }
+  .drive-meter {
+    margin: 9px 0 7px;
+    height: 2px;
+  }
+  .vehicle-footer {
+    font-size: 6px;
+  }
+  .vehicle-footer > span:last-child {
+    display: none;
+  }
+  .island-minimap {
+    right: 18px;
+    bottom: 146px;
+    width: 133px;
+    border-radius: 15px;
+  }
+  .minimap-title {
+    padding: 10px 10px 7px;
+    font-size: 8px;
+  }
+  .minimap-title > span {
+    gap: 5px;
+  }
+  .minimap-title svg {
+    width: 12px;
+  }
+  .minimap-board {
+    margin: 0 7px;
+    border-radius: 8px;
+  }
+  .minimap-stop {
+    width: 19px;
+    height: 19px;
+    border-radius: 5px;
+    font-size: 6px;
+  }
+  .map-north {
+    font-size: 5px;
+  }
+  .next-stop {
+    padding: 8px 9px 10px;
+    gap: 6px;
+  }
+  .next-stop-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+  }
+  .next-stop-icon svg {
+    width: 12px;
+  }
+  .next-stop small {
+    font-size: 4px;
+    letter-spacing: 0.3px;
+    margin-bottom: 3px;
+  }
+  .next-stop strong {
+    font-size: 7px;
+  }
+  .next-stop > svg {
+    display: none;
+  }
+  .driving-app .studio-bottom {
+    bottom: 11px;
+    width: calc(100% - 30px);
+    padding: 10px 5px 5px;
+    border-radius: 19px;
+  }
+  .driving-app .dock-heading {
+    font-size: 7px;
+    margin: 0 9px 4px;
+  }
+  .driving-app .dock-heading > span {
+    gap: 5px;
+  }
+  .driving-app .exploration-progress {
+    font-size: 7px !important;
+  }
+  .driving-app .destination-dock > button {
+    flex-direction: column;
+    padding: 7px 1px;
+    gap: 4px;
+    min-width: 0;
+  }
+  .driving-app .destination-icon {
+    width: 26px;
+    height: 26px;
+    background: transparent;
+  }
+  .driving-app .destination-icon svg {
+    width: 19px;
+    height: 19px;
+  }
+  .driving-app .destination-copy strong {
+    font-size: 8px;
+  }
+  .driving-app .destination-long {
+    display: none;
+  }
+  .driving-app .destination-short {
+    display: inline;
+  }
+  .drive-touch-controls {
+    display: grid;
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 100px;
+    z-index: 20;
+    grid-template-columns: 40px 40px 1fr 42px 40px 40px;
+    gap: 6px;
+    pointer-events: none;
+  }
+  .drive-touch-controls button {
+    width: 40px;
+    height: 38px;
+    border-radius: 12px;
+    background: var(--glass);
+    border: 1px solid #fff9;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(14px);
+    display: grid;
+    place-items: center;
+    pointer-events: auto;
+    touch-action: none;
+    user-select: none;
+  }
+  .drive-touch-controls button:active {
+    background: var(--coral);
+    color: var(--button-text);
+    transform: scale(0.95);
+  }
+  .drive-touch-controls .steer-left {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .drive-touch-controls .steer-right {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .drive-touch-controls .brake {
+    grid-column: 4;
+    grid-row: 1;
+    width: 42px;
+    font-size: 6px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+  }
+  .drive-touch-controls .reverse {
+    grid-column: 5;
+    grid-row: 1;
+  }
+  .drive-touch-controls .accelerate {
+    grid-column: 6;
+    grid-row: 1;
+    background: var(--ink);
+    color: var(--surface);
+  }
+  .driving-app .near-prompt {
+    bottom: 297px;
+    left: 20px;
+    transform: none;
+    font-size: 8px;
+    padding: 9px 12px;
+    gap: 7px;
+    max-width: calc(100% - 40px);
+  }
+  .driving-app .near-prompt kbd {
+    height: 17px;
+    min-width: 17px;
+    font-size: 7px;
+  }
+  .map-marker {
+    padding: 3px;
+    border-radius: 9px;
+    gap: 0;
+  }
+  .marker-number {
+    width: 25px;
+    height: 25px;
+    font-size: 9px;
+    border-radius: 7px;
+  }
+  .marker-name,
+  .map-marker > svg {
+    display: none;
+  }
+}
+@media (max-width: 360px) {
+  .driving-app .view-switch > span {
+    display: none;
+  }
+  .island-intro h1 {
+    font-size: 28px;
+  }
+  .drive-dashboard {
+    width: 140px;
+    left: 16px;
+  }
+  .island-minimap {
+    right: 16px;
+    width: 125px;
+  }
+  .drive-touch-controls {
+    left: 16px;
+    right: 16px;
+    grid-template-columns: 35px 35px 1fr 37px 35px 35px;
+    gap: 5px;
+  }
+  .drive-touch-controls button {
+    width: 35px;
+  }
+  .drive-touch-controls .brake {
+    width: 37px;
+  }
+}
+@media (max-height: 700px) and (min-width: 601px) {
+  .island-intro h1 {
+    font-size: 35px;
+  }
+  .island-intro p {
+    display: none;
+  }
+  .island-minimap {
+    width: 150px;
+  }
+  .drive-dashboard {
+    width: 200px;
+  }
+  .driving-app .near-prompt {
+    bottom: 120px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .drive-meter > span {
+    transition: none;
+  }
+}
+@media (min-width: 601px) {
+  .map-marker {
+    gap: 0;
+    padding: 4px;
+    border-radius: 11px;
+  }
+  .marker-name {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      opacity 0.2s,
+      max-width 0.2s,
+      padding 0.2s;
+  }
+  .map-marker > svg {
+    display: none;
+  }
+  .map-marker:hover,
+  .map-marker:focus-visible {
+    gap: 8px;
+    padding-right: 11px;
+  }
+  .map-marker:hover .marker-name,
+  .map-marker:focus-visible .marker-name {
+    max-width: 180px;
+    opacity: 1;
+  }
+  .map-marker:hover > svg,
+  .map-marker:focus-visible > svg {
+    display: block;
+  }
+}
+.island-intro::before {
+  content: "";
+  position: absolute;
+  inset: -45px -65px -25px -45px;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 25% 35%,
+    #edf1ecef 10%,
+    #edf1ecbd 45%,
+    #edf1ec00 74%
+  );
+}
+[data-theme="dark"] .island-intro::before {
+  background: radial-gradient(
+    ellipse at 25% 35%,
+    #203a4be8 10%,
+    #203a4ba8 45%,
+    #203a4b00 74%
+  );
+}
+.credits-button {
+  font-size: 8px;
+  color: var(--muted);
+  padding: 5px;
+}
+.credits-button:hover {
+  color: var(--coral);
+}
+.model-credit {
+  font-size: 10px !important;
+  line-height: 1.7 !important;
+  color: var(--muted);
+  margin: 18px 0 8px !important;
+}
+.model-credit a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .driving-app .near-prompt {
+    top: 228px;
+    bottom: auto;
+  }
+  .drive-touch-controls {
+    grid-template-columns: 44px 44px 1fr 44px 44px 44px;
+    gap: 5px;
+    bottom: 100px;
+  }
+  .drive-touch-controls button,
+  .drive-touch-controls .brake {
+    width: 44px;
+    height: 42px;
+  }
+  .minimap-stop {
+    width: 24px;
+    height: 24px;
+  }
+  .credits-button {
+    font-size: 6px;
+  }
+}
+@media (max-width: 360px) {
+  .drive-touch-controls {
+    grid-template-columns: 39px 39px 1fr 39px 39px 39px;
+    gap: 4px;
+  }
+  .drive-touch-controls button,
+  .drive-touch-controls .brake {
+    width: 39px;
+  }
+}
+.driving-app .site-footer {
+  position: relative;
+  z-index: 20;
+  pointer-events: auto;
+}
+.help-dialog {
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}

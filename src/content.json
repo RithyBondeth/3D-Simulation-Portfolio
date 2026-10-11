@@ -1,0 +1,1126 @@
+{
+  "profile": {
+    "name": "Rithy Bondeth",
+    "title": "Full Stack Developer & AI Engineer",
+    "email": "rithybondeth999@gmail.com",
+    "github": "https://github.com/RithyBondeth",
+    "linkedin": "https://linkedin.com/in/hem-rithybondeth",
+    "youtube": "https://www.youtube.com/@rithybondeth6588",
+    "resume": "/files/bondeth-resume.pdf"
+  },
+  "projects": [
+    {
+      "id": "bondex-notch",
+      "title": "Bondex Notch",
+      "description": "A native macOS utility that turns the notch into a live view of your music, coding agents, running tasks, downloads, and system status.",
+      "overview": "Built in Swift and SwiftUI rather than Electron or an embedded web view, so it ships as one native binary instead of a bundled browser. Each widget owns its own polling lifecycle, which is what lets a widget you switch off stop sampling entirely rather than merely hide - the distinction that matters on a surface the machine keeps on screen all day.",
+      "tags": [
+        "Swift",
+        "SwiftUI",
+        "macOS",
+        "Apple Events"
+      ],
+      "category": "macOS",
+      "domains": [
+        "Developer Tools"
+      ],
+      "tier": "production",
+      "visibility": "public",
+      "links": [
+        {
+          "kind": "site",
+          "url": "https://bondex-notch.bondeth.site"
+        }
+      ],
+      "image": "/images/bondex-notch.webp",
+      "caseStudy": {
+        "problem": "On a MacBook the notch is dead space, while the things worth a glance - what's playing, a download finishing, whether a coding agent is still working - are scattered across the menu bar and separate windows. Anything that lives at the notch is on screen all day, so it has to stay quiet when nothing is happening and cost almost nothing to run.",
+        "constraints": [
+          "macOS 14 or later, native on Apple Silicon and Intel",
+          "Public APIs only - nothing that breaks on the next macOS update",
+          "On screen all day, so idle CPU is the budget",
+          "No account; everything stays on the Mac"
+        ],
+        "decisions": [
+          {
+            "title": "Animation belongs to Core Animation",
+            "body": "Driving the equaliser from SwiftUI kept the panel re-rendering on every display frame. Each bar now runs as a Core Animation handed to the render server, and the app's CPU use while music plays dropped from 12-14% to 3%."
+          },
+          {
+            "title": "Media read from the apps themselves",
+            "body": "macOS has no public system-wide Now Playing API, and the private framework was locked down in macOS 15.4. Bondex asks Music and Spotify through their scripting dictionaries, and asks the browser tab holding the audio for its media session.",
+            "tradeoff": "Each app needs an Automation permission on first use, browsers need “Allow JavaScript from Apple Events” switched on once, and Firefox cannot be supported at all."
+          },
+          {
+            "title": "Apple Events, batched",
+            "body": "Each Apple Event property is a separate round trip, so reading tabs one at a time cost 1.1 seconds per call. Fetching every tab's URL in a single event brought the same read down to about 185 ms."
+          },
+          {
+            "title": "Agents detected, not configured",
+            "body": "Coding agents are found by executable name wherever they are installed, and shown as merely “Open” unless a hook reports what they are doing - agents spend most of a turn waiting on the network, so CPU usage cannot tell you.",
+            "tradeoff": "Without the optional hook Bondex can only say an agent is running, not whether it is thinking - so it says that rather than guessing."
+          }
+        ],
+        "outcome": "Ships as a universal binary with no third-party dependencies, a 24-hour trial, and Stripe checkout on its own site; currently in early access.",
+        "metrics": [
+          {
+            "value": "12-14% → 3%",
+            "label": "CPU while music plays"
+          },
+          {
+            "value": "1.1s → 185ms",
+            "label": "browser media read"
+          },
+          {
+            "value": "0",
+            "label": "third-party dependencies"
+          },
+          {
+            "value": "macOS 14+",
+            "label": "Apple Silicon & Intel"
+          }
+        ],
+        "gallery": [
+          {
+            "src": "/projects/bondex-notch/productivity.webp",
+            "alt": "Bondex Notch's Home panel with a focus timer, an upcoming meeting, running coding agents, and music",
+            "caption": "Home: a focus timer, the next meeting, Codex and Claude at work, and what's playing."
+          },
+          {
+            "src": "/projects/bondex-notch/system.webp",
+            "alt": "Bondex Notch's System panel with CPU, memory, network, and device batteries",
+            "caption": "System: CPU, memory, network, and every connected device's battery."
+          },
+          {
+            "src": "/projects/bondex-notch/clipboard.webp",
+            "alt": "Bondex Notch's searchable clipboard history",
+            "caption": "A searchable clipboard history, kept on the Mac."
+          },
+          {
+            "src": "/projects/bondex-notch/settings-appearance.webp",
+            "alt": "Bondex Notch's appearance settings with accent colours and panel options",
+            "caption": "Appearance settings - accent, material, and panel size."
+          }
+        ]
+      }
+    },
+    {
+      "id": "apsara-talent",
+      "title": "Apsara Talent",
+      "description": "A recruitment platform for Cambodia - semantic matching between candidates and companies, a full hiring pipeline, chat, interviews, and an AI resume builder - on seven NestJS services.",
+      "overview": "Two loops share one product: profiles and mutual interest that lead to a match, and a job pipeline from application to hire. A NestJS gateway fronts six internal services over TCP on one PostgreSQL schema with pgvector, Redis, and Socket.IO, serving a Next.js web app and a Flutter mobile client. It runs on Railway, Neon, Cloudflare R2, and Vercel, with Prometheus and Grafana watching it and recovery times measured rather than assumed.",
+      "tags": [
+        "TypeScript",
+        "Next.js",
+        "NestJS",
+        "Microservices",
+        "PostgreSQL",
+        "pgvector"
+      ],
+      "category": "Web",
+      "domains": [
+        "Recruitment"
+      ],
+      "tier": "production",
+      "visibility": "public",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://talent.apsara.social"
+        }
+      ],
+      "image": "/images/apsara-talent.webp",
+      "caseStudy": {
+        "problem": "Apsara Talent has to support two different conversations: candidates and companies finding each other, and a company moving an applicant from application to offer. It needs both without blurring them - and it has to match people on meaning rather than exact keywords, because “Full Stack Development” and “Backend Developer” describe overlapping people.",
+        "constraints": [
+          "Three roles: employees, companies, and administrators",
+          "Matching (employee ↔ company) kept distinct from applying (employee ↔ job)",
+          "One shared database schema across seven services",
+          "English and Khmer, on web and mobile"
+        ],
+        "decisions": [
+          {
+            "title": "Matching on meaning, not keywords",
+            "body": "Recommendations combine weighted signals - career-scope similarity, skill overlap, and job-title similarity - with the semantic parts scored by pgvector cosine distance over an HNSW index, so related roles match even when they share no words.",
+            "tradeoff": "Not every profile has an embedding yet, so each semantic signal falls back to exact overlap - results stay sensible, just less forgiving, until the vector exists."
+          },
+          {
+            "title": "Services that share a schema",
+            "body": "A gateway and six internal services - auth, users, jobs, chat, resumes, and notifications - talk over NestJS TCP transport and share one PostgreSQL schema and one contracts library.",
+            "tradeoff": "The deployables are separate but the data is not: a change to a shared entity can touch several services at once, and the project map says so plainly rather than pretending otherwise."
+          },
+          {
+            "title": "A load gate people can trust",
+            "body": "Every push runs a load phase against the readiness endpoint, which fans out to the database, Redis, and all six services. The p95 limit is 500 ms - about three times the worst of three measured runs.",
+            "tradeoff": "Concurrency was cut from 20 to 5 after runner contention failed a release at 3.3% errors. A flaky gate gets rerun until it passes and stops meaning anything."
+          },
+          {
+            "title": "Recovery measured, not assumed",
+            "body": "Restoring the database from a Neon point-in-time branch is tested weekly and takes 3.7 seconds; rolling a single service back takes about two minutes, with a dry-run rollback planner in CI.",
+            "tradeoff": "The point-in-time window is one day, so anything noticed later depends on the nightly off-site dump - written down in the runbook rather than discovered during an incident."
+          }
+        ],
+        "outcome": "Deployed across Railway, Neon, Cloudflare R2, and Vercel, with Prometheus, Alertmanager, and Grafana watching it and a runbook for the failures that have already happened once. Roughly 1,700 commits across the API, web, and mobile repositories since January 2025.",
+        "metrics": [
+          {
+            "value": "3.7s",
+            "label": "verified database restore"
+          },
+          {
+            "value": "~2 min",
+            "label": "one-service rollback"
+          },
+          {
+            "value": "< 500ms",
+            "label": "p95 load gate"
+          },
+          {
+            "value": "7",
+            "label": "backend services"
+          }
+        ],
+        "gallery": [
+          {
+            "src": "/projects/apsara-talent/dashboard.webp",
+            "alt": "Apsara Talent's candidate dashboard with likes, matches, and profile completeness",
+            "caption": "The candidate dashboard - likes, mutual matches, and profile completeness."
+          },
+          {
+            "src": "/projects/apsara-talent/sign-in.webp",
+            "alt": "Apsara Talent's sign-in screen with Google, Facebook, LinkedIn, GitHub, and phone login",
+            "caption": "Sign in with Google, Facebook, LinkedIn, GitHub, a phone number, or email."
+          }
+        ]
+      }
+    },
+    {
+      "id": "apsara-assistant",
+      "title": "Apsara Assistant",
+      "description": "An AI sales assistant for Cambodian shops - it answers customers on Messenger and Telegram from the seller's own catalogue, in Khmer, English, or romanized Khmer, and can take an order and a payment while the seller sleeps.",
+      "overview": "A FastAPI service on PostgreSQL 16 turns each Messenger or Telegram webhook into a queued job, answers from the seller's catalogue and shop details, and hands the thread back to the seller when it should. Postgres carries everything, including the durable job queue and the daily reply quotas. A Next.js back office gives the seller one inbox plus orders, inventory, and analytics, in Khmer or English.",
+      "tags": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "LLM APIs",
+        "Next.js",
+        "TypeScript"
+      ],
+      "category": "Web",
+      "domains": [
+        "AI"
+      ],
+      "tier": "production",
+      "visibility": "public",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://assistant.apsara.social"
+        }
+      ],
+      "image": "/images/apsara-assistant.webp",
+      "caseStudy": {
+        "problem": "Cambodian shops sell through Facebook Pages and Telegram, and customers message at all hours - in Khmer script, in English, or in Khmer typed in Latin letters, often mixed. A seller who is asleep loses the sale, and an assistant that answers in the wrong language, guesses a delivery fee, or converts a price wrongly does more harm than silence.",
+        "constraints": [
+          "Khmer script, English, and romanized Khmer - decided per message",
+          "Two currencies, at each shop's own exchange rate",
+          "Many shops in one database, with no row-level security to fall back on",
+          "Stripe is unavailable to Cambodian businesses, so payment QR codes work too"
+        ],
+        "decisions": [
+          {
+            "title": "Reply in the customer's own script",
+            "body": "Language is decided per message: Khmer in, Khmer out; English in, English out; romanized Khmer such as “tlai ponman” gets romanized Khmer back, casual like a shop owner on Messenger - and a mixed message gets a mixed reply."
+          },
+          {
+            "title": "Prices written once, never converted by the model",
+            "body": "Every catalogue price reaches the model already written in both currencies at the shop's own rate - “4.00 USD (16,400 KHR)” - so it copies instead of calculating. A receipt paid in the other currency is checked against that rate within 3%, because banks apply their own."
+          },
+          {
+            "title": "Don't guess - hand it to the seller",
+            "body": "With no delivery fee or policy on file, the assistant says it will check rather than inventing one, and flags the thread. The seller gets one Telegram alert per episode, not one per message, and a seller's reply pauses the assistant for twelve hours instead of silencing that thread for good."
+          },
+          {
+            "title": "Receipts read before the seller is told",
+            "body": "A customer's payment photo goes to a vision model that returns amount, currency, and reference as strict JSON, judged against the order as a match, an amount mismatch, a different currency, a duplicate, not a receipt, or unreadable.",
+            "tradeoff": "The verdict is advice, not a decision: confirming payment stays the seller's tap, and receipt scans have their own daily ceiling because the customer decides how many photos arrive."
+          },
+          {
+            "title": "Postgres does the queueing",
+            "body": "Webhook work is written to a job table and drained with SELECT … FOR UPDATE SKIP LOCKED, so a retried webhook or a restart never loses a reply, and daily reply quotas are an upsert on the same database - no separate queue or cache to run.",
+            "tradeoff": "The test suite needs a real PostgreSQL - SQLite cannot stand in - so it is slower to set up, but it tests the database the product actually runs on."
+          },
+          {
+            "title": "Webhooks that don't start retry storms",
+            "body": "Messenger, Telegram, and Stripe webhooks are the only unauthenticated endpoints, each verified by a signature or a per-connection secret, and each answers 200 to anything it cannot use - a 4xx buys hours of retries rather than a fix. Stored page, bot, and Stripe credentials are encrypted at rest."
+          }
+        ],
+        "metrics": [
+          {
+            "value": "3",
+            "label": "languages & scripts"
+          },
+          {
+            "value": "2",
+            "label": "channels: Messenger, Telegram"
+          },
+          {
+            "value": "6",
+            "label": "receipt verdicts"
+          },
+          {
+            "value": "338",
+            "label": "backend tests"
+          }
+        ],
+        "gallery": [
+          {
+            "src": "/projects/apsara-assistant/chat-khmer.webp",
+            "alt": "A customer and Apsara Assistant chatting in Khmer about stock and paying by KHQR",
+            "caption": "Auto-reply in Khmer - stock, delivery, and payment by KHQR, answered instantly."
+          },
+          {
+            "src": "/projects/apsara-assistant/order-verified.webp",
+            "alt": "An order created from a Messenger conversation, with its payment marked verified",
+            "caption": "An order created from a Messenger conversation, with the payment verified."
+          },
+          {
+            "src": "/projects/apsara-assistant/features.webp",
+            "alt": "Apsara Assistant's feature grid, led by Khmer-language AI and multi-platform messaging",
+            "caption": "Khmer script, romanized Khmer, and English - across Messenger, Telegram, and the web."
+          },
+          {
+            "src": "/projects/apsara-assistant/integrations.webp",
+            "alt": "The seller's Integrations screen with Messenger, Telegram, and Stripe connections",
+            "caption": "The seller connects Messenger, Telegram, and their own Stripe account."
+          }
+        ]
+      }
+    },
+    {
+      "id": "apsara-agentic",
+      "title": "Apsara Agentic",
+      "description": "A local, bring-your-own-key coding agent for the terminal - it reads and edits a real repository, runs checks, and asks before every change. No Apsara server in the loop.",
+      "overview": "The model proposes; the CLI owns permissions, execution, recovery, and state. File tools are confined to the chosen workspace, every edit is shown as a diff and checkpointed before it lands, and a change only counts as done once the project's own tests pass. Written in Python with LiteLLM for model routing, MCP for external tools, and Tree-sitter for code intelligence across a dozen languages, with a Next.js site for the alpha.",
+      "tags": [
+        "Python",
+        "LiteLLM",
+        "MCP",
+        "Tree-sitter",
+        "Next.js",
+        "TypeScript"
+      ],
+      "category": "Web",
+      "domains": [
+        "AI"
+      ],
+      "tier": "production",
+      "visibility": "public",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://agentic.apsara.social"
+        }
+      ],
+      "image": "/images/apsara-agentic.webp",
+      "caseStudy": {
+        "problem": "Most AI coding tools treat a repository as something to paste into a chat. The model's edits land without a clear moment where a person decides, nothing proves the change works, and a bad turn is hard to take back. For an agent to be trusted inside a real codebase, the hard part is not the model call - it is permissions, verification, and recovery.",
+        "constraints": [
+          "Runs on the developer's machine with their own model key",
+          "Never writes outside the chosen workspace",
+          "No edit lands without a person approving the diff",
+          "Python 3.10-3.14 on Linux and macOS, with Windows smoke tests"
+        ],
+        "decisions": [
+          {
+            "title": "The CLI owns the loop, not the model",
+            "body": "The model proposes actions; the runtime decides what runs. Built-in file paths resolve beneath the workspace root, shell commands are off by default and checked against an allowlist at every stage of a pipe, and MCP tools that look like they change external state need approval.",
+            "tradeoff": "An approved command still runs with the user's own permissions - the allowlist is a guardrail, not an operating-system sandbox, and the docs say so rather than implying otherwise."
+          },
+          {
+            "title": "Every change can be undone",
+            "body": "Each file mutation is checkpointed before it happens, and every agent turn owns an atomic checkpoint, so /undo reverses one edit and /undo-turn reverses everything a turn touched - including turns that were interrupted halfway.",
+            "tradeoff": "Before a command runs, the workspace is snapshotted up to a 100 MB ceiling, trading disk and time for recoverability on large repositories."
+          },
+          {
+            "title": "Done means verified",
+            "body": "The agent must attempt a baseline check before its first edit, and only a passing full run of the project's own tests completes a change - an unrelated successful command never counts. Multi-file changes then get a separate, tool-free critic review of the diff."
+          },
+          {
+            "title": "Evaluated like software",
+            "body": "A benchmark harness scores recorded runs out of 100 - half of that for the repository's independent verification passing - and fails any run that edits files outside the allowed set, so rewriting a test cannot turn a broken fix into a pass. CI re-scores saved runs offline without spending tokens."
+          }
+        ],
+        "outcome": "Released to trusted developers as private alpha 0.1.0a1 on 10 August 2026 - installable with pipx and usable day to day, with interfaces still free to change between releases.",
+        "metrics": [
+          {
+            "value": "0.1.0a1",
+            "label": "private alpha · Aug 2026"
+          },
+          {
+            "value": "424",
+            "label": "automated tests"
+          },
+          {
+            "value": "3.10-3.14",
+            "label": "Python versions"
+          },
+          {
+            "value": "0",
+            "label": "servers in the loop"
+          }
+        ],
+        "gallery": [
+          {
+            "src": "/projects/apsara-agentic/agent-loop.webp",
+            "alt": "Apsara Agentic's product page showing the terminal interface and the review step",
+            "caption": "The agent loop as a product: bounded tools and a review step before any edit lands."
+          },
+          {
+            "src": "/projects/apsara-agentic/capabilities.webp",
+            "alt": "Apsara Agentic's capabilities: project-local init and workspace-scoped tools",
+            "caption": "Project-local setup and workspace-scoped tools - the behaviours that make it trustworthy."
+          }
+        ]
+      }
+    },
+    {
+      "id": "apsara-elearning",
+      "title": "Apsara Elearning",
+      "description": "A bilingual learning platform for Cambodian students from Grade 1 to university, with Apsara AI - a tutor that explains in Khmer, grounded in the lesson the student is on.",
+      "overview": "Courses follow the national structure - grade and subject for Grades 1-12, faculty and major for university - down to modules, lessons, quizzes, and coding challenges. Two NestJS gateways sit over six services on RabbitMQ with PostgreSQL and Drizzle. The tutor runs on Claude behind a provider gateway that can also route to OpenAI, Gemini, or DeepSeek; coding challenges are graded with Judge0, and plans go through Stripe.",
+      "tags": [
+        "TypeScript",
+        "Next.js",
+        "NestJS",
+        "RabbitMQ",
+        "PostgreSQL",
+        "LLM APIs"
+      ],
+      "category": "Web",
+      "domains": [
+        "AI",
+        "Education"
+      ],
+      "tier": "production",
+      "visibility": "public",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://elearning.apsara.social"
+        }
+      ],
+      "image": "/images/apsara-elearning.webp",
+      "caseStudy": {
+        "problem": "Most good material for Math, Physics, and Chemistry exists in English, which puts it furthest from the Cambodian students who need it most. The gap is language, not content - and a tutor that closes it has to know where the student is, because a Grade 7 student and a university student need different answers to the same question.",
+        "constraints": [
+          "Grades 1-12 on the national curriculum, plus university by faculty and major",
+          "Khmer by default, English when the student writes in English",
+          "Maths that renders anywhere, without a LaTeX engine",
+          "Guide students to answers rather than handing them over"
+        ],
+        "decisions": [
+          {
+            "title": "A tutor grounded in the lesson",
+            "body": "Every question goes to the tutor with the student's current lesson, subject, and grade - named in both English and Khmer - so the answer is pitched at the right level and stays on the coursework."
+          },
+          {
+            "title": "Khmer first, textbook terms intact",
+            "body": "The tutor replies in the language the student writes in, defaulting to Khmer, but keeps scientific terms in English where the textbook does and adds the Khmer alongside. Maths is written in Unicode - ², √, π, Σ - instead of LaTeX, so it reads the same on every device."
+          },
+          {
+            "title": "One gateway, several model providers",
+            "body": "Model calls go through a provider gateway with Anthropic, OpenAI, Gemini, DeepSeek, and OpenAI-compatible adapters, so the tutor is not tied to one vendor's pricing or availability."
+          }
+        ],
+        "metrics": [
+          {
+            "value": "1-12",
+            "label": "grades, plus university"
+          },
+          {
+            "value": "6",
+            "label": "backend services"
+          },
+          {
+            "value": "5",
+            "label": "AI provider adapters"
+          }
+        ],
+        "gallery": [
+          {
+            "src": "/projects/apsara-elearning/flower-anatomy-km.webp",
+            "alt": "A Grade 12 biology diagram of a flower's anatomy, labelled in Khmer",
+            "caption": "Grade 12 biology, labelled in Khmer - the material meets students in their language."
+          },
+          {
+            "src": "/projects/apsara-elearning/gene-expression-km.webp",
+            "alt": "A Grade 12 diagram of gene expression from DNA to protein, labelled in Khmer",
+            "caption": "Gene expression from DNA to protein, with Khmer labels throughout."
+          }
+        ]
+      }
+    },
+    {
+      "id": "apsara-wallet",
+      "title": "Apsara Wallet",
+      "description": "A personal finance app for Cambodia - wallets in riel and dollars, receipt scanning on the phone, budgets, savings goals, and spending insights, in Khmer and English.",
+      "overview": "Cambodia runs on two currencies at once, so the ledger stores every amount in riel and derives the dollar figure at the live exchange rate, rather than keeping two balances that can drift apart. Receipts are read on the phone by Apple Vision and ML Kit. A Flutter app for iOS and Android sits on a NestJS API with PostgreSQL and Drizzle, whose test suite enforces the ledger's rules and keeps every user's data walled off from every other's.",
+      "tags": [
+        "Flutter",
+        "Dart",
+        "NestJS",
+        "PostgreSQL",
+        "Drizzle ORM",
+        "Riverpod"
+      ],
+      "category": "Mobile",
+      "domains": [
+        "Fintech"
+      ],
+      "tier": "production",
+      "visibility": "public",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://wallet.apsara.social"
+        }
+      ],
+      "image": "/images/apsara-wallet.webp",
+      "caseStudy": {
+        "problem": "In Cambodia people earn, spend, and save in riel and dollars, often in the same day. Most finance apps make one currency primary and treat the other as an afterthought - and the record of where the money went is still a paper receipt.",
+        "constraints": [
+          "Riel and dollars in one ledger, without balances drifting apart",
+          "Receipts read on the phone, not uploaded",
+          "Still readable when the connection drops",
+          "Khmer and English throughout, on iOS and Android"
+        ],
+        "decisions": [
+          {
+            "title": "Riel is the ledger's only unit",
+            "body": "Every amount is stored as whole riel, and the dollar figure is derived at the live exchange rate whenever it is shown. Each wallet has one balance, so a transfer or a deleted transaction can never leave a riel column and a dollar column disagreeing.",
+            "tradeoff": "Dollar figures move with the rate. The API caches it for six hours and falls back to a pegged 4,100 when the provider is down, so a USD view is an estimate, not a record."
+          },
+          {
+            "title": "Receipt OCR on the device",
+            "body": "Text recognition runs natively - Apple Vision on iOS, ML Kit on Android - over a platform channel, while the parsing heuristics stay in pure Dart so one set of unit tests covers both platforms.",
+            "tradeoff": "Two native integrations to maintain instead of one cloud OCR call, and recognition is only as good as each platform's on-device model."
+          },
+          {
+            "title": "Last good data, not a blank screen",
+            "body": "Each data screen caches its most recent successful response. When the network drops, the app shows that snapshot under an offline banner instead of an error, and the exchange rate keeps its own cached copy so totals still render.",
+            "tradeoff": "Offline is read-only - adding a transaction needs a connection, which keeps the server as the ledger's single source of truth."
+          },
+          {
+            "title": "The ledger's rules live in tests",
+            "body": "Unit specs assert on the real SQL each service binds - which wallet moved, by what signed amount, inside which transaction - and an end-to-end suite checks that every protected route rejects a missing token and that one user's data is invisible to another."
+          }
+        ],
+        "outcome": "Version 1.0.0 is release-ready: CI builds Android and iOS on every pull request, the API's end-to-end suite gates every change, and the store listings are prepared in English and Khmer. It has not been published to the stores yet.",
+        "metrics": [
+          {
+            "value": "KHR + USD",
+            "label": "one ledger"
+          },
+          {
+            "value": "iOS & Android",
+            "label": "one Flutter codebase"
+          },
+          {
+            "value": "EN + ខ្មែរ",
+            "label": "fully localised"
+          },
+          {
+            "value": "v1.0.0",
+            "label": "release-ready"
+          }
+        ],
+        "gallery": [
+          {
+            "src": "/projects/apsara-wallet/gallery-overview-en.webp",
+            "alt": "Apsara Wallet's dashboard, wallet list, and add-transaction screens",
+            "caption": "Dashboard, wallets, and adding a transaction - riel first, dollars derived."
+          },
+          {
+            "src": "/projects/apsara-wallet/gallery-planning-en.webp",
+            "alt": "Apsara Wallet's budget, savings goals, and analytics screens",
+            "caption": "Budgets, savings goals, and spending analytics."
+          },
+          {
+            "src": "/projects/apsara-wallet/gallery-overview-km.webp",
+            "alt": "Apsara Wallet's dashboard, wallets, and analytics screens in Khmer",
+            "caption": "The same app in Khmer - every screen is localised."
+          }
+        ]
+      }
+    },
+    {
+      "id": "romlerk",
+      "title": "Romlerk",
+      "description": "A Flutter to-do and notes app with an AI assistant that helps turn everyday thoughts into tasks and reminders.",
+      "overview": "Romlerk brings notes and to-dos into one mobile space. Its AI assistant helps shape a thought into an actionable task or reminder. The iOS and Android apps are coming soon.",
+      "tags": [
+        "Flutter",
+        "Dart"
+      ],
+      "category": "Mobile",
+      "domains": [
+        "Productivity",
+        "AI"
+      ],
+      "visibility": "public",
+      "links": [],
+      "image": "/images/romlerk.webp"
+    },
+    {
+      "id": "pdfflow",
+      "title": "PDFlow",
+      "description": "Private PDF tools that forget you were here - merge, split, compress, convert, protect, and watermark documents with no account, no tracking, and files deleted within 30 minutes.",
+      "overview": "Thirteen tools for PDFs, images, and Office files, built around one promise: upload, do the job, download, and leave no footprint. A Nuxt 4 front end talks to a stateless FastAPI service; Celery workers do the CPU-heavy work with PyMuPDF, pypdf, Pillow, and LibreOffice; Redis carries both the job queue and live progress; and PostgreSQL holds metadata only - never document contents. Runs on Railway.",
+      "tags": [
+        "TypeScript",
+        "Nuxt.js",
+        "FastAPI",
+        "Celery",
+        "Redis",
+        "PostgreSQL"
+      ],
+      "category": "Web",
+      "domains": [
+        "Productivity"
+      ],
+      "tier": "production",
+      "visibility": "public",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://pdfflow.bondeth.site"
+        }
+      ],
+      "image": "/images/pdfflow.webp",
+      "caseStudy": {
+        "problem": "Most online document tools ask for an account, track how they are used, or leave people wondering where their files went. PDFlow's promise is narrower and harder: accept files from anonymous strangers on the public internet, run third-party parsers over them, hand back a result - and keep nothing.",
+        "constraints": [
+          "No accounts, cookies, analytics, or trackers",
+          "No permanent storage - results expire within 30 minutes",
+          "Every upload treated as hostile",
+          "CPU-heavy work that can take minutes per job"
+        ],
+        "decisions": [
+          {
+            "title": "Deletion with a safety net",
+            "body": "Inputs are deleted the moment a job ends, success or failure; a sweep every five minutes removes expired results; and an orphan pass deletes anything on disk older than twice the lifetime, whatever the database says - because one deletion path is a single point of failure."
+          },
+          {
+            "title": "Uploads treated as hostile",
+            "body": "Each file's magic bytes are checked against its extension, size is enforced while the bytes stream in rather than trusted from Content-Length, and the uploaded filename never reaches the disk - files are stored under random UUIDs, with every path verified to stay inside the storage bucket."
+          },
+          {
+            "title": "No accounts, on purpose",
+            "body": "Identity is a random job UUID held only in browser memory - a reload genuinely starts over - and rate limits key on IP at both Nginx and the app.",
+            "tradeoff": "With no accounts, a download link is a bearer capability: anyone holding the job's UUID within its 30 minutes can fetch the result. The mitigation is entropy and a short lifetime, not access control - and the security notes say so plainly."
+          },
+          {
+            "title": "Progress over Redis pub/sub",
+            "body": "Workers publish progress to a Redis channel, and whichever API process holds the browser's server-sent-event stream relays it, with the last event cached so a job that finishes before the browser subscribes still reports. Nginx buffering is off on that route - otherwise the browser sees nothing, then everything."
+          },
+          {
+            "title": "Workers that survive a crash",
+            "body": "Tasks are acknowledged late and check their own status first, so a job redelivered after a worker dies never redoes finished work; each worker takes one task at a time so CPU-bound jobs don't queue behind a busy one; and soft and hard time limits turn a runaway job into a clear message."
+          },
+          {
+            "title": "Passwords used once",
+            "body": "For Protect and Unlock, the document password waits in Redis only until the worker reads it once, then it is deleted - and Redis persistence is switched off in production so it never reaches disk."
+          }
+        ],
+        "outcome": "Thirteen working tools, deployed on Railway as four services - frontend, backend, PostgreSQL, and Redis - with 149 backend tests running in CI.",
+        "metrics": [
+          {
+            "value": "13",
+            "label": "working tools"
+          },
+          {
+            "value": "≤ 30 min",
+            "label": "result lifetime"
+          },
+          {
+            "value": "0",
+            "label": "accounts or trackers"
+          },
+          {
+            "value": "149",
+            "label": "backend tests"
+          }
+        ],
+        "gallery": [
+          {
+            "src": "/projects/pdfflow/tools.webp",
+            "alt": "PDFlow's tool catalogue, grouped by what each tool does to a document",
+            "caption": "The toolbox - thirteen tools, each showing its accepted files and output up front."
+          },
+          {
+            "src": "/projects/pdfflow/lifecycle.webp",
+            "alt": "PDFlow's four steps from upload to automatic deletion",
+            "caption": "From upload to automatic deletion, shown exactly as it happens."
+          }
+        ]
+      }
+    },
+    {
+      "id": "reahu-generator",
+      "title": "Reahu Generator",
+      "description": "A GitHub profile README builder - compose a profile from 17 blocks or 12 templates, preview it exactly as GitHub will render it, and export the Markdown. No account, no backend.",
+      "overview": "A Reahu document is an ordered array of typed blocks, rendered to Markdown by a pipeline that never imports Vue - so the part that matters can be tested on its own. The builder keeps the editor and a GitHub-style preview side by side, with undo, redo, autosave, and share links that carry the whole document in the URL. Built with Nuxt 4, Vue 3, and TypeScript, and deployed on Vercel.",
+      "tags": [
+        "TypeScript",
+        "Nuxt.js",
+        "Vue.js",
+        "Tailwind CSS"
+      ],
+      "category": "Web",
+      "domains": [
+        "Developer Tools"
+      ],
+      "tier": "production",
+      "visibility": "public",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://reahu.bondeth.site"
+        }
+      ],
+      "image": "/images/reahu-generator.webp",
+      "caseStudy": {
+        "problem": "A memorable GitHub profile README takes hours of copying snippets, fixing broken image URLs, and pushing again and again just to see how GitHub renders it. Reahu turns that into a visual workflow - without asking anyone for an account or storing their draft.",
+        "constraints": [
+          "No account, database, or cloud drafts",
+          "The preview has to match what GitHub actually renders",
+          "A shared link can carry a document someone else wrote",
+          "Adding a block shouldn't mean touching the whole app"
+        ],
+        "decisions": [
+          {
+            "title": "Documents are data; renderers are pure",
+            "body": "A profile is an ordered array of typed blocks, and each block type has a pure renderer that turns its props into Markdown. The render core and configuration never import Vue, so the Markdown pipeline is tested without the interface."
+          },
+          {
+            "title": "Sharing without a server",
+            "body": "A share link compresses the whole document into the URL fragment, which browsers never send to the server - so sharing needs no storage at all.",
+            "tradeoff": "A link can carry a document someone else wrote, so the preview sanitizes everything it renders, and oversized or malformed payloads are rejected before they load."
+          },
+          {
+            "title": "The type system enforces completeness",
+            "body": "Adding a block means adding its props, a renderer, a definition, and an editor - and type-checking fails if any block is missing from the renderer registry or the palette, so a half-added block cannot ship."
+          },
+          {
+            "title": "Drafts that survive new versions",
+            "body": "Saved and shared documents are validated on load: properties added in newer versions are filled in with defaults, unknown ones are dropped, and the builder keeps working when browser storage is blocked."
+          }
+        ],
+        "metrics": [
+          {
+            "value": "17",
+            "label": "blocks"
+          },
+          {
+            "value": "12",
+            "label": "templates"
+          },
+          {
+            "value": "~200",
+            "label": "tech-stack icons"
+          },
+          {
+            "value": "50",
+            "label": "social platforms"
+          }
+        ],
+        "gallery": [
+          {
+            "src": "/projects/reahu-generator/builder.webp",
+            "alt": "Reahu Generator's builder: block editors on the left, a live GitHub-style preview on the right",
+            "caption": "The builder - edit blocks on the left, see GitHub's rendering on the right, then share, copy, or download."
+          }
+        ]
+      }
+    },
+    {
+      "id": "debc-website",
+      "title": "DEBC Website",
+      "description": "The official website of Cambodia's Digital Economy and Business Committee, publishing policy, news, and government services.",
+      "overview": "A government site's binding requirement isn't its feature list, it's staying up and staying readable on whatever device and connection the public actually has. Next.js over a NestJS API with Supabase and PostgreSQL behind it, deployed on AWS in Docker behind Nginx, monitored with Sentry, Prometheus, and Grafana.",
+      "tags": [
+        "TypeScript",
+        "Next.js",
+        "NestJS",
+        "Supabase",
+        "PostgreSQL",
+        "AWS"
+      ],
+      "category": "Web",
+      "domains": [
+        "GovTech"
+      ],
+      "tier": "production",
+      "visibility": "limited",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://digitaleconomy.gov.kh/?lang=kh"
+        }
+      ],
+      "image": "/images/debc-website.webp"
+    },
+    {
+      "id": "informal-economy",
+      "title": "Informal Economy",
+      "description": "A national registration platform for Cambodia's informal economy workers, built with the Ministry of Economy and Finance.",
+      "overview": "Registering informal workers at national scale means designing for someone filling in a form once, on a phone, possibly with help - so the failure modes that matter are dropped submissions and ambiguous state, not throughput. Next.js and NestJS microservices communicate over RabbitMQ, with PostgreSQL and Supabase for storage, running on Kubernetes and AWS behind Nginx and monitored with Sentry, Prometheus, and Grafana.",
+      "tags": [
+        "TypeScript",
+        "Next.js",
+        "NestJS",
+        "Microservices",
+        "Kubernetes",
+        "AWS"
+      ],
+      "category": "Web",
+      "domains": [
+        "GovTech"
+      ],
+      "tier": "production",
+      "visibility": "limited",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://informal.digitaleconomy.gov.kh/km"
+        }
+      ],
+      "image": "/images/informal-economy.webp"
+    },
+    {
+      "id": "cambodia-investment-platform",
+      "title": "Cambodia Investment Platform",
+      "description": "The landing site for Cambodia Investment Platform, connecting startups, MSMEs, investors, and the public to digital financing.",
+      "overview": "A landing page for a financing mechanism has one job and it's an editorial one: explain a complicated instrument to four audiences - founders, small businesses, investors, and the public - without losing any of them or writing four different pages. Next.js and Tailwind, deployed on Vercel.",
+      "tags": [
+        "TypeScript",
+        "Next.js",
+        "Tailwind CSS",
+        "Vercel"
+      ],
+      "category": "Web",
+      "domains": [
+        "GovTech",
+        "Fintech"
+      ],
+      "tier": "production",
+      "visibility": "limited",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://edf-cip-website-dev.intechdevkh.com/en"
+        }
+      ],
+      "image": "/images/cambodia-investment-platform.webp"
+    },
+    {
+      "id": "code-hub",
+      "title": "Code Hub",
+      "description": "A developer community platform from my freelance years, with Google, Facebook, and GitHub SSO for discovering and sharing projects.",
+      "overview": "Three SSO providers was the actual build: each returns a different shape of profile, and reconciling them into one account without duplicating a user who signs in a second way through a different provider is most of the work in a social login flow. React on the front, NestJS API, PostgreSQL for accounts and projects, Firebase alongside for auth plumbing, containerised with Docker.",
+      "tags": [
+        "TypeScript",
+        "React.js",
+        "NestJS",
+        "PostgreSQL",
+        "Firebase"
+      ],
+      "category": "Web",
+      "domains": [
+        "Community"
+      ],
+      "tier": "production",
+      "visibility": "public",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://codehub-bondeth.netlify.app/signin"
+        },
+        {
+          "kind": "repo",
+          "url": "https://github.com/bondeth/codehub"
+        }
+      ],
+      "image": "/images/code-hub.webp"
+    },
+    {
+      "id": "apple-clone",
+      "title": "Apple Clone",
+      "description": "A front-end rebuild of Apple's product pages - full-screen model showcases, scroll-driven sections, and navigation.",
+      "overview": "Practice work. The interesting constraint in Apple's layouts is that scroll position drives the content rather than merely moving past it, which is a different implementation problem from a static page and the reason this was worth rebuilding. React, TypeScript, and Tailwind on Vercel.",
+      "tags": [
+        "TypeScript",
+        "React.js",
+        "Tailwind CSS",
+        "Vercel"
+      ],
+      "category": "Web",
+      "domains": [],
+      "tier": "practice",
+      "visibility": "public",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://apple-bondeth.vercel.app"
+        },
+        {
+          "kind": "repo",
+          "url": "https://github.com/bondeth/apple-clone"
+        }
+      ],
+      "image": "/images/apple-clone.webp"
+    },
+    {
+      "id": "tesla-clone",
+      "title": "Tesla Clone",
+      "description": "A front-end rebuild of Tesla's site - full-screen model showcases, smooth scroll sections, and navigation.",
+      "overview": "Practice work, built alongside the Apple rebuild to compare how two companies solve the same full-bleed product page differently. React, TypeScript, and Tailwind on Vercel.",
+      "tags": [
+        "TypeScript",
+        "React.js",
+        "Tailwind CSS",
+        "Vercel"
+      ],
+      "category": "Web",
+      "domains": [],
+      "tier": "practice",
+      "visibility": "public",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://tesla-bondeth.vercel.app"
+        },
+        {
+          "kind": "repo",
+          "url": "https://github.com/bondeth/tesla-clone"
+        }
+      ],
+      "image": "/images/tesla-clone.webp"
+    },
+    {
+      "id": "sabynews-clone",
+      "title": "Sabynews Clone",
+      "description": "A pixel-faithful rebuild of the Sabay News portal - dense Khmer-language grids and category navigation.",
+      "overview": "Practice work, and a harder layout problem than it looks: Khmer sets at a different line height to Latin, so a news grid tuned on English copy breaks the moment real headlines go into it. React, TypeScript, and Tailwind on Vercel.",
+      "tags": [
+        "TypeScript",
+        "React.js",
+        "Tailwind CSS",
+        "Vercel"
+      ],
+      "category": "Web",
+      "domains": [],
+      "tier": "practice",
+      "visibility": "public",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://sabynews-clone-bondeth.netlify.app"
+        },
+        {
+          "kind": "repo",
+          "url": "https://github.com/bondeth/sabynews-clone"
+        }
+      ],
+      "image": "/images/sabynews-clone.webp"
+    },
+    {
+      "id": "bondeth-vlog",
+      "title": "Bondeth Vlog",
+      "description": "My first personal site - blog posts, projects, and skills behind an animated 3D logo.",
+      "overview": "Early work, kept here as a marker of where the current site started. React, TypeScript, and Tailwind on Vercel.",
+      "tags": [
+        "TypeScript",
+        "React.js",
+        "Tailwind CSS",
+        "Vercel"
+      ],
+      "category": "Web",
+      "domains": [],
+      "tier": "practice",
+      "visibility": "public",
+      "links": [
+        {
+          "kind": "app",
+          "url": "https://bondeth-blog.vercel.app"
+        },
+        {
+          "kind": "repo",
+          "url": "https://github.com/bondeth/bondeth-blog"
+        }
+      ],
+      "image": "/images/bondeth-vlog.webp"
+    }
+  ],
+  "experience": [
+    {
+      "role": "Software Engineer",
+      "company": "Digital Economy and Business Committee",
+      "period": "2025 - Present",
+      "description": "Working as a Software Engineer, specializing in web and mobile app development. Building and maintaining production applications.",
+      "tags": [
+        "Next.js",
+        "NestJS",
+        "PostgreSQL",
+        "Flutter",
+        "FastAPI",
+        "Docker"
+      ]
+    },
+    {
+      "role": "Full Stack Developer",
+      "company": "Mango-Byte",
+      "period": "2024 - 2025",
+      "description": "Working as a junior Full Stack Developer, specializing in web and mobile app development. Building and maintaining production applications across the full stack.",
+      "tags": [
+        "React",
+        "Next.js",
+        "NestJS",
+        "PostgreSQL",
+        "Flutter"
+      ]
+    },
+    {
+      "role": "Developer (Freelance Team Collaboration)",
+      "company": "Freelance",
+      "period": "2023 - 2024",
+      "description": "Collaborated with a freelancing team on web and mobile app development projects. Delivered multiple client projects including e-commerce and service platforms.",
+      "tags": [
+        "Vue.js",
+        "NestJS",
+        "PostgreSQL",
+        "Flutter"
+      ]
+    },
+    {
+      "role": "Web Developer Internship",
+      "company": "ALLWEB IT Company Co., Ltd.",
+      "period": "Jun 2022 - Sep 2022",
+      "description": "Built an attendance management system and contributed to both frontend and backend development. Gained hands-on experience with enterprise web frameworks.",
+      "tags": [
+        "Angular",
+        "Symfony",
+        "PHP",
+        "MySQL"
+      ]
+    },
+    {
+      "role": "IT Supporter",
+      "company": "Pailin Province Hall",
+      "period": "2020 - 2021",
+      "description": "Provided IT support including hardware/software troubleshooting and system installation and configuration for government offices.",
+      "tags": [
+        "Hardware",
+        "Networking",
+        "Windows"
+      ]
+    },
+    {
+      "role": "IDT Coding Instructor",
+      "company": "Cambodia Academy of Digital Technology",
+      "period": "Feb 2020 - May 2020",
+      "description": "Volunteered in the IDT Encoding Program, teaching high school students how to code using C/C++ fundamentals.",
+      "tags": [
+        "C",
+        "C++",
+        "Teaching"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "category": "Frontend",
+      "items": [
+        "TypeScript",
+        "React.js",
+        "Next.js",
+        "Vue.js",
+        "Nuxt.js",
+        "Tailwind CSS"
+      ]
+    },
+    {
+      "category": "Backend",
+      "items": [
+        "Python",
+        "Node.js",
+        "NestJS",
+        "FastAPI",
+        "GraphQL"
+      ]
+    },
+    {
+      "category": "Databases",
+      "items": [
+        "PostgreSQL",
+        "MongoDB",
+        "Redis"
+      ]
+    },
+    {
+      "category": "AI & ML",
+      "items": [
+        "OpenAI",
+        "Anthropic",
+        "Gemini",
+        "LangChain",
+        "LangGraph",
+        "Ollama",
+        "Hugging Face"
+      ]
+    },
+    {
+      "category": "Mobile",
+      "items": [
+        "Flutter",
+        "Swift",
+        "Kotlin"
+      ]
+    },
+    {
+      "category": "Cloud",
+      "items": [
+        "Vercel",
+        "Netlify",
+        "DigitalOcean",
+        "AWS",
+        "GCP",
+        "Cloudflare"
+      ]
+    },
+    {
+      "category": "DevOps & Tools",
+      "items": [
+        "Docker",
+        "Nginx",
+        "GitHub Actions",
+        "Git",
+        "GitHub",
+        "Linux"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Bachelor of Computer Science",
+      "institution": "Cambodia Academy of Digital Technology (CADT)",
+      "period": "2020 - 2024",
+      "location": "Phnom Penh, Cambodia",
+      "description": "Pursued a bachelor's degree in Computer Science with a focus on software engineering, web development, and mobile app development. Graduated as a Techo Scholar.",
+      "achievements": [
+        "Techo Scholar - merit-based scholarship for outstanding students"
+      ]
+    }
+  ]
+}
