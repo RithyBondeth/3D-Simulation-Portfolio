@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.DS_Store
+*.tsbuildinfo
+test-results/
+playwright-report/
+.impeccable/
+.env*
+!.env.example
