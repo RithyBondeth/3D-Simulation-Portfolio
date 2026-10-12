@@ -1,3 +1,8 @@
+import {
+  DRIVE_LIMIT,
+  shoreline,
+  pavilionFootprints,
+} from "../src/lib/pavilion-layout.ts";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -59,26 +64,26 @@ test("steering follows direction of travel and cannot rotate a parked car", () =
   assert.ok(reverse.yaw > still.yaw);
 });
 test("building collisions stop at the wall even after a long frame", () => {
-  const start = { ...spawnCar(), x: -20, z: -21.5, yaw: Math.PI, speed: 18 };
+  const start = { ...spawnCar(), x: -23, z: 11.6, yaw: 0, speed: 18 };
   const next = advanceCar(start, { ...coast, throttle: 1 }, 10);
   assert.equal(next.speed, 0);
-  assert.ok(next.z <= -21.15);
+  assert.ok(next.z >= 11.2);
   assert.equal(blocked(next.x, next.z), false);
 });
-test("the sea boundary stops cars at the island edge", () => {
+test("the retreat boundary stops cars before the scenery edge", () => {
   const next = simulate(
-    { ...spawnCar(), x: 57, z: 0, yaw: -Math.PI / 2, speed: 7 },
+    { ...spawnCar(), x: 49.5, z: 30.5, yaw: -Math.PI / 2, speed: 7 },
     { ...coast, throttle: 1 },
     2,
   );
-  assert.ok(next.x <= 58.85);
+  assert.ok(next.x <= DRIVE_LIMIT - 1.2);
   assert.equal(blocked(next.x, next.z), false);
 });
 test("off-road driving has a lower speed limit than asphalt", () => {
-  assert.equal(onRoad(-22, -31), true);
-  assert.equal(onRoad(-6, -38), false);
+  assert.equal(onRoad(-12, 30.5), true);
+  assert.equal(onRoad(5, 18), false);
   const next = advanceCar(
-    { ...spawnCar(), x: -6, z: -38, speed: 18 },
+    { ...spawnCar(), x: 5, z: 18, speed: 18 },
     coast,
     0.05,
   );
@@ -93,4 +98,56 @@ test("coasting stops and a suspended frame cannot teleport the vehicle", () => {
     30,
   );
   assert.ok(stalled.distance <= 1.80001);
+});
+
+test("the coastal loop is continuous through straight roads and every bend", () => {
+  const check = (x: number, z: number) => {
+    assert.ok(onRoad(x, z), `road at ${x}, ${z}`);
+    assert.equal(blocked(x, z), false, `clear road at ${x}, ${z}`);
+  };
+  for (let p = -36; p <= 36; p++) {
+    check(p, 30.5);
+    check(p, -38.5);
+  }
+  for (let p = -30; p <= 22; p++) {
+    check(-44.5, p);
+    check(44.5, p);
+  }
+  for (const sx of [-1, 1])
+    for (const sz of [-1, 1])
+      for (let i = 0; i <= 30; i++) {
+        const a = ((i / 30) * Math.PI) / 2;
+        check(
+          sx * (36 + Math.cos(a) * 8.5),
+          -4 + sz * (26 + Math.sin(a) * 8.5),
+        );
+      }
+});
+test("all pavilion buildings and the reflecting pool block the car", () => {
+  for (const b of pavilionFootprints) assert.equal(blocked(b.x, b.z), true);
+  assert.equal(blocked(0, 2), true, "courtyard reflecting pool");
+  assert.equal(
+    blocked(spawnCar().x, spawnCar().z),
+    false,
+    "parking position is clear",
+  );
+});
+
+test("the waterfront is reachable and sand slows the car before the sea", () => {
+  assert.equal(blocked(0, 44), false);
+  assert.equal(onRoad(0, 44), false);
+  const sand = advanceCar(
+    { ...spawnCar(), x: 0, z: 44, speed: 18, yaw: Math.PI },
+    coast,
+    0.05,
+  );
+  assert.ok(sand.speed <= 7);
+  const edge = simulate(
+    { ...spawnCar(), x: 0, z: shoreline(0) - 4, speed: 7, yaw: Math.PI },
+    { ...coast, throttle: 1 },
+    2,
+  );
+  assert.equal(edge.speed, 0);
+  assert.ok(edge.z <= shoreline(0) - 3.5);
+  assert.equal(blocked(edge.x, edge.z), false);
 });

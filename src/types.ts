@@ -1,7 +1,12 @@
 export type SectionId =
   "projects" | "about" | "skills" | "experience" | "contact" | "labs";
 export type Vec3 = [number, number, number];
-export type MovementInput = { x: number; z: number; brake?: boolean; invalidate?: () => void };
+export type MovementInput = {
+  x: number;
+  z: number;
+  brake?: boolean;
+  invalidate?: () => void;
+};
 
 export const sectionNames: Record<SectionId, string> = {
   projects: "Selected work",
@@ -45,34 +50,34 @@ export const stations: {
     title: "Selected work",
     subtitle: "The project gallery",
     number: "01",
-    position: [-20, 6, -22],
+    position: [-23, 6.2, 9],
   },
   {
     id: "labs",
     title: "The AI lab",
-    subtitle: "The innovation pavilion",
+    subtitle: "Ideas in practice",
     number: "02",
-    position: [20, 8, -23],
+    position: [0, 7.4, -14],
   },
   {
     id: "skills",
     title: "My toolkit",
-    subtitle: "The tech garden",
+    subtitle: "Tools of the craft",
     number: "03",
-    position: [23, 6, 22],
+    position: [23, 6.2, 8],
   },
   {
     id: "about",
     title: "A little about me",
-    subtitle: "The waterfront house",
+    subtitle: "The person behind the work",
     number: "04",
-    position: [-20, 6, 22],
+    position: [-18, 2.4, 18],
   },
   {
     id: "experience",
     title: "The journey",
-    subtitle: "The coastal lookout",
+    subtitle: "Experience & education",
     number: "05",
-    position: [-47, 7, 0],
+    position: [20, 2.4, 18],
   },
 ];

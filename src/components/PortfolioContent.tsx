@@ -41,11 +41,14 @@ const aiProject = isAIProject;
 export function PortfolioContent({
   section,
   onNavigate,
+  initialProjectId,
 }: {
   section: SectionId;
   onNavigate: (section: SectionId) => void;
+  initialProjectId?: string;
 }) {
-  if (section === "projects") return <Projects />;
+  if (section === "projects")
+    return <Projects initialProjectId={initialProjectId} />;
   if (section === "about") return <About onNavigate={onNavigate} />;
   if (section === "skills") return <Skills />;
   if (section === "experience") return <Experience />;
@@ -63,10 +66,12 @@ function Tags({ tags }: { tags: string[] }) {
   );
 }
 
-function Projects() {
+function Projects({ initialProjectId }: { initialProjectId?: string }) {
   const [filter, setFilter] = useState("Featured");
   const [query, setQuery] = useState("");
-  const [project, setProject] = useState<Project | null>(null);
+  const [project, setProject] = useState<Project | null>(
+    () => projects.find((p) => p.id === initialProjectId) ?? null,
+  );
   const list = sortedProjects.filter((p) => {
     const matches = `${p.title} ${p.description} ${p.tags.join(" ")}`
       .toLowerCase()

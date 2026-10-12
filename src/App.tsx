@@ -11,8 +11,6 @@ import {
 import {
   ArrowDownIcon,
   CarIcon,
-  MapTrifoldIcon,
-  CompassIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
   ArrowUpIcon,
@@ -20,13 +18,14 @@ import {
   ArrowCounterClockwiseIcon,
   BooksIcon,
   BriefcaseIcon,
-  CheckIcon,
   CubeIcon,
   EnvelopeSimpleIcon,
   GithubLogoIcon,
   HouseIcon,
   ListIcon,
   MoonIcon,
+  PauseIcon,
+  PlayIcon,
   MouseIcon,
   QuestionIcon,
   SparkleIcon,
@@ -43,6 +42,12 @@ import {
   type MovementInput,
 } from "./types";
 import profile from "./profile.json";
+import { featuredProjects } from "./featured-projects";
+import {
+  journeyChapter,
+  journeyNames,
+  journeyStops,
+} from "./lib/coastal-journey";
 
 const DrivingWorld = lazy(() => import("./components/DrivingWorld"));
 import { spawnCar, type RoadTelemetry } from "./lib/driving";
@@ -81,7 +86,7 @@ class WorldBoundary extends Component<
       return (
         <div className="world-error">
           <CubeIcon size={38} />
-          <h2>The island couldn’t load.</h2>
+          <h2>The 3D scene couldn’t load.</h2>
           <p>Your browser may not support 3D. All the work is still here.</p>
           <button className="primary-button" onClick={this.props.onFallback}>
             Open simple view
@@ -164,7 +169,14 @@ export default function App() {
       return false;
     }
   });
-  const [exploring, setExploring] = useState(true);
+  const [exploring, setExploring] = useState(false);
+  const [journeyProgress, setJourneyProgress] = useState(0);
+  const journeyMain = useRef<HTMLElement>(null);
+  const journeyStage = useRef<HTMLDivElement>(null);
+  const portfolioScroll = useRef(0);
+  const previousMode = useRef(false);
+  const chapter = journeyChapter(journeyProgress);
+  const [selectedProject, setSelectedProject] = useState<string | undefined>();
   const [ready, setReady] = useState(false);
   const [slow, setSlow] = useState(false);
   const [help, setHelp] = useState(false);
@@ -172,9 +184,9 @@ export default function App() {
     () => document.documentElement.dataset.theme === "dark",
   );
   const [muted, setMuted] = useState(true);
+  const [ambientPaused, setAmbientPaused] = useState(false);
   const [reset, setReset] = useState(0);
   const [near, setNear] = useState<SectionId | null>(null);
-  const [visited, setVisited] = useState<SectionId[]>([]);
   const [telemetry, setTelemetry] = useState<RoadTelemetry>(() => ({
     ...spawnCar(),
     offroad: false,
@@ -185,7 +197,7 @@ export default function App() {
   const select = useCallback((id: SectionId) => {
     setSection(id);
     setHelp(false);
-    setVisited((v) => (v.includes(id) ? v : [...v, id]));
+    setSelectedProject(undefined);
     if (window.location.hash !== `#${id}`)
       window.history.pushState(null, "", `#${id}`);
   }, []);
@@ -197,6 +209,78 @@ export default function App() {
       window.location.pathname + window.location.search,
     );
   }, []);
+  const changeMode = useCallback((drive: boolean) => {
+    if (drive) portfolioScroll.current = window.scrollY;
+    setExploring(drive);
+    setReset((r) => r + 1);
+  }, []);
+  const jumpToChapter = useCallback(
+    (index: number) => {
+      const main = journeyMain.current,
+        stage = journeyStage.current;
+      if (!main || !stage) return;
+      const header = document.querySelector(".site-header")?.clientHeight ?? 92;
+      const start = main.getBoundingClientRect().top + window.scrollY - header;
+      window.scrollTo({
+        top:
+          start +
+          (main.offsetHeight - stage.offsetHeight) * journeyStops[index],
+        behavior: reduceMotion ? "instant" : "smooth",
+      });
+    },
+    [reduceMotion],
+  );
+  useEffect(() => {
+    if (simple || exploring) return;
+    let frame = 0;
+    const measure = () => {
+      const main = journeyMain.current,
+        stage = journeyStage.current;
+      if (!main || !stage) return;
+      const header = document.querySelector(".site-header")?.clientHeight ?? 92;
+      const travel = main.offsetHeight - stage.offsetHeight;
+      setJourneyProgress(
+        Math.max(
+          0,
+          Math.min(
+            1,
+            (header - main.getBoundingClientRect().top) / Math.max(1, travel),
+          ),
+        ),
+      );
+    };
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measure);
+    };
+    schedule();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [simple, exploring]);
+  useEffect(() => {
+    if (previousMode.current === exploring) return;
+    previousMode.current = exploring;
+    const frame = requestAnimationFrame(() =>
+      window.scrollTo({
+        top: exploring ? 0 : portfolioScroll.current,
+        behavior: "instant",
+      }),
+    );
+    return () => cancelAnimationFrame(frame);
+  }, [exploring]);
+  const openProject = useCallback(
+    (id: string) => {
+      select("projects");
+      setSelectedProject(id);
+    },
+    [select],
+  );
+  const startDrive = useCallback(() => changeMode(true), [changeMode]);
   const onReady = useCallback(() => setReady(true), []);
   const fallback = useCallback(() => {
     setSimple(true);
@@ -243,11 +327,12 @@ export default function App() {
       if (e.ctrlKey || e.metaKey || e.altKey || section || help || simple)
         return;
       if (e.key.toLowerCase() === "r") {
+        if (!exploring) jumpToChapter(0);
         setReset((r) => r + 1);
         return;
       }
       if (e.key.toLowerCase() === "m") {
-        setExploring((v) => !v);
+        changeMode(!exploring);
         return;
       }
       if (e.key === "?") {
@@ -263,7 +348,16 @@ export default function App() {
     };
     window.addEventListener("keydown", keys);
     return () => window.removeEventListener("keydown", keys);
-  }, [select, section, help, simple, near]);
+  }, [
+    select,
+    section,
+    help,
+    simple,
+    near,
+    exploring,
+    changeMode,
+    jumpToChapter,
+  ]);
   useEffect(() => {
     if (muted || !section || !audio.current) return;
     const ctx = audio.current;
@@ -314,7 +408,7 @@ export default function App() {
 
   return (
     <div
-      className={`app driving-app ${simple ? "simple-mode" : ""} ${exploring ? "exploring" : ""}`}
+      className={`app pavilion-app metaverse-app ${simple ? "simple-mode" : ""} ${exploring ? "exploring driving-mode" : ""}`}
     >
       <a className="skip-link" href="#main-content">
         Skip to portfolio
@@ -322,12 +416,12 @@ export default function App() {
       <header className="site-header">
         <button
           className="brand"
-          title="Back to the island"
+          title="Back to Bondeth World"
           onClick={() => {
             close();
             setSimple(false);
-            setExploring(true);
-            setReset((r) => r + 1);
+            changeMode(false);
+            jumpToChapter(0);
           }}
         >
           <span className="brand-mark" aria-hidden="true">
@@ -338,7 +432,7 @@ export default function App() {
             <span className="brand-separator" aria-hidden="true">
               /
             </span>
-            <span className="brand-studio">the island</span>
+            <span className="brand-studio">world / portfolio</span>
           </span>
         </button>
         <nav className="header-nav" aria-label="Main navigation">
@@ -346,7 +440,7 @@ export default function App() {
             className={section === "projects" ? "active" : ""}
             onClick={() => select("projects")}
           >
-            Projects
+            Work
           </button>
           <button
             className={section === "about" ? "active" : ""}
@@ -420,7 +514,8 @@ export default function App() {
               }
             >
               <PortfolioContent
-                key={activeSection}
+                key={`${activeSection}:${selectedProject ?? "list"}`}
+                initialProjectId={selectedProject}
                 section={activeSection}
                 onNavigate={select}
               />
@@ -428,277 +523,437 @@ export default function App() {
           </section>
         </main>
       ) : (
-        <main id="main-content" className="studio-main outdoor-main">
-          <div
-            className="world-shell"
-            role="region"
-            aria-label="Outdoor driving portfolio. Drive with WASD or arrow keys, brake with Space, and explore the map destinations."
-          >
-            <WorldBoundary onFallback={fallback} onError={onReady}>
-              <Suspense fallback={null}>
-                <DrivingWorld
-                  selected={section}
-                  onSelect={select}
-                  onReady={onReady}
-                  onNear={setNear}
-                  onTelemetry={setTelemetry}
-                  night={night}
-                  reduceMotion={reduceMotion}
-                  paused={help || !!section}
-                  reset={reset}
-                  movement={movement}
-                  immersive={exploring}
-                />
-              </Suspense>
-            </WorldBoundary>
-            {!ready && (
-              <div className="world-loading" role="status">
-                <div className="loading-model">
-                  <CubeIcon size={39} weight="duotone" />
+        <main
+          ref={journeyMain}
+          id="main-content"
+          className="studio-main pavilion-main"
+        >
+          <div ref={journeyStage} className="journey-stage">
+            <div
+              className="world-shell"
+              role="region"
+              aria-label={
+                exploring
+                  ? "Optional BMW M4 drive through Bondeth World. Use WASD or arrow keys, and Space to brake."
+                  : "Scroll to explore a floating cartoon world with a BMW M4, project galleries, an interactive AI portal, and animated sky islands."
+              }
+            >
+              <WorldBoundary onFallback={fallback} onError={onReady}>
+                <Suspense fallback={null}>
+                  <DrivingWorld
+                    selected={section}
+                    onSelect={select}
+                    onProject={openProject}
+                    onReady={onReady}
+                    onNear={setNear}
+                    onTelemetry={setTelemetry}
+                    night={night}
+                    reduceMotion={reduceMotion}
+                    paused={help || !!section}
+                    reset={reset}
+                    movement={movement}
+                    immersive={exploring}
+                    journeyProgress={journeyProgress}
+                    ambientPaused={ambientPaused}
+                    onDrive={startDrive}
+                  />
+                </Suspense>
+              </WorldBoundary>
+              {!ready && (
+                <div className="world-loading" role="status">
+                  <div className="loading-model">
+                    <CubeIcon size={39} weight="duotone" />
+                  </div>
+                  <strong>Welcome to Bondeth World.</strong>
+                  <span>Preparing your arrival…</span>
+                  {slow && (
+                    <button className="text-button" onClick={fallback}>
+                      Browse in simple view
+                      <ArrowRightIcon size={16} />
+                    </button>
+                  )}
                 </div>
-                <strong>Welcome to Bondeth Island</strong>
-                <span>Your M4 is almost ready.</span>
-                {slow && (
-                  <button className="text-button" onClick={fallback}>
-                    Browse in simple view
-                    <ArrowRightIcon size={16} />
+              )}
+            </div>
+
+            <div className="world-tools">
+              <button
+                className="icon-button"
+                onClick={() => setNight((n) => !n)}
+                aria-label={night ? "Switch to daytime" : "Switch to nighttime"}
+                title={night ? "Daytime" : "Nighttime"}
+              >
+                {night ? <MoonIcon size={19} /> : <SunIcon size={20} />}
+              </button>
+              <button
+                className="icon-button"
+                onClick={toggleSound}
+                aria-label={
+                  muted
+                    ? "Enable interaction sounds"
+                    : "Mute interaction sounds"
+                }
+                title={muted ? "Sound off" : "Sound on"}
+              >
+                {muted ? (
+                  <SpeakerSlashIcon size={19} />
+                ) : (
+                  <SpeakerHighIcon size={19} />
+                )}
+              </button>
+              <button
+                className="icon-button"
+                onClick={() => setAmbientPaused((value) => !value)}
+                aria-label={
+                  ambientPaused
+                    ? "Play scene animation"
+                    : "Pause scene animation"
+                }
+                aria-pressed={ambientPaused}
+                title={ambientPaused ? "Play animation" : "Pause animation"}
+                disabled={reduceMotion}
+              >
+                {ambientPaused || reduceMotion ? (
+                  <PlayIcon size={19} />
+                ) : (
+                  <PauseIcon size={19} />
+                )}
+              </button>
+              <span className="tool-divider" />
+              <button
+                className="icon-button"
+                onClick={() => {
+                  if (!exploring) jumpToChapter(0);
+                  setReset((r) => r + 1);
+                }}
+                aria-label="Reset car and camera"
+                title="Return to start"
+              >
+                <ArrowCounterClockwiseIcon size={19} />
+              </button>
+              <button
+                className="icon-button"
+                onClick={() => setHelp(true)}
+                aria-label="How to explore"
+                title="How to explore"
+              >
+                <QuestionIcon size={20} />
+              </button>
+            </div>
+
+            {!exploring ? (
+              <>
+                <section
+                  key={chapter}
+                  className={`pavilion-hero chapter-${chapter}`}
+                  aria-label={journeyNames[chapter]}
+                >
+                  <div className="pavilion-eyebrow">
+                    <span />{" "}
+                    {
+                      [
+                        "A portfolio with a world of its own.",
+                        "Ideas, brought into the real world",
+                        "Step into the AI lab",
+                        "The next chapter starts with a hello",
+                      ][chapter]
+                    }
+                  </div>
+                  {chapter === 0 ? (
+                    <>
+                      <h1>
+                        <span>Rithy</span>{" "}
+                        <span>
+                          Bondeth<span className="name-dot">.</span>
+                        </span>
+                      </h1>
+                      <p className="pavilion-role">
+                        Full Stack Developer <span>& AI Engineer</span>
+                      </p>
+                    </>
+                  ) : (
+                    <h2 className="journey-title">
+                      {
+                        [
+                          null,
+                          <>
+                            Real problems.
+                            <br />
+                            Useful software<span className="name-dot">.</span>
+                          </>,
+                          <>
+                            Always
+                            <br />
+                            building<span className="name-dot">.</span>
+                          </>,
+                          <>
+                            Have something
+                            <br />
+                            in mind<span className="name-dot">?</span>
+                          </>,
+                        ][chapter]
+                      }
+                    </h2>
+                  )}
+                  <p className="pavilion-description">
+                    {
+                      [
+                        "Full stack ideas, brought to life. I build web, mobile, and AI products — from Cambodia to your screen.",
+                        "From local coding agents to commerce assistants and native macOS apps. Explore the products, and the thinking behind them.",
+                        "I’m drawn to useful AI, careful interfaces, and ideas that make everyday life a little better. There’s always another experiment on my desk.",
+                        "A new product, a fresh perspective, or a good conversation. I’d love to hear what you’re working on.",
+                      ][chapter]
+                    }
+                  </p>
+                  <div className="pavilion-actions">
+                    <button
+                      className="pavilion-work-button"
+                      onClick={() =>
+                        select(
+                          chapter === 2
+                            ? "labs"
+                            : chapter === 3
+                              ? "contact"
+                              : "projects",
+                        )
+                      }
+                    >
+                      {
+                        [
+                          "Explore my work",
+                          "Explore the projects",
+                          "Visit my AI lab",
+                          "Let’s talk",
+                        ][chapter]
+                      }{" "}
+                      <ArrowUpRightIcon size={18} />
+                    </button>
+                    {chapter === 3 ? (
+                      <a
+                        className="pavilion-about-button"
+                        href={profile.resume}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        My resume <ArrowUpRightIcon size={16} />
+                      </a>
+                    ) : (
+                      <button
+                        className="pavilion-about-button"
+                        onClick={() =>
+                          select(chapter === 2 ? "skills" : "about")
+                        }
+                      >
+                        {chapter === 2 ? "My toolkit" : "Meet the maker"}{" "}
+                        <ArrowRightIcon size={16} />
+                      </button>
+                    )}
+                  </div>
+                  <nav
+                    className="pavilion-links"
+                    aria-label="More about Bondeth"
+                  >
+                    <button onClick={() => select("skills")}>Toolkit</button>
+                    <span>/</span>
+                    <button onClick={() => select("experience")}>
+                      Journey
+                    </button>
+                    <span>/</span>
+                    <button onClick={() => select("labs")}>AI lab</button>
+                  </nav>
+                  <div className="pavilion-location">
+                    <span /> Phnom Penh, Cambodia{" "}
+                    <span className="location-line" /> Open to collaborations
+                  </div>
+                </section>
+                <nav className="journey-navigation" aria-label="World chapters">
+                  <div className="journey-progress" aria-hidden="true">
+                    <span style={{ transform: `scaleX(${journeyProgress})` }} />
+                  </div>
+                  <div className="journey-chapters">
+                    {journeyNames.map((name, i) => (
+                      <button
+                        key={name}
+                        aria-current={chapter === i ? "step" : undefined}
+                        onClick={() => jumpToChapter(i)}
+                      >
+                        <span>0{i + 1}</span>
+                        <span>{name}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <span className="journey-scroll">
+                    <MouseIcon size={13} />{" "}
+                    {reduceMotion
+                      ? "Scroll to change the view"
+                      : "Scroll to travel through my world"}
+                  </span>
+                </nav>
+                <button
+                  className="pavilion-drive-button"
+                  onClick={() => changeMode(true)}
+                >
+                  <CarIcon size={18} />
+                  <span>
+                    Drive the M4
+                    <small>Explore at your own pace</small>
+                  </span>
+                  <ArrowUpRightIcon size={17} />
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="drive-mode-bar">
+                  <button onClick={() => changeMode(false)}>
+                    <ArrowLeftIcon size={16} /> Back to portfolio
+                  </button>
+                  <span>Your world. Your route.</span>
+                </div>
+                <DrivingHUD telemetry={telemetry} />
+                {nearStation && (
+                  <button
+                    className="near-prompt"
+                    onClick={() => select(nearStation.id)}
+                  >
+                    <kbd>E</kbd> {nearStation.title}{" "}
+                    <ArrowUpRightIcon size={15} />
                   </button>
                 )}
-              </div>
+              </>
             )}
-          </div>
 
-          <div className="world-tools">
-            <button
-              className="icon-button"
-              onClick={() => setNight((n) => !n)}
-              aria-label={night ? "Switch to daytime" : "Switch to nighttime"}
-              title={night ? "Daytime" : "Nighttime"}
-            >
-              {night ? <MoonIcon size={19} /> : <SunIcon size={20} />}
-            </button>
-            <button
-              className="icon-button"
-              onClick={toggleSound}
-              aria-label={
-                muted ? "Enable interaction sounds" : "Mute interaction sounds"
-              }
-              title={muted ? "Sound off" : "Sound on"}
-            >
-              {muted ? (
-                <SpeakerSlashIcon size={19} />
-              ) : (
-                <SpeakerHighIcon size={19} />
-              )}
-            </button>
-            <span className="tool-divider" />
-            <button
-              className="icon-button"
-              onClick={() => setReset((r) => r + 1)}
-              aria-label="Reset car and camera"
-              title="Return to start"
-            >
-              <ArrowCounterClockwiseIcon size={19} />
-            </button>
-            <button
-              className="icon-button"
-              onClick={() => setHelp(true)}
-              aria-label="How to explore"
-              title="How to explore"
-            >
-              <QuestionIcon size={20} />
-            </button>
-          </div>
-
-          <div className="island-intro">
-            <span className="island-kicker">
-              <span /> BONDETH’S INTERACTIVE PORTFOLIO
-            </span>
-            <h1>
-              Take the
-              <br />
-              <em>scenic route.</em>
-            </h1>
-            <p>
-              Full Stack Developer & AI Engineer.
-              <br />A little drive through the things I build.
-            </p>
-            <button
-              className="camera-switch"
-              onClick={() => setExploring((v) => !v)}
-            >
-              {exploring ? <MapTrifoldIcon size={17} /> : <CarIcon size={17} />}
-              {exploring ? "View island map" : "Back to driving"}
-              <ArrowUpRightIcon size={15} />
-            </button>
-          </div>
-          <DrivingHUD
-            telemetry={telemetry}
-            visited={visited}
-            onSelect={select}
-            overview={!exploring}
-            onOverview={() => setExploring((v) => !v)}
-          />
-          {exploring && nearStation && (
-            <button
-              className="near-prompt"
-              onClick={() => select(nearStation.id)}
-            >
-              <kbd>E</kbd>Explore {nearStation.title.toLowerCase()}
-              <ArrowRightIcon size={16} />
-            </button>
-          )}
-
-          <div className="studio-bottom">
-            <div className="dock-heading">
-              <span>
-                <CompassIcon size={14} /> Five places. Your own route.
-              </span>
-              <span className="exploration-progress">
-                <span className="progress-marks" aria-hidden="true">
-                  {stations.map((s) => (
-                    <i
-                      key={s.id}
-                      className={visited.includes(s.id) ? "visited" : ""}
-                    />
-                  ))}
-                </span>
-                {visited.filter((id) => id !== "contact").length} / 5 explored
-              </span>
-            </div>
-            <nav className="destination-dock" aria-label="Island destinations">
-              {stations.map((station, i) => {
-                const Icon = icons[station.id];
-                return (
+            {exploring && (
+              <div
+                className="drive-touch-controls"
+                aria-label="Driving controls"
+              >
+                {[
+                  {
+                    x: -1,
+                    z: undefined,
+                    label: "Steer left",
+                    Icon: ArrowLeftIcon,
+                    className: "steer-left",
+                  },
+                  {
+                    x: 1,
+                    z: undefined,
+                    label: "Steer right",
+                    Icon: ArrowRightIcon,
+                    className: "steer-right",
+                  },
+                  {
+                    x: undefined,
+                    z: 1,
+                    label: "Reverse",
+                    Icon: ArrowDownIcon,
+                    className: "reverse",
+                  },
+                  {
+                    x: undefined,
+                    z: -1,
+                    label: "Accelerate",
+                    Icon: ArrowUpIcon,
+                    className: "accelerate",
+                  },
+                ].map(({ x, z, label, Icon, className }) => (
                   <button
-                    key={station.id}
-                    onClick={() => select(station.id)}
-                    className={section === station.id ? "active" : ""}
+                    key={label}
+                    className={className}
+                    aria-label={label}
+                    onPointerDown={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.setPointerCapture(e.pointerId);
+                      move(x, z);
+                    }}
+                    onPointerUp={() =>
+                      move(
+                        x === undefined ? undefined : 0,
+                        z === undefined ? undefined : 0,
+                      )
+                    }
+                    onPointerCancel={() =>
+                      move(
+                        x === undefined ? undefined : 0,
+                        z === undefined ? undefined : 0,
+                      )
+                    }
+                    onLostPointerCapture={() =>
+                      move(
+                        x === undefined ? undefined : 0,
+                        z === undefined ? undefined : 0,
+                      )
+                    }
                   >
-                    <span
-                      className={`destination-icon destination-${station.id}`}
-                    >
-                      <Icon size={21} weight="regular" />
-                    </span>
-                    <span className="destination-copy">
-                      <strong>
-                        <span className="destination-long">
-                          {station.title}
-                        </span>
-                        <span className="destination-short">
-                          {
-                            {
-                              projects: "Work",
-                              labs: "AI lab",
-                              skills: "Toolkit",
-                              about: "About",
-                              experience: "Journey",
-                              contact: "Contact",
-                            }[station.id]
-                          }
-                        </span>
-                      </strong>
-                      <span>{station.subtitle}</span>
-                    </span>
-                    <span className="destination-key">
-                      {visited.includes(station.id) ? (
-                        <CheckIcon size={13} />
-                      ) : (
-                        i + 1
-                      )}
-                    </span>
+                    <Icon size={22} />
                   </button>
-                );
-              })}
-            </nav>
-          </div>
-
-          {exploring && (
-            <div className="drive-touch-controls" aria-label="Driving controls">
-              {[
-                {
-                  x: -1,
-                  z: undefined,
-                  label: "Steer left",
-                  Icon: ArrowLeftIcon,
-                  className: "steer-left",
-                },
-                {
-                  x: 1,
-                  z: undefined,
-                  label: "Steer right",
-                  Icon: ArrowRightIcon,
-                  className: "steer-right",
-                },
-                {
-                  x: undefined,
-                  z: 1,
-                  label: "Reverse",
-                  Icon: ArrowDownIcon,
-                  className: "reverse",
-                },
-                {
-                  x: undefined,
-                  z: -1,
-                  label: "Accelerate",
-                  Icon: ArrowUpIcon,
-                  className: "accelerate",
-                },
-              ].map(({ x, z, label, Icon, className }) => (
+                ))}
                 <button
-                  key={label}
-                  className={className}
-                  aria-label={label}
+                  className="brake"
+                  aria-label="Brake"
                   onPointerDown={(e) => {
                     e.preventDefault();
                     e.currentTarget.setPointerCapture(e.pointerId);
-                    move(x, z);
+                    movement.current.brake = true;
+                    movement.current.invalidate?.();
                   }}
-                  onPointerUp={() =>
-                    move(
-                      x === undefined ? undefined : 0,
-                      z === undefined ? undefined : 0,
-                    )
-                  }
-                  onPointerCancel={() =>
-                    move(
-                      x === undefined ? undefined : 0,
-                      z === undefined ? undefined : 0,
-                    )
-                  }
-                  onLostPointerCapture={() =>
-                    move(
-                      x === undefined ? undefined : 0,
-                      z === undefined ? undefined : 0,
-                    )
-                  }
+                  onPointerUp={() => {
+                    movement.current.brake = false;
+                  }}
+                  onPointerCancel={() => {
+                    movement.current.brake = false;
+                  }}
+                  onLostPointerCapture={() => {
+                    movement.current.brake = false;
+                  }}
                 >
-                  <Icon size={22} />
+                  BRAKE
                 </button>
-              ))}
-              <button
-                className="brake"
-                aria-label="Brake"
-                onPointerDown={(e) => {
-                  e.preventDefault();
-                  e.currentTarget.setPointerCapture(e.pointerId);
-                  movement.current.brake = true;
-                  movement.current.invalidate?.();
-                }}
-                onPointerUp={() => {
-                  movement.current.brake = false;
-                }}
-                onPointerCancel={() => {
-                  movement.current.brake = false;
-                }}
-                onLostPointerCapture={() => {
-                  movement.current.brake = false;
-                }}
+              </div>
+            )}
+            {!exploring && (
+              <section
+                className="featured-work"
+                aria-labelledby="featured-heading"
               >
-                BRAKE
-              </button>
-            </div>
-          )}
+                <div className="featured-heading">
+                  <span className="pavilion-eyebrow">
+                    Made in the real world
+                  </span>
+                  <h2 id="featured-heading">
+                    Featured projects<span>.</span>
+                  </h2>
+                  <button onClick={() => select("projects")}>
+                    View all projects <ArrowUpRightIcon size={15} />
+                  </button>
+                </div>
+                <div className="featured-list">
+                  {featuredProjects.map((project, i) => (
+                    <button
+                      className="featured-project"
+                      key={project.id}
+                      onClick={() => openProject(project.id)}
+                      aria-label={`View ${project.title} case study`}
+                    >
+                      <div className="featured-image">
+                        <img
+                          src={project.image}
+                          alt={`${project.title} product preview`}
+                        />
+                        <span>0{i + 1}</span>
+                      </div>
+                      <div className="featured-copy">
+                        <span>{project.category}</span>
+                        <h3>{project.title}</h3>
+                        <p>{project.description}</p>
+                      </div>
+                      <ArrowUpRightIcon className="featured-arrow" size={17} />
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
         </main>
       )}
 
@@ -711,18 +966,22 @@ export default function App() {
           <div className="control-legend">
             <span>
               <MouseIcon size={16} />
-              Drag to look around
+              {exploring
+                ? "Drag to look around"
+                : "Scroll to explore the world"}
             </span>
-            <span className="zoom-legend">Scroll to zoom</span>
-            <span>
-              <span className="key-group">
-                <kbd>W</kbd>
-                <kbd>A</kbd>
-                <kbd>S</kbd>
-                <kbd>D</kbd>
+            {exploring && <span className="zoom-legend">Scroll to zoom</span>}
+            {exploring && (
+              <span>
+                <span className="key-group">
+                  <kbd>W</kbd>
+                  <kbd>A</kbd>
+                  <kbd>S</kbd>
+                  <kbd>D</kbd>
+                </span>{" "}
+                to drive
               </span>
-              to drive
-            </span>
+            )}
           </div>
         )}
         {!simple && (
@@ -744,7 +1003,7 @@ export default function App() {
           <div className="drawer-top">
             <span>
               <CubeIcon size={16} />
-              BONDETH ISLAND
+              BONDETH / PORTFOLIO
             </span>
             <button
               className="icon-button"
@@ -769,7 +1028,8 @@ export default function App() {
               }
             >
               <PortfolioContent
-                key={section}
+                key={`${section}:${selectedProject ?? "list"}`}
+                initialProjectId={selectedProject}
                 section={section}
                 onNavigate={select}
               />
@@ -778,7 +1038,7 @@ export default function App() {
           <div className="drawer-footer">
             <span>There’s more to explore.</span>
             <button className="text-button" onClick={close}>
-              Back to the island
+              Back to the world
               <ArrowRightIcon size={16} />
             </button>
           </div>
@@ -801,14 +1061,18 @@ export default function App() {
           <span className="help-icon">
             <CubeIcon size={32} weight="duotone" />
           </span>
-          <h2 id="help-title">Take it for a spin.</h2>
-          <p>Drive the coast, discover the work, and stop wherever you like.</p>
+          <h2 id="help-title">Make yourself at home.</h2>
+          <p>
+            Scroll through the world to discover the work, or take the M4 for a
+            short drive of your own.
+          </p>
           <div className="help-rows">
             <div>
               <MouseIcon size={23} />
               <span>
-                <strong>Look around</strong>Drag to look around. Scroll or pinch
-                to zoom.
+                <strong>Explore the world</strong>Scroll through four views, or
+                choose a chapter below the introduction. In driving mode, drag
+                to look around and scroll to zoom.
               </span>
             </div>
             <div>
@@ -827,14 +1091,15 @@ export default function App() {
               <kbd>E</kbd>
               <span>
                 <strong>Discover a corner</strong>Click a marker, or press E
-                when you’re nearby. M switches the map. R returns to the start.
+                when you’re nearby while driving. M returns to the portfolio. R
+                returns to the start.
               </span>
             </div>
             <div>
               <kbd>1-5</kbd>
               <span>
-                <strong>Jump right in</strong>Number keys open the five island
-                destinations.
+                <strong>Jump right in</strong>Number keys open the five
+                portfolio destinations.
               </span>
             </div>
           </div>
@@ -842,10 +1107,10 @@ export default function App() {
             className="primary-button"
             onClick={() => {
               setHelp(false);
-              setExploring(true);
+              changeMode(true);
             }}
           >
-            Let’s drive
+            Take a short drive
             <ArrowUpRightIcon size={18} />
           </button>
           <p className="model-credit">
