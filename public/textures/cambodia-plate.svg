@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="330" viewBox="0 0 1560 330">
+  <rect x="3" y="3" width="1554" height="324" rx="24" fill="#f9faf7" stroke="#202364" stroke-width="6"/>
+  <rect x="14" y="14" width="1532" height="302" rx="16" fill="none" stroke="#adb2c5" stroke-width="2"/>
+  <text x="780" y="58" text-anchor="middle" font-family="Khmer MN, Khmer Sangam MN, sans-serif" font-weight="bold" font-size="50" fill="#202364">កម្ពុជា</text>
+  <text x="780" y="220" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="160" letter-spacing="8" fill="#202364">DETH X RANA</text>
+  <path d="M94 247H1466" stroke="#67a9c2" stroke-width="4"/>
+  <text x="780" y="301" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" font-size="48" letter-spacing="10" fill="#a52a27">CAMBODIA</text>
+  <g fill="#c1c4cb" stroke="#727783" stroke-width="2">
+    <circle cx="48" cy="165" r="10"/>
+    <circle cx="1512" cy="165" r="10"/>
+  </g>
+  <path d="M42 165H54M1506 165H1518" stroke="#727783" stroke-width="2"/>
+</svg>

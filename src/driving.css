@@ -1113,3 +1113,109 @@
   overflow-y: auto;
   overscroll-behavior: contain;
 }
+
+/* City driving: compact cockpit overlays leave the street and skyline visible. */
+.island-intro {
+  padding: 19px 22px 20px;
+  background: var(--glass);
+  border: 1px solid #ffffff70;
+  border-radius: 18px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px #14242c12;
+}
+.island-intro::before {
+  display: none;
+}
+.island-intro h1 {
+  font-size: clamp(30px, 2.7vw, 42px);
+  margin: 14px 0 12px;
+}
+.island-intro p {
+  margin-bottom: 15px;
+}
+.island-kicker {
+  font-size: 8px;
+  letter-spacing: 1.35px;
+}
+.camera-switch {
+  padding: 9px 13px;
+  border-color: var(--line);
+  box-shadow: none;
+}
+.minimap-board {
+  aspect-ratio: 260 / 310;
+  background: #d6d9d4;
+}
+.minimap-stop {
+  border: 1px solid #ffffffe0;
+}
+.driving-app .brand-studio {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+@media (max-width: 850px) {
+  .island-intro {
+    padding: 15px 17px;
+  }
+  .island-intro h1 {
+    font-size: 30px;
+  }
+}
+@media (max-width: 600px) {
+  .island-intro {
+    padding: 11px 13px;
+    border-radius: 13px;
+  }
+  .island-intro h1 {
+    font-size: 25px;
+    margin: 10px 0 8px;
+  }
+  .island-kicker {
+    font-size: 5.5px;
+    letter-spacing: 0.7px;
+  }
+  .island-intro p {
+    font-size: 7px;
+    margin-bottom: 10px;
+  }
+  .camera-switch {
+    padding: 7px 8px;
+    font-size: 7px;
+  }
+  .minimap-board {
+    aspect-ratio: 260 / 310;
+  }
+}
+@media (max-height: 650px) and (min-width: 601px) {
+  .island-intro h1 {
+    font-size: 26px;
+  }
+  .island-intro p {
+    display: none;
+  }
+  .island-intro {
+    padding: 12px 16px;
+  }
+}
+.driving-app.exploring .site-header {
+  background: transparent;
+}
+.driving-app .brand {
+  background: var(--glass);
+  padding: 7px 10px 7px 7px;
+  border-radius: 13px;
+  backdrop-filter: blur(16px);
+}
+.driving-app .brand {
+  width: max-content;
+  flex: 0 0 auto;
+}
+.driving-app:not(.exploring) .drive-dashboard,
+.driving-app:not(.exploring) .island-minimap,
+.driving-app:not(.exploring) .island-intro h1,
+.driving-app:not(.exploring) .island-intro p {
+  display: none;
+}
+.driving-app:not(.exploring) .island-intro .camera-switch {
+  margin-top: 12px;
+}

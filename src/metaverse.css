@@ -1,0 +1,851 @@
+/* The world is the canvas; the interface is a quiet layer above it. */
+body {
+  background: #0c1c2a;
+}
+.metaverse-app {
+  --bg: #0c1c2a;
+  --surface: #162c3a;
+  --surface-subtle: #203a46;
+  --ink: #e6eee6;
+  --muted: #9bb6b7;
+  --line: #a2d3c326;
+  --coral: #ffac88;
+  --coral-soft: #ab704426;
+  --button: #b6f0d3;
+  --button-text: #183b3a;
+  --glass: #16303bd9;
+  --shadow: 0 12px 40px #06121e38;
+  --header-height: 80px;
+  --work-height: 112px;
+  color: var(--ink);
+}
+.metaverse-app .site-header {
+  height: var(--header-height);
+  max-width: 1920px;
+  padding: 0 clamp(24px, 3.5vw, 64px);
+  background: #0c1c2af0;
+  border-bottom: 1px solid #b1dfd710;
+}
+.metaverse-app .brand {
+  font-size: 19px;
+  font-weight: 650;
+}
+.metaverse-app .brand-mark {
+  background: #a7e4cf14;
+  border-color: #b6f0d35c;
+  color: var(--button);
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+}
+.metaverse-app .brand-separator {
+  color: #769d9e;
+  padding: 0 12px;
+}
+.metaverse-app .brand-studio {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+}
+.metaverse-app .header-nav {
+  gap: 20px;
+}
+.metaverse-app .header-nav button {
+  color: #b6cbca;
+  font-size: 12px;
+}
+.metaverse-app .header-nav button:hover {
+  color: var(--button);
+}
+.metaverse-app .header-nav a {
+  color: #b6cbca;
+}
+.metaverse-app .contact-button {
+  border-radius: 24px;
+  padding: 11px 17px;
+  gap: 18px;
+  background: #b6f0d3;
+  color: #183b3a;
+}
+.metaverse-app .contact-button:hover {
+  background: #d2ffe5;
+  color: #183b3a;
+}
+.metaverse-app .view-switch {
+  color: #a2bcbb;
+  font-size: 10px;
+}
+.metaverse-app .pavilion-main {
+  max-width: 1920px;
+}
+.metaverse-app .journey-stage {
+  min-height: 650px;
+  background: var(--bg);
+}
+.metaverse-app .world-shell {
+  inset: 0 0 0;
+  height: auto;
+}
+.metaverse-app .journey-stage::after {
+  inset: 0;
+  height: auto;
+  background:
+    linear-gradient(
+      90deg,
+      #0c1c2af5 0%,
+      #0c1c2ad9 23%,
+      #0c1c2a70 37%,
+      transparent 57%
+    ),
+    linear-gradient(0deg, #0c1c2a 0%, #0c1c2a30 20%, transparent 38%);
+}
+.metaverse-app .pavilion-hero {
+  padding: clamp(30px, 5.5vh, 68px) 0 0 clamp(24px, 3.5vw, 64px);
+  width: 36%;
+}
+.metaverse-app .pavilion-eyebrow {
+  color: #a8c8c4;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+}
+.metaverse-app .pavilion-eyebrow > span:first-child {
+  background: var(--button);
+  box-shadow: 0 0 12px #b6f0d36b;
+}
+.metaverse-app .pavilion-hero h1 {
+  font-size: clamp(62px, 5.5vw, 96px);
+  font-weight: 520;
+  line-height: 1.04;
+  letter-spacing: -0.065em;
+  margin: 24px 0 22px;
+  text-shadow: 0 4px 36px #0b1c2955;
+}
+.metaverse-app .name-dot {
+  color: var(--button);
+}
+.metaverse-app .pavilion-role {
+  color: #c8e0d6;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 17px;
+}
+.metaverse-app .pavilion-role > span {
+  color: #9ebbb7;
+  font-weight: 450;
+}
+.metaverse-app .pavilion-description {
+  color: #a6bcbd;
+  max-width: 285px;
+  font-size: 12px;
+  line-height: 1.85;
+  margin-bottom: 24px;
+}
+.metaverse-app .pavilion-work-button {
+  border-radius: 28px;
+  padding: 14px 18px;
+  gap: 22px;
+  font-size: 11px;
+  box-shadow: 0 6px 24px #9dffd512;
+}
+.metaverse-app .pavilion-work-button:hover {
+  background: #d2ffe5;
+  color: #183b3a;
+}
+.metaverse-app .pavilion-about-button {
+  border: 0;
+  color: #b6cdca;
+  font-size: 10px;
+  gap: 8px;
+}
+.metaverse-app .pavilion-actions {
+  gap: 20px;
+}
+.metaverse-app .pavilion-links {
+  margin-top: 23px;
+  font-size: 10px;
+  gap: 14px;
+}
+.metaverse-app .pavilion-links button {
+  color: #9bb6b7;
+}
+.metaverse-app .pavilion-links button:hover {
+  color: var(--button);
+}
+.metaverse-app .pavilion-location {
+  font-size: 8px;
+  color: #799fa0;
+  margin-top: 26px;
+}
+.metaverse-app .pavilion-location > span:first-child {
+  background: var(--button);
+}
+.metaverse-app .journey-title {
+  font-size: clamp(44px, 4.2vw, 72px);
+  font-weight: 500;
+  line-height: 1.1;
+  margin: 27px 0 24px;
+}
+.metaverse-app .world-tools {
+  top: 24px;
+  right: clamp(24px, 3.5vw, 64px);
+  padding: 6px;
+  border: 1px solid #d0f7e524;
+  background: #16303bcc;
+  border-radius: 28px;
+  box-shadow: 0 8px 24px #07152233;
+}
+.metaverse-app .world-tools .icon-button {
+  width: 32px;
+  height: 32px;
+  color: #bedbd1;
+}
+.metaverse-app .world-tools .icon-button:hover {
+  background: #b6f0d317;
+  color: #d7ffe7;
+}
+.metaverse-app .world-tools .icon-button[aria-pressed="true"] {
+  color: var(--button);
+  background: #b6f0d322;
+}
+.metaverse-app .journey-navigation {
+  bottom: calc(var(--work-height) + 32px);
+  left: clamp(24px, 3.5vw, 64px);
+  width: min(375px, 32%);
+}
+.metaverse-app .journey-progress {
+  margin-bottom: 17px;
+  height: 2px;
+  border-radius: 2px;
+}
+.metaverse-app .journey-progress > span {
+  background: var(--button);
+}
+.metaverse-app .journey-chapters {
+  gap: 12px;
+}
+.metaverse-app .journey-chapters button {
+  gap: 6px;
+  font-size: 9px;
+  color: #759b9e;
+}
+.metaverse-app .journey-chapters button[aria-current],
+.metaverse-app .journey-chapters button:hover {
+  color: var(--button);
+}
+.metaverse-app .journey-chapters button > span:first-child {
+  font-size: 9px;
+}
+.metaverse-app .journey-scroll {
+  color: #6f9397;
+  margin-top: 17px;
+}
+.metaverse-app .pavilion-drive-button {
+  right: clamp(24px, 3.5vw, 64px);
+  bottom: calc(var(--work-height) + 38px);
+  background: #16303bd9;
+  border: 1px solid #c8f5e329;
+  border-radius: 14px;
+  color: #ddf1e5;
+  padding: 15px 17px;
+  gap: 14px;
+  font-size: 12px;
+}
+.metaverse-app .pavilion-drive-button > svg:first-child {
+  color: var(--button);
+  width: 22px;
+  height: 22px;
+}
+.metaverse-app .pavilion-drive-button small {
+  color: #86aaa9;
+  font-size: 9px;
+}
+.metaverse-app .pavilion-drive-button:hover {
+  background: #234650;
+}
+.metaverse-app .featured-work {
+  width: auto;
+  height: 86px;
+  left: clamp(24px, 3.5vw, 64px);
+  right: clamp(24px, 3.5vw, 64px);
+  bottom: 20px;
+  display: grid;
+  grid-template-columns: 155px 1fr;
+  gap: 24px;
+  padding: 15px 21px;
+  border: 1px solid #ceeade20;
+  border-radius: 17px;
+  background: #152c3bd9;
+  backdrop-filter: blur(24px);
+  box-shadow: 0 16px 40px #06131d2b;
+}
+.metaverse-app .featured-heading h2 {
+  font-family: "Manrope Variable", sans-serif;
+  font-size: 14px;
+  letter-spacing: -0.035em;
+  font-weight: 650;
+  margin: 3px 0 7px;
+}
+.metaverse-app .featured-heading .pavilion-eyebrow {
+  font-size: 7px;
+  color: #70999a;
+}
+.metaverse-app .featured-heading > button {
+  font-size: 8px;
+  gap: 8px;
+  color: #9cbbb3;
+}
+.metaverse-app .featured-heading > button:hover {
+  color: var(--button);
+}
+.metaverse-app .featured-list {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+.metaverse-app .featured-project {
+  flex: 1;
+  gap: 12px;
+  padding: 0 0 0 20px;
+  border-left: 1px solid #b0d3ca19;
+}
+.metaverse-app .featured-image {
+  width: 56px;
+  height: 43px;
+  border-radius: 6px;
+  opacity: 0.85;
+}
+.metaverse-app .featured-image > span {
+  display: none;
+}
+.metaverse-app .featured-copy > span {
+  font-size: 7px;
+  color: #7fa3a5;
+}
+.metaverse-app .featured-copy h3 {
+  font-size: 10px;
+  font-weight: 600;
+  margin: 5px 0 0;
+  color: #d1e4da;
+}
+.metaverse-app .featured-copy p {
+  display: none;
+}
+.metaverse-app .featured-arrow {
+  width: 13px;
+  color: #7dada3;
+}
+.metaverse-app .featured-project:hover .featured-image {
+  opacity: 1;
+}
+.metaverse-app .featured-project:hover .featured-copy h3 {
+  color: var(--button);
+}
+.metaverse-app .site-footer {
+  border-color: #b1dfd710;
+  padding: 16px clamp(24px, 3.5vw, 64px);
+  background: #0c1c2a;
+  color: #739598;
+}
+.metaverse-app .world-loading,
+.metaverse-app .world-error {
+  background: #0c1c2a;
+}
+.metaverse-app .loading-model {
+  color: var(--button);
+}
+.metaverse-app .pavilion-label,
+.metaverse-app .world-marker {
+  background: #173745e8;
+  border: 1px solid #c7efdb3b;
+  color: #ddf4e7;
+  box-shadow: 0 8px 24px #07152233;
+  backdrop-filter: blur(16px);
+  border-radius: 9px;
+  font-family: "Manrope Variable", sans-serif;
+}
+.metaverse-app .pavilion-label.car-label {
+  background: #b6f0d3ed;
+  color: #173d3c;
+  padding: 7px 10px;
+  border-radius: 18px;
+  font-size: 9px;
+}
+.metaverse-app .pavilion-label:hover {
+  background: #b6f0d3;
+  color: #173d3c;
+}
+.world-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 9px 13px;
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.world-marker > span:last-child {
+  font-size: 8px;
+  color: #9fc9ba;
+  font-weight: 450;
+}
+.world-marker:hover {
+  background: #265660;
+  transform: translateY(-2px);
+  border-color: #b6f0d3a0;
+}
+.world-marker:active {
+  transform: translateY(0) scale(0.97);
+}
+.world-marker.portal-marker {
+  flex-direction: row;
+  gap: 9px;
+  border-radius: 22px;
+  font-size: 10px;
+  padding: 9px 12px;
+}
+.marker-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #b6f0d3;
+  box-shadow: 0 0 10px #b6f0d380;
+}
+.metaverse-app button:focus-visible,
+.metaverse-app a:focus-visible {
+  outline: 2px solid #b6f0d3;
+  outline-offset: 5px;
+}
+.metaverse-app .drive-mode-bar > button,
+.metaverse-app .drive-touch-controls button {
+  background: #16303bd9;
+  color: #d9f3e5;
+  border: 1px solid #bcebd22b;
+}
+.metaverse-app .coastal-drive-status {
+  background: #16303be0;
+  border: 1px solid #bcebd21f;
+  border-radius: 14px;
+}
+.metaverse-app .drive-mode-bar > span {
+  color: #a5c5bf;
+}
+.metaverse-app.driving-mode .world-shell {
+  inset: -80px 0 0;
+}
+.metaverse-app.driving-mode .journey-stage {
+  min-height: 0;
+}
+.metaverse-app.driving-mode .journey-stage::after {
+  display: none;
+}
+@media (min-width: 901px) and (max-height: 780px) {
+  .metaverse-app .journey-stage {
+    min-height: 590px;
+  }
+  .metaverse-app .pavilion-hero {
+    padding-top: 27px;
+  }
+  .metaverse-app .pavilion-hero h1 {
+    font-size: 64px;
+    margin: 19px 0 16px;
+  }
+  .metaverse-app .pavilion-role {
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+  .metaverse-app .pavilion-description {
+    font-size: 11px;
+    margin-bottom: 18px;
+  }
+  .metaverse-app .pavilion-links {
+    margin-top: 19px;
+  }
+  .metaverse-app .pavilion-location {
+    display: none;
+  }
+  .metaverse-app .journey-title {
+    font-size: 49px;
+    margin: 25px 0;
+  }
+}
+@media (min-width: 901px) and (max-width: 1150px) {
+  .metaverse-app .pavilion-hero {
+    width: 40%;
+  }
+  .metaverse-app .pavilion-hero h1 {
+    font-size: 63px;
+  }
+  .metaverse-app .pavilion-about-button {
+    font-size: 9px;
+  }
+  .metaverse-app .pavilion-actions {
+    gap: 15px;
+  }
+  .metaverse-app .featured-work {
+    grid-template-columns: 120px 1fr;
+    gap: 14px;
+  }
+  .metaverse-app .featured-project {
+    padding-left: 14px;
+    gap: 9px;
+  }
+  .metaverse-app .featured-list {
+    gap: 14px;
+  }
+  .metaverse-app .featured-image {
+    width: 44px;
+  }
+}
+@media (max-width: 900px) {
+  .metaverse-app {
+    --header-height: 72px;
+    --work-height: 110px;
+  }
+  .metaverse-app .journey-stage {
+    min-height: 690px;
+  }
+  .metaverse-app .site-header {
+    padding: 0 24px;
+  }
+  .metaverse-app .brand-studio,
+  .metaverse-app .brand-separator {
+    display: none;
+  }
+  .metaverse-app .pavilion-hero {
+    width: 100%;
+    padding: 24px 24px 0;
+  }
+  .metaverse-app .pavilion-hero h1 {
+    font-size: 52px;
+    margin: 15px 0 12px;
+  }
+  .metaverse-app .pavilion-hero h1 > span {
+    display: inline;
+  }
+  .metaverse-app .pavilion-role {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+  .metaverse-app .pavilion-description {
+    max-width: 370px;
+    font-size: 11px;
+    margin-bottom: 15px;
+  }
+  .metaverse-app .pavilion-actions {
+    gap: 22px;
+  }
+  .metaverse-app .pavilion-links {
+    margin-top: 16px;
+    font-size: 9px;
+  }
+  .metaverse-app .pavilion-location {
+    display: none;
+  }
+  .metaverse-app .world-shell {
+    inset: 145px -8% 30px;
+  }
+  .metaverse-app .journey-stage::after {
+    height: auto;
+    background: linear-gradient(
+      180deg,
+      #0c1c2a 0%,
+      #0c1c2af2 17%,
+      #0c1c2a50 36%,
+      transparent 49%,
+      #0c1c2a00 76%,
+      #0c1c2a 98%
+    );
+  }
+  .metaverse-app .world-tools {
+    top: 265px;
+    right: 24px;
+    padding: 4px;
+  }
+  .metaverse-app .journey-title {
+    font-size: 44px;
+    margin: 16px 0;
+  }
+  .metaverse-app .journey-navigation {
+    left: 24px;
+    width: 320px;
+    max-width: 48%;
+    bottom: calc(var(--work-height) + 23px);
+  }
+  .metaverse-app .pavilion-drive-button {
+    right: 24px;
+    bottom: calc(var(--work-height) + 27px);
+    padding: 11px 13px;
+    font-size: 10px;
+  }
+  .metaverse-app .pavilion-drive-button small {
+    font-size: 7px;
+  }
+  .metaverse-app .featured-work {
+    left: 24px;
+    right: 24px;
+    bottom: 18px;
+    height: 86px;
+    grid-template-columns: 130px 1fr;
+    padding: 13px 16px;
+    gap: 14px;
+  }
+  .metaverse-app .featured-heading {
+    display: block;
+  }
+  .metaverse-app .featured-heading .pavilion-eyebrow {
+    display: block;
+  }
+  .metaverse-app .featured-heading h2 {
+    font-size: 12px;
+  }
+  .metaverse-app .featured-project {
+    padding-left: 12px;
+    gap: 8px;
+  }
+  .metaverse-app .featured-list {
+    gap: 15px;
+  }
+  .metaverse-app .featured-image {
+    width: 42px;
+    height: 40px;
+  }
+  .metaverse-app .featured-copy h3 {
+    font-size: 9px;
+  }
+  .metaverse-app.driving-mode .world-shell {
+    inset: -72px 0 0;
+  }
+}
+@media (max-width: 600px) {
+  .metaverse-app {
+    --header-height: 68px;
+    --work-height: 100px;
+  }
+  .metaverse-app .site-header {
+    padding: 0 20px;
+  }
+  .metaverse-app .brand {
+    font-size: 16px;
+  }
+  .metaverse-app .brand-mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+  .metaverse-app .header-actions {
+    gap: 11px;
+  }
+  .metaverse-app .view-switch {
+    font-size: 8px;
+  }
+  .metaverse-app .contact-button {
+    font-size: 9px;
+    padding: 9px 12px;
+    gap: 9px;
+  }
+  .metaverse-app .journey-stage {
+    min-height: 700px;
+  }
+  .metaverse-app .pavilion-hero {
+    padding: 23px 20px 0;
+  }
+  .metaverse-app .pavilion-eyebrow {
+    font-size: 8px;
+  }
+  .metaverse-app .pavilion-hero h1 {
+    font-size: clamp(36px, 10vw, 52px);
+    margin: 15px 0 12px;
+  }
+  .metaverse-app .pavilion-role {
+    font-size: 10px;
+    margin-bottom: 10px;
+  }
+  .metaverse-app .pavilion-description {
+    font-size: 10px;
+    max-width: 320px;
+    line-height: 1.8;
+    margin-bottom: 15px;
+  }
+  .metaverse-app .pavilion-work-button {
+    font-size: 10px;
+    padding: 12px 15px;
+    gap: 15px;
+  }
+  .metaverse-app .pavilion-about-button {
+    font-size: 9px;
+  }
+  .metaverse-app .pavilion-links {
+    font-size: 9px;
+    margin-top: 15px;
+  }
+  .metaverse-app .world-shell {
+    inset: 190px -23% 25px;
+  }
+  .metaverse-app .journey-stage::after {
+    background: linear-gradient(
+      180deg,
+      #0c1c2a 0%,
+      #0c1c2af7 19%,
+      #0c1c2a50 37%,
+      transparent 49%,
+      transparent 74%,
+      #0c1c2a 98%
+    );
+  }
+  .metaverse-app .world-tools {
+    top: 294px;
+    right: 17px;
+    border-radius: 25px;
+  }
+  .metaverse-app .world-tools .icon-button {
+    width: 29px;
+    height: 29px;
+  }
+  .metaverse-app .journey-navigation {
+    left: 20px;
+    max-width: 44%;
+    width: 165px;
+    bottom: calc(var(--work-height) + 13px);
+  }
+  .metaverse-app .journey-chapters {
+    gap: 0;
+  }
+  .metaverse-app .journey-chapters button {
+    min-height: 36px;
+    width: 38px;
+  }
+  .metaverse-app .journey-chapters button > span:first-child {
+    font-size: 10px;
+  }
+  .metaverse-app .journey-progress {
+    margin-bottom: 11px;
+  }
+  .metaverse-app .pavilion-drive-button {
+    bottom: calc(var(--work-height) + 25px);
+    right: 20px;
+    padding: 10px 11px;
+    font-size: 10px;
+    gap: 8px;
+  }
+  .metaverse-app .pavilion-drive-button > svg:first-child {
+    width: 18px;
+  }
+  .metaverse-app .pavilion-drive-button small {
+    font-size: 7px;
+  }
+  .metaverse-app .featured-work {
+    height: 83px;
+    bottom: 13px;
+    left: 16px;
+    right: 16px;
+    padding: 11px;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    border-radius: 12px;
+  }
+  .metaverse-app .featured-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .metaverse-app .featured-heading .pavilion-eyebrow {
+    display: none;
+  }
+  .metaverse-app .featured-heading h2 {
+    font-size: 11px;
+    margin: 0;
+  }
+  .metaverse-app .featured-heading > button {
+    font-size: 7px;
+  }
+  .metaverse-app .featured-list {
+    gap: 12px;
+    justify-content: space-between;
+  }
+  .metaverse-app .featured-project {
+    flex-direction: row;
+    border: 0;
+    padding: 0;
+    gap: 7px;
+  }
+  .metaverse-app .featured-image {
+    width: 30px;
+    height: 28px;
+    flex: 0 0 30px;
+    border-radius: 4px;
+  }
+  .metaverse-app .featured-copy h3 {
+    font-size: 7px;
+    line-height: 1.4;
+    margin: 0;
+  }
+  .metaverse-app .featured-copy > span {
+    display: none;
+  }
+  .metaverse-app .world-marker {
+    font-size: 9px;
+    padding: 7px 10px;
+  }
+  .metaverse-app .world-marker > span:last-child {
+    font-size: 7px;
+  }
+  .metaverse-app .portal-marker {
+    font-size: 8px;
+    gap: 7px;
+  }
+  .metaverse-app .pavilion-label.car-label {
+    font-size: 8px;
+  }
+  .metaverse-app .journey-title {
+    font-size: 36px;
+    margin: 18px 0;
+  }
+  .metaverse-app.driving-mode .world-shell {
+    inset: -68px 0 0;
+  }
+}
+@media (max-width: 600px) and (max-height: 740px) {
+  .metaverse-app .journey-stage {
+    min-height: 590px;
+  }
+  .metaverse-app .pavilion-hero {
+    padding-top: 16px;
+  }
+  .metaverse-app .pavilion-hero h1 {
+    margin: 12px 0 10px;
+    font-size: 35px;
+  }
+  .metaverse-app .pavilion-description {
+    max-width: 305px;
+    font-size: 9px;
+    margin-bottom: 12px;
+  }
+  .metaverse-app .pavilion-links {
+    display: none;
+  }
+  .metaverse-app .world-shell {
+    top: 165px;
+  }
+  .metaverse-app .world-tools {
+    top: 247px;
+  }
+  .metaverse-app .journey-title {
+    font-size: 32px;
+    margin: 12px 0;
+  }
+  .metaverse-app .pavilion-role {
+    margin-bottom: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .metaverse-app button,
+  .metaverse-app a {
+    transition: none;
+  }
+}
+.metaverse-app:not(.driving-mode) .world-shell canvas {
+  cursor: inherit;
+}

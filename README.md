@@ -1,6 +1,6 @@
-# Bondeth Island
+# Bondeth World — an interactive 3D portfolio
 
-An outdoor driving portfolio for Rithy Bondeth. Drive a detailed BMW M4 Competition through a coastal island with five destinations: a project gallery, AI pavilion, tech garden, waterfront house, and career lookout. Built with React, TypeScript, Three.js, React Three Fiber, and Vite.
+Rithy Bondeth’s portfolio inside a floating cartoon world, built with React, TypeScript, Three.js, React Three Fiber, and Vite. Scroll through four connected camera views: arrival, selected work, the AI portal, and contact. The island includes sculpted towers, rooftop gardens, project galleries, a hovering companion, sky trams, floating satellite islands, a ringed planet, and an animated waterfall. A blue BMW M4 follows the journey and is available for optional manual driving.
 
 ## Run locally
 
@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open http://localhost:5173. Verify and preview the production build:
+Development runs at http://localhost:5173. Build and preview the production version:
 
 ```sh
 npm test
@@ -19,49 +19,45 @@ npm run build
 npm run preview
 ```
 
-The production preview runs on http://localhost:4173. Serve `dist/` with any static host. No environment variables or API keys are needed.
+The production preview runs at http://localhost:4173. Serve `dist/` with any static host. No API keys or environment variables are required.
 
-## Development workflow
+## Explore
 
-Create a feature branch from `main`, make changes, and open a pull request. GitHub Actions installs the locked dependencies with Node.js 24, runs the tests, and builds the production bundle on every pull request and push to `main`. Merge after the checks pass.
+- Scroll vertically or use the four chapter buttons to follow the M4 through the world.
+- Open Work, About, Toolkit, Journey, AI lab, and Contact directly from the interface.
+- Click a 3D project screen or a featured project in the floating dock to open its individual case study.
+- The flying companion opens About, the animated portal opens the AI lab, and the floating contact beacon opens Contact. Chapter-specific labels keep the scene readable.
+- Choose **Drive the M4** for manual driving. **M** switches modes and restores the previous portfolio scroll position.
+- **W / Up** accelerates, **S / Down** brakes into reverse, **A / D** or **Left / Right** steers, and **Space** brakes. Drag to orbit; scroll or pinch to zoom.
+- **E** opens a nearby destination while driving. **R** resets; **1–5** opens destinations; **?** opens controls and asset credits. **Escape** closes a panel.
+- Phones have separate steering and pedal controls with simultaneous touch support. The scroll-driven scene allows vertical touch scrolling.
+- The scene toolbar offers day/night lighting, optional interaction sounds, ambient animation pause/play, reset, and help. **Simple view** provides all portfolio content without WebGL.
 
-## Drive and explore
+Driving retains acceleration, coasting, braking, reversing, speed-dependent steering, slower unpaved surfaces, building collisions, and the waterfront boundary. The existing compact road and building footprints are shared between the rendered world and vehicle handling. Decorative trees, sky traffic, and floating props are not collision obstacles.
 
-- **W / Up:** accelerate. **S / Down:** brake into reverse.
-- **A / D** or **Left / Right:** steer. **Space:** brake.
-- **E:** open a nearby destination. The arrival button works on touch screens.
-- **M:** switch between the chase camera and full island map. **R:** return to the starting position.
-- Drag to orbit around the car; scroll or pinch to zoom. The camera follows while driving.
-- Click a world marker, minimap destination, or bottom navigation button to open a section directly.
-- **1–5:** Work, AI lab, Toolkit, About, and Journey. **?:** controls and asset credits. **Escape:** close a panel.
-- Phones have separate steering and pedal controls, supporting simultaneous touches.
-- Day/night, optional interaction sounds, reset, and help are at the top right.
-- Simple view offers the same portfolio without WebGL.
-
-The dashboard displays actual simulated speed, gear, distance driven, and asphalt/off-road status. The minimap follows the car and identifies the nearest destination. Handling includes acceleration, coasting, braking, reversing, speed-dependent steering, slower grass, building collisions, and an island boundary. This is an arcade driving experience, not a vehicle dynamics simulator. Trees are decorative; building footprints and the fountain block movement.
-
-Driving stops while a content panel or help dialog is open, when the window loses focus, or when the page is hidden. The scene renders on demand and rests when idle. Reduced motion removes camera interpolation and interface transitions while keeping manual driving available.
+Content panels suspend the car, camera, and ambient animation. Held inputs clear on blur and tab visibility changes. Ambient motion shares a 30 fps clock and stops offscreen, in hidden tabs, or when paused. Reduced motion disables ambient animation and pointer parallax, removes the opening drive-in, and uses static chapter views. Manual driving remains available.
 
 ## Content and implementation
 
-The portfolio content and original images came from the user's existing portfolio, https://www.bondeth.dev/en, and its local source. All 17 project profiles, six career roles, seven skill groups, the portrait, and PDF resume are preserved.
+All 17 project profiles, six career roles, seven skill groups, portrait, PDF resume, and original public project links are preserved. Contact opens the visitor’s mail app or copies the public email address.
 
-- `src/content.json`: verified projects, case studies, experience, skills, education, and profile.
-- `src/profile.json`: the lightweight profile record for the main interface; keep contact/social links in sync.
-- `src/components/DrivingWorld.tsx`: island geometry, buildings, roads, vegetation, lighting, M4 rendering, wheel animation, camera, and input lifecycle.
-- `src/components/DrivingHUD.tsx`: live vehicle dashboard and interactive minimap.
-- `src/lib/driving.ts`: deterministic vehicle handling, road detection, and collision boundaries.
-- `src/components/PortfolioContent.tsx`: searchable projects, filters, case studies, biography, toolkit, career, AI labs, and contact.
-- `src/driving.css`: full-screen outdoor layout, blue/ivory palette, responsive driving controls, and HUD.
-- `src/styles.css` and `src/studio.css`: shared portfolio content, typography, and panel styles retained from the earlier design.
-- `public/models/bmw-m4.glb`: locally hosted, compressed M4 model. See [ASSETS.md](ASSETS.md) and [model attribution](public/models/ATTRIBUTION.md).
+- `src/App.tsx`: portfolio navigation, sticky scroll stage, chapter copy, featured projects, dialogs, and manual-driving mode.
+- `src/components/MetaverseWorld.tsx`: procedural island terrain, layered foundations, architecture, interactive project displays, portal and waterfall shaders, companion, contact beacon, sky traffic, stars, and satellite islands.
+- `src/components/DrivingWorld.tsx`: lighting, HDR reflections, licensed M4, rolling wheels, cinematic/chase cameras, desktop pointer parallax, and input lifecycle.
+- `src/components/CartoonMotion.tsx`: shared animation clock and visibility-aware render scheduling.
+- `src/lib/coastal-journey.ts`: chapter stops, camera field of view, cinematic route, and continuous camera interpolation.
+- `src/lib/pavilion-layout.ts`: shared road geometry, architectural footprints, collision bounds, and shoreline. The world reuses this compact, tested plan.
+- `src/lib/driving.ts`: deterministic vehicle handling and collision resolution.
+- `src/components/PortfolioContent.tsx`: searchable projects, case studies, biography, skills, career, AI labs, and contact.
+- `src/featured-projects.ts`, `src/content.json`, and `src/profile.json`: existing portfolio records and interface profile.
+- `src/metaverse.css`: world interface, floating project dock, markers, responsive layouts, and interaction states. Earlier shared interface styles remain in `pavilion.css`, `studio.css`, and `styles.css`.
 
-The earlier room component is no longer imported or included in the build. The interface uses self-hosted Sora, Manrope, Ubuntu, and JetBrains Mono with Phosphor icons. Theme uses `bondeth-island-theme` and starts in daylight. View preference uses `bondeth-view`.
-
-Contact opens the visitor's email app. The copy button copies the public email address. No new message-submission backend was added. AI playgrounds, social profiles, full original case studies, and products link to existing public destinations.
+Earlier room, city, and pavilion scene components remain in the repository as design history and are not imported into the current world. Fonts and assets are hosted locally. Existing theme and view preferences remain compatible.
 
 ## Validation and assets
 
-Eleven Node tests cover driving behavior, collision boundaries, suspended frames, and AI project classification. Native browser checks cover desktop and phone layouts, acceleration, steering, braking, the overview camera, minimap navigation, touch pedals, content panels, and Simple view.
+Seventeen Node tests cover vehicle handling, collision bounds, continuous roads, the left-to-right cinematic route, camera interpolation, vehicle visibility above the project dock, and AI project classification. See [current verification](artifacts/metaverse-verification.md) for checks and limitations. Earlier screenshots document their respective previous designs.
 
-Screenshots and validation notes are in [artifacts/verification.md](artifacts/verification.md). The Three.js module is lazy loaded separately from the UI and content. The M4 is approximately 3.9 MB and is hosted locally; Vite reports a size advisory for the Three.js chunk. WebGL failure offers Simple view.
+The Three.js scene and portfolio content are lazy loaded. The M4 is approximately 3.9 MB. Vite retains its size advisory for the Three.js bundle. A WebGL error provides a Simple view fallback.
+
+Asset licenses are documented in [ASSETS.md](ASSETS.md) and [model attribution](public/models/ATTRIBUTION.md). The user’s custom **DETH X RANA** Cambodian-style plate remains on the front and rear.
