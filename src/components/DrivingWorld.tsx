@@ -27,6 +27,7 @@ import {
   type RoadTelemetry,
 } from "../lib/driving";
 import MetaverseWorld from "./MetaverseWorld";
+import CoastalWorld from "./CoastalWorld";
 import { CartoonMotion } from "./CartoonMotion";
 import {
   journeyCarPose,
@@ -576,6 +577,16 @@ function Scene(props: Props) {
       );
       target.set(...(shot.target as [number, number, number]));
     }
+    if (!props.immersive && size.width > 900)
+      c.setViewOffset(
+        size.width,
+        size.height,
+        -size.width * 0.15,
+        0,
+        size.width,
+        size.height,
+      );
+    else c.clearViewOffset();
     c.lookAt(target);
     cameraTarget.current.copy(target);
     if (controls.current) {
@@ -632,10 +643,10 @@ function Scene(props: Props) {
         }
         onReduce={props.onReduceQuality}
       />
-      <color attach="background" args={[props.night ? "#142c35" : "#edf1e7"]} />
+      <color attach="background" args={[props.night ? "#142c35" : "#bddbd7"]} />
       <fog
         attach="fog"
-        args={[props.night ? "#224952" : "#edf1e7", 260, 560]}
+        args={[props.night ? "#224952" : "#bddbd7", 210, 620]}
       />
       <PerspectiveCamera
         ref={perspective}
@@ -692,6 +703,7 @@ function Scene(props: Props) {
         color="#7bd6cd"
         intensity={props.night ? 1 : 0.75}
       />
+      <CoastalWorld night={props.night} quality={props.graphicsQuality} />
       <MetaverseWorld
         night={props.night}
         onSelect={props.onSelect}

@@ -1634,3 +1634,62 @@
     margin-top: 16px;
   }
 }
+
+/* The coastal simulation fills the stage; only copy gets a gentle reading veil. */
+.metaverse-app .world-shell {
+  inset: 0;
+  height: auto;
+}
+.metaverse-app .journey-stage::after {
+  background: linear-gradient(
+    90deg,
+    rgba(237, 241, 231, 0.94),
+    rgba(237, 241, 231, 0.72) 22%,
+    rgba(237, 241, 231, 0.12) 43%,
+    transparent 60%
+  );
+}
+.metaverse-app .journey-stage {
+  background: #bddbd7;
+}
+[data-theme="dark"] .metaverse-app .journey-stage::after {
+  background: linear-gradient(
+    90deg,
+    rgba(20, 44, 53, 0.96),
+    rgba(20, 44, 53, 0.78) 22%,
+    rgba(20, 44, 53, 0.16) 43%,
+    transparent 60%
+  );
+}
+.metaverse-app .district-browser {
+  background-color: var(--glass);
+  backdrop-filter: blur(16px);
+}
+.metaverse-app.driving-mode .journey-stage::after {
+  display: none;
+}
+@media (max-width: 900px) {
+  .metaverse-app .journey-stage::after {
+    background: linear-gradient(
+      180deg,
+      rgba(237, 241, 231, 0.97),
+      rgba(237, 241, 231, 0.84) 24%,
+      rgba(237, 241, 231, 0.06) 48%,
+      transparent 65%
+    );
+  }
+  [data-theme="dark"] .metaverse-app .journey-stage::after {
+    background: linear-gradient(
+      180deg,
+      rgba(20, 44, 53, 0.97),
+      rgba(20, 44, 53, 0.86) 24%,
+      rgba(20, 44, 53, 0.06) 48%,
+      transparent 65%
+    );
+  }
+}
+@media (max-width: 900px) {
+  .metaverse-app .pavilion-label.car-label {
+    display: none;
+  }
+}
