@@ -1160,8 +1160,8 @@ function Sky({ night }: { night: boolean }) {
     [],
   );
   useEffect(() => {
-    material.uniforms.horizon.value.set(night ? "#224952" : "#edf1e7");
-    material.uniforms.zenith.value.set(night ? "#142c35" : "#d9e9df");
+    material.uniforms.horizon.value.set(night ? "#224952" : "#bddbd7");
+    material.uniforms.zenith.value.set(night ? "#102333" : "#86bccc");
   }, [night, material]);
   useEffect(() => () => material.dispose(), [material]);
   const stars = useMemo(() => {
@@ -1180,7 +1180,7 @@ function Sky({ night }: { night: boolean }) {
   return (
     <>
       <mesh renderOrder={-100}>
-        <sphereGeometry args={[390, 32, 24]} />
+        <sphereGeometry args={[600, 32, 24]} />
         <primitive object={material} attach="material" />
       </mesh>
       <points geometry={stars}>

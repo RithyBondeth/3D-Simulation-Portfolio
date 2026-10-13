@@ -793,8 +793,8 @@ export default function App() {
                   <img
                     src="/island-preview.webp"
                     width="1000"
-                    height="650"
-                    alt="A preview of Bondeth’s floating island, gardens and waterfront"
+                    height="469"
+                    alt="A preview of Bondeth’s island above a living coastal ocean"
                     fetchPriority="high"
                   />
                   <div className="island-preview-invitation">

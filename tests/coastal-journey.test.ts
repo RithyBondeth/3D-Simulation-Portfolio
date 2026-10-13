@@ -88,3 +88,34 @@ test("the complete M4 stays in frame around all four sides of the island", () =>
     }
   }
 });
+
+test("the full-stage desktop composition keeps the car visible beside the reading veil", () => {
+  for (const [width, height] of [
+    [1024, 768],
+    [1440, 900],
+    [1920, 1080],
+  ]) {
+    const camera = new PerspectiveCamera(journeyFov, width / height, 0.1, 800);
+    camera.setViewOffset(width, height, -width * 0.15, 0, width, height);
+    const frame = Math.max(1, (height / width) * 1.12) * 1.28;
+    for (let step = 0; step <= 200; step++) {
+      const shot = journeyShot(step / 200),
+        car = journeyCarPose(step / 200);
+      camera.position
+        .set(...(shot.camera as [number, number, number]))
+        .multiplyScalar(frame);
+      camera.lookAt(new Vector3(...(shot.target as [number, number, number])));
+      camera.updateMatrixWorld();
+      for (const dx of [-3, 3])
+        for (const dz of [-3, 3]) {
+          const point = new Vector3(car.x + dx, 2.2, car.z + dz).project(
+            camera,
+          );
+          assert.ok(
+            Math.abs(point.x) < 0.95 && Math.abs(point.y) < 0.9,
+            `car clipped at ${width} px, ${step}`,
+          );
+        }
+    }
+  }
+});

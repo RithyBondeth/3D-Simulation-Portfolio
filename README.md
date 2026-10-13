@@ -1,6 +1,6 @@
 # Bondeth World — an interactive 3D portfolio
 
-Rithy Bondeth’s portfolio inside a floating cartoon world, built with React, TypeScript, Three.js, React Three Fiber, and Vite. Scroll through four connected camera views: arrival, selected work, the AI portal, and contact. The island includes sculpted towers, rooftop gardens, four interactive project districts, a hovering companion, sky trams, floating satellite islands, a ringed planet, and an animated waterfall. A blue BMW M4 drives a complete 301-metre circuit around the island as you scroll, with continuous turns, rolling wheels, and an orbiting camera. Manual driving is also available. The brighter editorial layout frames a sunlit diorama with clouds, birds, garden flowers, and a small sailboat.
+Rithy Bondeth’s portfolio inside a floating cartoon world, built with React, TypeScript, Three.js, React Three Fiber, and Vite. Scroll through four connected camera views: arrival, selected work, the AI portal, and contact. The island includes sculpted towers, rooftop gardens, four interactive project districts, a hovering companion, sky trams, floating satellite islands, a ringed planet, and an animated waterfall. A blue BMW M4 drives a complete 301-metre circuit around the island as you scroll, with continuous turns, rolling wheels, and an orbiting camera. Manual driving is also available. The world fills the stage with a sunlit coastal ocean, animated wave highlights, distant low-poly islands, slow boats, clouds, birds, garden flowers, and a small sailboat. A soft reading veil keeps the introduction legible above the simulation.
 
 ## Run locally
 
@@ -49,7 +49,7 @@ Normal view opens with three real product previews above the searchable gallery.
 
 The branded social preview is generated with `npm run assets:social`; both SVG source and a crawler-compatible PNG are in `public/`.
 
-See [portfolio polish verification](artifacts/portfolio-polish-verification.md) and [mobile audit comparison](artifacts/mobile-performance-comparison.json) for current checks.
+See [coastal world verification](artifacts/coastal-world-verification.md), [portfolio polish verification](artifacts/portfolio-polish-verification.md) and [mobile audit comparison](artifacts/mobile-performance-comparison.json) for current checks.
 
 ## Content and implementation
 
@@ -61,6 +61,7 @@ All 17 project profiles, six career roles, seven skill groups, portrait, PDF res
 - `src/lib/project-districts.ts`: exclusive district classification, shared gallery filters, route discovery, and manual-driving proximity.
 - `src/components/MetaverseWorld.tsx`: procedural island terrain, layered foundations, architecture, district sculptures and text landmarks, portal and waterfall shaders, companion, contact beacon, sky traffic, stars, and satellite islands.
 - `src/components/DrivingWorld.tsx`: lighting, HDR reflections, licensed M4, rolling wheels, cinematic/chase cameras, desktop pointer parallax, and input lifecycle.
+- `src/components/CoastalWorld.tsx`: single-pass ocean shading, distant coastal islands, and slow boats with day/night palettes, sharing the visibility-aware ambient clock. Battery saver reduces island and boat counts.
 - `src/components/IslandAtmosphere.tsx`: low-poly clouds, birds, flowers, shoreline ripples, and a gently rocking sailboat.
 - `src/components/IslandDistrict.tsx`: instanced neighbourhood architecture, renewable energy, waterfront cafés, transit infrastructure, and public-space details.
 - `src/components/IslandPeople.tsx`: articulated pedestrians and cyclists using the shared ambient motion clock, including static initial poses when paused.
@@ -77,7 +78,7 @@ Earlier room, city, and pavilion scene components remain in the repository as de
 
 ## Validation and assets
 
-Thirty-one Node tests cover vehicle handling, collision bounds, continuous roads, a full circuit with continuous vehicle tangents, camera interpolation, vehicle projection bounds, pedestrian/cycle separation from the driving circuit, cycle-loop continuity, parked-shuttle collision, project classification, complete district discovery, shared gallery filters, and rendering every project/case study. See [current verification](artifacts/metaverse-verification.md) for checks and limitations. Earlier screenshots document their respective previous designs.
+Thirty-two Node tests cover vehicle handling, collision bounds, continuous roads, a full circuit with continuous vehicle tangents, camera interpolation, vehicle projection bounds, pedestrian/cycle separation from the driving circuit, cycle-loop continuity, parked-shuttle collision, project classification, complete district discovery, shared gallery filters, and rendering every project/case study. See [current verification](artifacts/metaverse-verification.md) for checks and limitations. Earlier screenshots document their respective previous designs.
 
 The Three.js scene and portfolio interface are lazy loaded. Project records are shared with the opening-page district catalogue so the island and gallery stay in sync. The M4 is approximately 3.9 MB. Vite retains its size advisory for the Three.js bundle. A WebGL error provides a Simple view fallback.
 
