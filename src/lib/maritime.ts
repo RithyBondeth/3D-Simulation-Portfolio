@@ -18,3 +18,19 @@ export function vesselPose(vessel: (typeof fleet)[number], seconds: number) {
     yaw: Math.atan2(-dx, -dz),
   };
 }
+
+/** Historical stern positions keep the wake behind the hull through turns. */
+export function vesselWakePoint(
+  vessel: (typeof fleet)[number],
+  seconds: number,
+  age: number,
+) {
+  const pose = vesselPose(vessel, seconds - Math.max(0, age));
+  const length =
+    vessel.kind === "cargo" ? 24 : vessel.kind === "ferry" ? 14 : 10;
+  return {
+    x: pose.x + (Math.sin(pose.yaw) * length) / 2,
+    z: pose.z + (Math.cos(pose.yaw) * length) / 2,
+    yaw: pose.yaw,
+  };
+}

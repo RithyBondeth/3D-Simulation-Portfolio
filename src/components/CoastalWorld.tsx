@@ -34,6 +34,13 @@ function Ocean({ night }: { night: boolean }) {
         float glint=pow(max(0.,sin(p.x*.7+p.y*.47+time*.8)*sin(p.y*.52-time*.5)),18.);
         float path=exp(-pow((p.x+p.y*.35+70.)/45.,2.));
         color+=light*glint*(.05+path*.2);
+        // The lowest foundation actually meets the ocean, below the floating town.
+        vec2 q=abs(p-vec2(0.,3.))-vec2(19.,21.)+2.5;
+        float shore=length(max(q,0.))+min(max(q.x,q.y),0.)-2.5;
+        float wash=.55+sin(p.x*.45+p.y*.3+time*.65)*.16;
+        float foam=exp(-pow((shore-wash)/.3,2.));
+        foam*=smoothstep(-.6,.7,sin(p.x*1.2-p.y*.7-time*.6));
+        color=mix(color,light,foam*.32);
         float distanceToEye=length(world-cameraPosition);
         color=mix(color,haze,smoothstep(200.,620.,distanceToEye));
         gl_FragColor=vec4(color,1.);

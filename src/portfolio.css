@@ -1,4 +1,9 @@
 /* Shared identity, then the editorial portfolio. Scene styling stays in metaverse.css. */
+.district-landmark:hover,
+.district-landmark:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent);
+}
 .metaverse-app .pavilion-main[hidden] {
   display: none;
 }
@@ -1623,9 +1628,9 @@
   background: linear-gradient(
     90deg,
     rgba(237, 241, 231, 0.94),
-    rgba(237, 241, 231, 0.72) 22%,
-    rgba(237, 241, 231, 0.12) 43%,
-    transparent 60%
+    rgba(237, 241, 231, 0.78) 20%,
+    rgba(237, 241, 231, 0.06) 36%,
+    transparent 46%
   );
 }
 .metaverse-app .journey-stage {
@@ -1635,9 +1640,9 @@
   background: linear-gradient(
     90deg,
     rgba(20, 44, 53, 0.96),
-    rgba(20, 44, 53, 0.78) 22%,
-    rgba(20, 44, 53, 0.16) 43%,
-    transparent 60%
+    rgba(20, 44, 53, 0.82) 20%,
+    rgba(20, 44, 53, 0.08) 36%,
+    transparent 46%
   );
 }
 .metaverse-app .district-browser {

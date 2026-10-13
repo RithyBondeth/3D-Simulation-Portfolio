@@ -4,6 +4,7 @@ import { Instances, type Piece } from "./IslandDistrict";
 import { useCartoonMotion } from "./CartoonMotion";
 import { fleet, vesselPose, type VesselKind } from "../lib/maritime";
 import type { GraphicsQuality } from "../lib/graphics-quality";
+import VesselWake from "./VesselWake";
 
 const seaLevel = -19;
 function hullGeometry(width: number, length: number, height: number) {
@@ -87,9 +88,11 @@ function details(kind: VesselKind) {
 function Vessel({
   vessel,
   night,
+  quality,
 }: {
   vessel: (typeof fleet)[number];
   night: boolean;
+  quality: GraphicsQuality;
 }) {
   const group = useRef<T.Group>(null);
   const model = useMemo(() => details(vessel.kind), [vessel.kind]);
@@ -113,36 +116,29 @@ function Vessel({
     );
   });
   return (
-    <group
-      ref={group}
-      position={[initial.x, seaLevel + 0.3, initial.z]}
-      rotation={[0, initial.yaw, 0]}
-    >
-      <mesh geometry={hull} rotation={[-Math.PI / 2, 0, 0]}>
-        <meshStandardMaterial
-          color={vessel.kind === "cargo" ? "#28516b" : "#f2f0e1"}
-          roughness={0.45}
-          metalness={0.15}
-        />
-      </mesh>
-      <Instances pieces={model.solid} night={night} />
-      <Instances pieces={model.glass} glass night={night} />
-      {[0, 1, 2].map((i) => (
-        <mesh
-          key={i}
-          position={[0, -0.22, model.length / 2 + 2 + i * 3]}
-          rotation={[-Math.PI / 2, 0, 0]}
-        >
-          <planeGeometry args={[model.width * (0.7 + i * 0.45), 0.14]} />
-          <meshBasicMaterial
-            color="#dbfff2"
-            transparent
-            opacity={0.4 - i * 0.1}
-            depthWrite={false}
+    <>
+      <VesselWake
+        vessel={vessel}
+        width={model.width}
+        night={night}
+        quality={quality}
+      />
+      <group
+        ref={group}
+        position={[initial.x, seaLevel + 0.3, initial.z]}
+        rotation={[0, initial.yaw, 0]}
+      >
+        <mesh geometry={hull} rotation={[-Math.PI / 2, 0, 0]}>
+          <meshStandardMaterial
+            color={vessel.kind === "cargo" ? "#28516b" : "#f2f0e1"}
+            roughness={0.45}
+            metalness={0.15}
           />
         </mesh>
-      ))}
-    </group>
+        <Instances pieces={model.solid} night={night} />
+        <Instances pieces={model.glass} glass night={night} />
+      </group>
+    </>
   );
 }
 export default function MaritimeFleet({
@@ -155,7 +151,7 @@ export default function MaritimeFleet({
   return (
     <>
       {fleet.slice(0, quality === "low" ? 3 : 7).map((vessel, i) => (
-        <Vessel key={i} vessel={vessel} night={night} />
+        <Vessel key={i} vessel={vessel} night={night} quality={quality} />
       ))}
     </>
   );
