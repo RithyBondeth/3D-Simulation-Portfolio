@@ -19,6 +19,10 @@ import {
 import data from "../content.json";
 import type { Project, SectionId } from "../types";
 import { isAIProject } from "../lib/studio-navigation";
+import {
+  matchesProjectFilter,
+  type ProjectFilter,
+} from "../lib/project-districts";
 
 const projects = data.projects as Project[];
 const featured = [
@@ -42,13 +46,20 @@ export function PortfolioContent({
   section,
   onNavigate,
   initialProjectId,
+  initialProjectFilter = "All",
 }: {
   section: SectionId;
   onNavigate: (section: SectionId) => void;
   initialProjectId?: string;
+  initialProjectFilter?: ProjectFilter;
 }) {
   if (section === "projects")
-    return <Projects initialProjectId={initialProjectId} />;
+    return (
+      <Projects
+        initialProjectId={initialProjectId}
+        initialFilter={initialProjectFilter}
+      />
+    );
   if (section === "about") return <About onNavigate={onNavigate} />;
   if (section === "skills") return <Skills />;
   if (section === "experience") return <Experience />;
@@ -66,8 +77,14 @@ function Tags({ tags }: { tags: string[] }) {
   );
 }
 
-function Projects({ initialProjectId }: { initialProjectId?: string }) {
-  const [filter, setFilter] = useState("Featured");
+function Projects({
+  initialProjectId,
+  initialFilter,
+}: {
+  initialProjectId?: string;
+  initialFilter: ProjectFilter;
+}) {
+  const [filter, setFilter] = useState<ProjectFilter>(initialFilter);
   const [query, setQuery] = useState("");
   const [project, setProject] = useState<Project | null>(
     () => projects.find((p) => p.id === initialProjectId) ?? null,
@@ -76,20 +93,14 @@ function Projects({ initialProjectId }: { initialProjectId?: string }) {
     const matches = `${p.title} ${p.description} ${p.tags.join(" ")}`
       .toLowerCase()
       .includes(query.toLowerCase());
-    return (
-      matches &&
-      (filter === "All" ||
-        (filter === "Featured" && featured.includes(p.id)) ||
-        (filter === "AI" && aiProject(p)) ||
-        (filter === "Web" && p.category === "Web") ||
-        (filter === "Apps" && ["Mobile", "macOS"].includes(p.category)))
-    );
+    return matches && matchesProjectFilter(p, filter, featured);
   });
   if (project)
     return (
       <article className="project-detail">
         <button className="text-button" onClick={() => setProject(null)}>
-          <ArrowLeftIcon size={16} /> All projects
+          <ArrowLeftIcon size={16} /> Back to{" "}
+          {filter === "All" ? "all projects" : `${filter} projects`}
         </button>
         <img
           className="detail-image"
@@ -165,7 +176,16 @@ function Projects({ initialProjectId }: { initialProjectId?: string }) {
       </p>
       <div className="project-tools">
         <div className="filter-tabs" aria-label="Filter projects">
-          {["Featured", "All", "AI", "Web", "Apps"].map((f) => (
+          {(
+            [
+              "All",
+              "Featured",
+              "AI",
+              "Web",
+              "Mobile",
+              "macOS",
+            ] as ProjectFilter[]
+          ).map((f) => (
             <button
               key={f}
               className={f === filter ? "active" : ""}
