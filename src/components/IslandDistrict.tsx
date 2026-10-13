@@ -7,10 +7,10 @@ import IslandPeople from "./IslandPeople";
 import type { Vec3 } from "../types";
 
 export type Piece = { at: Vec3; size: Vec3; color: string; rotation?: Vec3 };
-const stone = "#dfd5be",
+const stone = "#f0dfbc",
   dark = "#3b5d62",
-  timber = "#bb9877",
-  green = "#78a68b";
+  timber = "#c48c61",
+  green = "#69b47d";
 
 /** Hundreds of windows, roof panels and street details share two draw calls. */
 export function Instances({
@@ -135,7 +135,7 @@ function createDistrict() {
   });
   box([0, 0.12, -32], [72, 0.16, 3.8], "#d9dccc");
   box([0, 0.16, 24], [77, 0.12, 3.8], "#e8e2cd");
-  box([0, 0.16, 36.45], [80, 0.12, 2.5], "#7da99e");
+  box([0, 0.16, 36.45], [80, 0.12, 2.5], "#40a59c");
   box([0, 0.19, 38], [83, 0.14, 0.22], stone);
   for (let x = -38; x <= 38; x += 4)
     box([x, 0.24, 36.45], [1.6, 0.02, 0.08], "#e7efdc");
@@ -190,7 +190,7 @@ function createDistrict() {
   // Waterfront cafés: timber pergolas, striped awnings and open counters.
   [-29, 29].forEach((x, i) => {
     box([x, 0.2, 43.4], [9, 0.3, 5.2], "#d7cbb0");
-    box([x, 1.05, 44.5], [7.7, 1.7, 1.8], i ? "#95bbae" : "#d8ac86");
+    box([x, 1.05, 44.5], [7.7, 1.7, 1.8], i ? "#47b7ac" : "#e99565");
     box([x, 2, 44.5], [8.1, 0.18, 2.1], stone);
     for (const side of [-1, 1])
       box([x + side * 3.7, 2.1, 43.4], [0.16, 3.8, 0.16], timber);
@@ -198,7 +198,7 @@ function createDistrict() {
       box(
         [x - 4 + slat, 4, 43.4],
         [0.6, 0.13, 4.6],
-        slat % 2 ? stone : i ? "#7fa393" : "#d29973",
+        slat % 2 ? stone : i ? "#3ba797" : "#e87b54",
       );
     for (let cup = 0; cup < 3; cup++)
       box([x - 2 + cup * 2, 2.2, 43.7], [0.3, 0.35, 0.3], "#f6efe0");

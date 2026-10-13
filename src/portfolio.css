@@ -1662,8 +1662,95 @@
   );
 }
 .metaverse-app .district-browser {
-  background-color: var(--glass);
-  backdrop-filter: blur(16px);
+  height: auto;
+  bottom: 14px;
+  padding: 0;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+.metaverse-app .district-browser-heading {
+  min-height: 32px;
+  color: var(--ink);
+  gap: 16px;
+}
+.metaverse-app .district-browser-heading > span {
+  font-size: 10px;
+}
+.metaverse-app .district-browser-heading > button {
+  min-height: 32px;
+  font-size: 11px;
+  color: var(--ink);
+}
+.metaverse-app .district-options {
+  gap: 12px;
+}
+.metaverse-app .district-option {
+  padding: 10px 12px;
+  gap: 8px;
+  min-height: 48px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+}
+.metaverse-app .district-option strong {
+  font-size: 13px;
+}
+.metaverse-app .district-option small {
+  margin-top: 3px;
+  font-size: 10px;
+}
+.metaverse-app .district-count {
+  color: var(--ink);
+  font-size: 10px;
+}
+.metaverse-app .district-option[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  border-color: color-mix(in srgb, var(--district-color) 65%, transparent);
+  backdrop-filter: blur(8px);
+}
+.metaverse-app .district-option:hover {
+  background: color-mix(in srgb, var(--surface) 35%, transparent);
+}
+.metaverse-app .district-option:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+@media (max-width: 600px) {
+  .metaverse-app .district-browser {
+    left: 16px;
+    right: 16px;
+    bottom: 10px;
+  }
+  .metaverse-app .district-browser-heading {
+    gap: 8px;
+  }
+  .metaverse-app .district-browser-heading > button {
+    font-size: 10px;
+  }
+  .metaverse-app .district-browser-heading > span {
+    display: none;
+  }
+  .metaverse-app .district-options {
+    gap: 4px;
+  }
+  .metaverse-app .district-option {
+    padding: 8px 6px;
+    gap: 5px;
+    border-radius: 8px;
+  }
+  .metaverse-app .district-option strong {
+    font-size: 11px;
+  }
+  .metaverse-app .district-option .district-swatch {
+    display: none;
+  }
+  .metaverse-app .district-count {
+    font-size: 9px;
+  }
 }
 .metaverse-app.driving-mode .journey-stage::after {
   display: none;
@@ -1691,5 +1778,363 @@
 @media (max-width: 900px) {
   .metaverse-app .pavilion-label.car-label {
     display: none;
+  }
+}
+
+/* A cohesive navigation rail and a readable closing signature. */
+.metaverse-app {
+  --header-height: 88px;
+}
+.metaverse-app .site-header {
+  height: var(--header-height);
+  padding: 10px 24px;
+  max-width: none;
+  display: block;
+  border: 0;
+  background: var(--bg);
+}
+.metaverse-app .header-inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 24px;
+  width: min(100%, 1392px);
+  height: 68px;
+  margin: auto;
+  padding: 0 18px;
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow:
+    0 6px 24px #264f4910,
+    inset 0 1px #ffffff40;
+  backdrop-filter: blur(20px);
+}
+.metaverse-app .brand {
+  gap: 10px;
+  min-height: 44px;
+}
+.metaverse-app .brand-copy {
+  display: grid;
+  gap: 2px;
+  letter-spacing: -0.04em;
+}
+.metaverse-app .brand-copy strong {
+  font-size: 19px;
+  font-weight: 750;
+}
+.metaverse-app .brand-studio {
+  display: block;
+  font-family: "Manrope Variable", sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+.metaverse-app .header-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.metaverse-app .header-nav button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--ink);
+}
+.metaverse-app .all-projects-button > span {
+  padding: 3px 5px;
+  font-size: 10px;
+  background: var(--surface-subtle);
+  border-radius: 4px;
+}
+.metaverse-app .header-nav button:hover,
+.metaverse-app .header-nav button.active {
+  background: var(--surface-subtle);
+}
+.metaverse-app .header-actions {
+  gap: 10px;
+  justify-self: end;
+}
+.metaverse-app .view-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 12px;
+  font-size: 12px;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: transparent;
+}
+.metaverse-app .view-switch:hover {
+  background: var(--surface-subtle);
+}
+.metaverse-app .contact-button {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  gap: 16px;
+}
+.metaverse-app .portfolio-theme-toggle {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+}
+.metaverse-app .site-footer {
+  display: block;
+  width: min(calc(100% - 48px), 1392px);
+  max-width: none;
+  margin: 24px auto;
+  padding: 26px 28px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  color: var(--ink);
+  font-size: 12px;
+  pointer-events: auto;
+}
+.footer-main,
+.footer-bottom,
+.footer-identity,
+.footer-links,
+.footer-links a,
+.footer-links button {
+  display: flex;
+  align-items: center;
+}
+.footer-main {
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 24px;
+}
+.footer-identity {
+  gap: 12px;
+}
+.footer-identity strong {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+}
+.footer-identity p {
+  margin: 5px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.footer-links {
+  gap: 16px;
+}
+.footer-links a,
+.footer-links button {
+  min-height: 44px;
+  gap: 7px;
+  font-size: 12px;
+}
+.footer-links a:hover {
+  color: var(--coral);
+}
+.footer-links button {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 14px;
+}
+.footer-links button:hover {
+  background: var(--surface-subtle);
+}
+.footer-bottom {
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+}
+.metaverse-app .footer-credit,
+.metaverse-app .footer-location {
+  display: inline;
+  margin: 0;
+}
+.metaverse-app .credits-button,
+.metaverse-app .footer-world-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  margin-left: auto;
+  padding: 0;
+  font-size: 12px;
+  color: var(--ink);
+}
+@media (max-width: 1100px) {
+  .metaverse-app .header-inner {
+    gap: 12px;
+  }
+  .metaverse-app .view-switch span {
+    display: none;
+  }
+  .metaverse-app .view-switch {
+    width: 44px;
+    padding: 0;
+  }
+}
+@media (max-width: 760px) {
+  .metaverse-app {
+    --header-height: 80px;
+  }
+  .metaverse-app .site-header {
+    padding: 8px 12px;
+  }
+  .metaverse-app .header-inner {
+    grid-template-columns: 1fr auto auto;
+    height: 64px;
+    padding: 0 10px;
+    gap: 6px;
+    border-radius: 15px;
+  }
+  .metaverse-app .brand-copy strong {
+    font-size: 17px;
+  }
+  .metaverse-app .brand-studio,
+  .metaverse-app .header-nav > button:not(.all-projects-button),
+  .metaverse-app .header-actions .contact-button {
+    display: none;
+  }
+  .metaverse-app .brand {
+    gap: 7px;
+  }
+  .metaverse-app .header-actions {
+    gap: 4px;
+  }
+  .metaverse-app .header-nav button {
+    font-size: 12px;
+    padding: 0 8px;
+    gap: 4px;
+  }
+  .metaverse-app .all-projects-button > svg {
+    display: none;
+  }
+  .metaverse-app .all-projects-button > span {
+    font-size: 9px;
+  }
+  .metaverse-app .view-switch,
+  .metaverse-app .portfolio-theme-toggle {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+  .metaverse-app .site-footer {
+    width: calc(100% - 24px);
+    margin: 16px auto;
+    padding: 22px 18px 12px;
+    border-radius: 16px;
+  }
+  .footer-main {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+    padding-bottom: 18px;
+  }
+  .footer-links {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .footer-links a,
+  .footer-links button {
+    font-size: 12px;
+    gap: 5px;
+  }
+  .footer-links button {
+    padding: 0 10px;
+  }
+  .footer-bottom {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 10px;
+  }
+  .footer-bottom .footer-location {
+    grid-row: 2;
+    font-size: 10px;
+  }
+  .metaverse-app .credits-button,
+  .metaverse-app .footer-world-link {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    font-size: 11px;
+    gap: 5px;
+  }
+}
+/* Driving keeps a short utility footer so the car retains its screen space. */
+.metaverse-app.driving-mode .site-footer {
+  width: 100%;
+  margin: 0;
+  padding: 4px 24px;
+  border-radius: 0;
+  border-width: 1px 0 0;
+  background: var(--glass);
+}
+.driving-mode .footer-main {
+  display: none;
+}
+.driving-mode .footer-bottom {
+  border: 0;
+  padding: 0;
+}
+/* Keep the portal entry beneath the active project card rather than over its text. */
+.metaverse-app .portal-marker {
+  translate: 0 72px;
+}
+@media (max-width: 600px) {
+  .metaverse-app .portal-marker {
+    translate: 0 56px;
+  }
+}
+.metaverse-app .contact-marker .beacon-context {
+  color: var(--ink);
+  font-size: 11px;
+}
+@media (max-width: 760px) {
+  .metaverse-app .district-landmark.project-landmark {
+    width: 148px;
+    padding: 4px 8px;
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    box-shadow: 0 3px 12px #173d3b14;
+  }
+  .metaverse-app .district-landmark .landmark-meta,
+  .metaverse-app .district-landmark .landmark-pagination,
+  .metaverse-app .district-landmark .district-project-description {
+    display: none;
+  }
+  .metaverse-app .district-landmark .landmark-project {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .metaverse-app .district-landmark .landmark-project strong {
+    width: 100%;
+    font-size: 11px;
+    line-height: 1.35;
+    margin: 0;
+    gap: 6px;
+  }
+  .metaverse-app .contact-marker {
+    min-height: 44px;
+    padding: 7px 10px;
+  }
+  .metaverse-app .contact-marker .beacon-context {
+    display: none;
+  }
+  .metaverse-app .contact-marker .beacon-action {
+    color: var(--ink);
+    font-size: 11px;
+    margin: 0;
   }
 }

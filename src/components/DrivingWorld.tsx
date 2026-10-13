@@ -32,6 +32,7 @@ import { CartoonMotion } from "./CartoonMotion";
 import {
   journeyCarPose,
   journeyFov,
+  journeyFrame,
   journeyChapter,
   journeyShot,
 } from "../lib/coastal-journey";
@@ -564,7 +565,7 @@ function Scene(props: Props) {
     if (props.immersive)
       c.position.set(car.current.x - 12, 5.5, car.current.z + 5);
     else {
-      const frame = Math.max(1, (size.height / size.width) * 1.12) * 1.28;
+      const frame = journeyFrame(size.width, size.height);
       const shot = journeyShot(
         props.reduceMotion
           ? projectDistricts.find((d) => d.id === props.activeDistrictId)!.stop
@@ -604,7 +605,7 @@ function Scene(props: Props) {
       ? projectDistricts.find((d) => d.id === props.activeDistrictId)!.stop
       : car.current.distance / journeyCarPose(1).distance;
     const shot = journeyShot(p),
-      frame = Math.max(1, (size.height / size.width) * 1.12) * 1.28;
+      frame = journeyFrame(size.width, size.height);
     const c = overview.current,
       wanted = new T.Vector3(
         ...(shot.camera as [number, number, number]),
@@ -715,36 +716,39 @@ function Scene(props: Props) {
         projectIndex={props.projectIndex}
         onDistrict={props.onDistrict}
       />
-      {stations.map((s) => (
-        <Html
-          key={s.id}
-          position={s.position}
-          center
-          distanceFactor={props.immersive ? 18 : undefined}
-          occlude={props.immersive ? [architecture] : false}
-          wrapperClass="pavilion-world-label"
-          zIndexRange={[12, 1]}
-          style={{
-            display: props.immersive ? "block" : "none",
-            pointerEvents: props.paused ? "none" : "auto",
-          }}
-        >
-          <button
-            className={`pavilion-label ${props.selected === s.id ? "active" : ""}`}
-            aria-label={`Explore ${s.title}`}
-            onClick={() => props.onSelect(s.id)}
+      {/* The portal already has a dedicated entry; avoid a second label inside it. */}
+      {stations
+        .filter((station) => station.id !== "labs")
+        .map((s) => (
+          <Html
+            key={s.id}
+            position={s.position}
+            center
+            distanceFactor={props.immersive ? 18 : undefined}
+            occlude={props.immersive ? [architecture] : false}
+            wrapperClass="pavilion-world-label"
+            zIndexRange={[12, 1]}
+            style={{
+              display: props.immersive ? "block" : "none",
+              pointerEvents: props.paused ? "none" : "auto",
+            }}
           >
-            <span>
-              {s.id === "projects"
-                ? "The work"
-                : s.id === "labs"
-                  ? "AI & experiments"
-                  : s.title}
-            </span>
-            <ArrowUpRightIcon size={12} />
-          </button>
-        </Html>
-      ))}
+            <button
+              className={`pavilion-label ${props.selected === s.id ? "active" : ""}`}
+              aria-label={`Explore ${s.title}`}
+              onClick={() => props.onSelect(s.id)}
+            >
+              <span>
+                {s.id === "projects"
+                  ? "The work"
+                  : s.id === "labs"
+                    ? "AI & experiments"
+                    : s.title}
+              </span>
+              <ArrowUpRightIcon size={12} />
+            </button>
+          </Html>
+        ))}
       <Drive
         {...props}
         paused={props.paused}
