@@ -123,11 +123,13 @@ export default function IslandAtmosphere() {
             >
               <mesh position={[0, 0.18, 0]}>
                 <cylinderGeometry args={[0.035, 0.035, 0.4, 5]} />
-                <meshStandardMaterial color="#618969" />
+                <meshStandardMaterial color="#47986b" />
               </mesh>
               <mesh position={[0, 0.42, 0]}>
                 <icosahedronGeometry args={[0.22, 0]} />
-                <meshStandardMaterial color={i % 3 ? "#f4d58f" : "#ea9b86"} />
+                <meshStandardMaterial
+                  color={["#f6c94f", "#ec7d9c", "#e77950"][i % 3]}
+                />
               </mesh>
             </group>
           ))}

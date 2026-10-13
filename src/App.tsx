@@ -587,73 +587,68 @@ export default function App() {
         Skip to portfolio
       </a>
       <header className="site-header">
-        <button
-          className="brand"
-          title="Back to Bondeth World"
-          onClick={() => {
-            close();
-            setSimple(false);
-            changeMode(false);
-            jumpToChapter(0);
-          }}
-        >
-          <BrandMark />
-          <span>
-            Bondeth
-            <span className="brand-separator" aria-hidden="true">
-              /
+        <div className="header-inner">
+          <button
+            className="brand"
+            title="Back to Bondeth World"
+            onClick={() => {
+              close();
+              setSimple(false);
+              changeMode(false);
+              jumpToChapter(0);
+            }}
+          >
+            <BrandMark />
+            <span className="brand-copy">
+              <strong>Bondeth</strong>
+              <span className="brand-studio">Developer & maker</span>
             </span>
-            <span className="brand-studio">code, with curiosity</span>
-          </span>
-        </button>
-        <nav className="header-nav" aria-label="Main navigation">
-          <button
-            className={section === "about" ? "active" : ""}
-            onClick={() => select("about")}
-          >
-            About
           </button>
-          <a
-            href={profile.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Bondeth on GitHub"
-          >
-            <GithubLogoIcon size={20} />
-          </a>
-        </nav>
-        <div className="header-actions">
-          <button
-            className="all-projects-button"
-            onClick={() => select("projects")}
-            aria-label={`Work ${islandProjects.length} — Explore all projects`}
-          >
-            Work <span>{islandProjects.length}</span>
-            <ArrowUpRightIcon size={14} />
-          </button>
-          <button
-            className="view-switch"
-            onClick={setView}
-            aria-label={simple ? "Switch to 3D view" : "Switch to Simple view"}
-            title={simple ? "3D view" : "Simple view"}
-          >
-            {simple ? <CubeIcon size={17} /> : <ListIcon size={17} />}
-            <span>{simple ? "3D view" : "Simple view"}</span>
-          </button>
-          {simple && (
+          <nav className="header-nav" aria-label="Main navigation">
             <button
-              className="portfolio-theme-toggle"
-              onClick={() => setNight((value) => !value)}
-              aria-label={night ? "Switch to daytime" : "Switch to nighttime"}
-              title={night ? "Light theme" : "Dark theme"}
+              className={`all-projects-button ${section === "projects" || (simple && activeSection === "projects") ? "active" : ""}`}
+              onClick={() => select("projects")}
+              aria-label={`Work ${islandProjects.length} — Explore all projects`}
             >
-              {night ? <SunIcon size={18} /> : <MoonIcon size={18} />}
+              Work <span>{islandProjects.length}</span>
+              <ArrowUpRightIcon size={14} />
             </button>
-          )}
-          <button className="contact-button" onClick={() => select("contact")}>
-            Let’s talk
-            <ArrowUpRightIcon size={16} />
-          </button>
+
+            <button
+              className={section === "about" ? "active" : ""}
+              onClick={() => select("about")}
+            >
+              About
+            </button>
+          </nav>
+          <div className="header-actions">
+            <button
+              className="view-switch"
+              onClick={setView}
+              aria-label={simple ? "Explore in 3D" : "Portfolio view"}
+              title={simple ? "Explore the 3D world" : "Browse the portfolio"}
+            >
+              {simple ? <CubeIcon size={17} /> : <ListIcon size={17} />}
+              <span>{simple ? "Explore in 3D" : "Portfolio view"}</span>
+            </button>
+            {simple && (
+              <button
+                className="portfolio-theme-toggle"
+                onClick={() => setNight((value) => !value)}
+                aria-label={night ? "Switch to daytime" : "Switch to nighttime"}
+                title={night ? "Light theme" : "Dark theme"}
+              >
+                {night ? <SunIcon size={18} /> : <MoonIcon size={18} />}
+              </button>
+            )}
+            <button
+              className="contact-button"
+              onClick={() => select("contact")}
+            >
+              Let’s talk
+              <ArrowUpRightIcon size={16} />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -793,7 +788,7 @@ export default function App() {
                   <img
                     src="/island-preview.webp"
                     width="1000"
-                    height="469"
+                    height="466"
                     alt="A preview of Bondeth’s island above a living coastal ocean"
                     fetchPriority="high"
                   />
@@ -1280,40 +1275,48 @@ export default function App() {
       )}
 
       <footer className="site-footer">
-        <span>
-          Made with curiosity
-          <span className="footer-location"> in Phnom Penh, Cambodia.</span>
-        </span>
-        {!simple && (
-          <div className="control-legend">
-            <span>
-              <MouseIcon size={16} />
-              {exploring
-                ? "Drag to look around"
-                : "Scroll to explore the world"}
-            </span>
-            {exploring && <span className="zoom-legend">Scroll to zoom</span>}
-            {exploring && (
-              <span>
-                <span className="key-group">
-                  <kbd>W</kbd>
-                  <kbd>A</kbd>
-                  <kbd>S</kbd>
-                  <kbd>D</kbd>
-                </span>{" "}
-                to drive
-              </span>
-            )}
+        <div className="footer-main">
+          <div className="footer-identity">
+            <BrandMark />
+            <div>
+              <strong>Bondeth</strong>
+              <p>Thoughtful software, built with care.</p>
+            </div>
           </div>
-        )}
-        {!simple && (
-          <button className="credits-button" onClick={() => setHelp(true)}>
-            Controls & credits
-          </button>
-        )}
-        <span className="footer-credit">
-          © {new Date().getFullYear()} Bondeth
-        </span>
+          <nav className="footer-links" aria-label="Footer navigation">
+            <a href={profile.github} target="_blank" rel="noopener noreferrer">
+              <GithubLogoIcon size={18} />
+              GitHub
+              <ArrowUpRightIcon size={13} />
+            </a>
+            <a href={profile.resume} target="_blank" rel="noopener noreferrer">
+              Resume
+              <ArrowUpRightIcon size={13} />
+            </a>
+            <button onClick={() => select("contact")}>
+              Say hello
+              <ArrowUpRightIcon size={15} />
+            </button>
+          </nav>
+        </div>
+        <div className="footer-bottom">
+          <span className="footer-credit">
+            © {new Date().getFullYear()} Rithy Bondeth
+          </span>
+          <span className="footer-location">Phnom Penh, Cambodia</span>
+          {!simple && (
+            <button className="credits-button" onClick={() => setHelp(true)}>
+              <QuestionIcon size={16} />
+              Controls & credits
+            </button>
+          )}
+          {simple && (
+            <button className="footer-world-link" onClick={setView}>
+              <CubeIcon size={16} />
+              Explore the world
+            </button>
+          )}
+        </div>
       </footer>
 
       {section && !simple && (

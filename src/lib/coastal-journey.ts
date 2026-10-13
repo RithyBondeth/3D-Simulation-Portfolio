@@ -1,3 +1,9 @@
+/** Portrait phones favour the island itself over fitting every distant satellite. */
+export function journeyFrame(width: number, height: number) {
+  if (width <= 0 || height <= 0) return 1.28;
+  return Math.max(1, (height / width) * (width <= 760 ? 0.84 : 1.12)) * 1.28;
+}
+
 export const journeyFov = 42;
 export const journeyStops = [0, 0.32, 0.65, 1] as const;
 export const journeyNames = [

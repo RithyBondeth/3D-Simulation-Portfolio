@@ -15,7 +15,7 @@ import type { SectionId, Vec3 } from "../types";
 import IslandAtmosphere from "./IslandAtmosphere";
 import IslandDistrict from "./IslandDistrict";
 import IslandLandmarks from "./IslandLandmarks";
-import KhmerPavilion from "./KhmerPavilion";
+import PortalArchitecture from "./PortalArchitecture";
 import { journeyCarPose } from "../lib/coastal-journey";
 
 const mint = "#92ead0",
@@ -164,7 +164,7 @@ function IslandGround() {
         position={[0, -0.035, 4]}
         receiveShadow
       >
-        <meshStandardMaterial color="#8fb99c" roughness={0.95} />
+        <meshStandardMaterial color="#81bd8d" roughness={0.95} />
       </mesh>
       <mesh
         geometry={geometries.road}
@@ -180,7 +180,7 @@ function IslandGround() {
         position={[0, 0.15, -2]}
         receiveShadow
       >
-        <meshStandardMaterial color="#d2d7ba" roughness={0.8} />
+        <meshStandardMaterial color="#e4d7ad" roughness={0.8} />
       </mesh>
       <Block at={[0, -2.1, 59.55]} size={[80, 0.15, 0.18]} color={mint} glow />
       <Block at={[-58.55, -2.1, 4]} size={[0.18, 0.15, 66]} color={mint} glow />
@@ -553,15 +553,15 @@ function Architecture({
           onDistrict={onDistrict}
         />
       ))}
-      <Tower at={[-25, 10.5, -11]} size={[9, 9, 12]} color="#68baa9" terraces />
-      <Tower at={[-23, 8, 1]} size={[8, 4, 10]} color="#d2d5be" />
-      <Tower at={[-7, 15.3, -20]} size={[11, 16, 8]} color="#9dc8c4" terraces />
-      <Tower at={[7, 11.8, -20]} size={[11, 9, 8]} color="#a7bcd2" />
+      <Tower at={[-25, 10.5, -11]} size={[9, 9, 12]} color="#3cbaa3" terraces />
+      <Tower at={[-23, 8, 1]} size={[8, 4, 10]} color="#edc16f" />
+      <Tower at={[-7, 15.3, -20]} size={[11, 16, 8]} color="#62bfc8" terraces />
+      <Tower at={[7, 11.8, -20]} size={[11, 9, 8]} color="#829fd4" />
       <group position={[24, 11, -11]}>
         <mesh castShadow receiveShadow>
           <cylinderGeometry args={[4.4, 5.2, 10, 32]} />
           <meshStandardMaterial
-            color="#d59981"
+            color="#e48869"
             roughness={0.65}
             metalness={0.12}
           />
@@ -570,13 +570,13 @@ function Architecture({
           <group key={i} position={[0, -3 + i * 3, 0]}>
             <mesh rotation={[Math.PI / 2, 0, 0]}>
               <torusGeometry args={[4.9 - i * 0.15, 0.19, 8, 40]} />
-              <meshStandardMaterial color="#f2d5bb" roughness={0.5} />
+              <meshStandardMaterial color="#f3c898" roughness={0.5} />
             </mesh>
           </group>
         ))}
         <mesh position={[0, 5.4, 0]}>
           <cylinderGeometry args={[5.4, 5.4, 0.65, 32]} />
-          <meshStandardMaterial color="#ecc5aa" roughness={0.7} />
+          <meshStandardMaterial color="#e9a57d" roughness={0.7} />
         </mesh>
         <mesh position={[0, 6, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[3, 0.12, 8, 40]} />
@@ -626,9 +626,9 @@ function Portal({
           "varying vec2 vUv; void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}",
         fragmentShader: `varying vec2 vUv; uniform float uTime;
       void main(){vec2 p=(vUv-.5)*2.;float r=length(p);float a=atan(p.y,p.x);
-      float swirl=sin(r*19.-uTime*1.3+a*3.)*.5+.5;float edge=pow(r,4.);
+      float swirl=sin(r*13.-uTime*.8+a*2.)*.5+.5;float edge=pow(r,4.);
       float stars=pow(max(0.,sin(p.x*79.+uTime*.3)*cos(p.y*93.-uTime*.2)),24.);
-      vec3 col=mix(vec3(.06,.22,.3),vec3(.24,.7,.64),swirl*.5+edge*.4);
+      vec3 col=mix(vec3(.025,.12,.24),vec3(.04,.76,.78),swirl*.5+edge*.4);
       col+=stars*vec3(.7,1.,.85);gl_FragColor=vec4(col,(1.-smoothstep(.91,1.,r))*.8);
 #include <colorspace_fragment>
 }`,
@@ -655,30 +655,30 @@ function Portal({
       }}
     >
       <Block at={[0, -7.6, 0]} size={[8, 1.1, 16]} color="#2c4c5a" />
-      <Block at={[0, -6.85, 0]} size={[7, 0.3, 7]} color="#81ada7" />
+      <Block at={[0, -6.85, 0]} size={[7, 0.3, 7]} color="#37b8ae" />
       <mesh>
         <circleGeometry args={[5.05, 64]} />
         <primitive object={material} attach="material" />
       </mesh>
       <group ref={ring}>
         <mesh castShadow>
-          <torusGeometry args={[5.5, 0.48, 12, 80]} />
+          <torusGeometry args={[5.5, 0.28, 12, 80]} />
           <meshStandardMaterial
-            color="#b3e7d2"
+            color="#254f60"
             roughness={0.38}
             metalness={0.3}
           />
         </mesh>
         <mesh position={[0, 0, 0.18]}>
           <torusGeometry args={[5.2, 0.09, 8, 80]} />
-          <meshBasicMaterial color="#b4ffe2" toneMapped={false} />
+          <meshBasicMaterial color="#75fff0" toneMapped={false} />
         </mesh>
         {Array.from({ length: 8 }, (_, i) => (
           <group key={i} rotation={[0, 0, (i * Math.PI) / 4]}>
             <Block
               at={[0, 5.5, 0.42]}
               size={[0.14, 0.58, 0.25]}
-              color={coral}
+              color={mint}
               glow
             />
           </group>
@@ -736,7 +736,7 @@ function Tree({ at, scale = 1 }: { at: Vec3; scale?: number }) {
         >
           <icosahedronGeometry args={[r, 1]} />
           <meshStandardMaterial
-            color={["#72bca0", "#8ed3ad", "#59a68d"][i]}
+            color={["#55b98d", "#9ed979", "#319e84"][i]}
             roughness={0.85}
           />
         </mesh>
@@ -782,7 +782,7 @@ function Park() {
           {[-5, -2, 1, 4].map((x, i) => (
             <mesh key={x} position={[side * 19.5 + x, 1.1, 18]} castShadow>
               <icosahedronGeometry args={[0.85 + (i % 2) * 0.3, 1]} />
-              <meshStandardMaterial color={i % 2 ? "#8dbb90" : "#4f9c81"} />
+              <meshStandardMaterial color={i % 2 ? "#8bc96e" : "#36a783"} />
             </mesh>
           ))}
         </group>
@@ -1057,13 +1057,14 @@ function ContactBeacon({
         style={{ display: showLabel ? "block" : "none" }}
       >
         <button
-          className="world-marker"
+          className="world-marker contact-marker"
           onClick={(e) => {
             e.stopPropagation();
             onSelect("contact");
           }}
         >
-          Let’s make something<span>Say hello ↗</span>
+          <span className="beacon-context">Let’s make something</span>
+          <span className="beacon-action">Say hello ↗</span>
         </button>
       </Html>
     </group>
@@ -1250,7 +1251,7 @@ export default function MetaverseWorld({
           onDistrict={onDistrict}
         />
         <IslandDistrict night={night} />
-        <KhmerPavilion night={night} />
+        <PortalArchitecture night={night} />
       </group>
       <Park />
       <IslandLandmarks night={night} />

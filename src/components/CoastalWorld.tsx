@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo } from "react";
 import * as T from "three";
+import MaritimeFleet from "./MaritimeFleet";
+import ModernMarina from "./ModernMarina";
 import { useCartoonMotion } from "./CartoonMotion";
 import type { GraphicsQuality } from "../lib/graphics-quality";
 
@@ -59,62 +61,6 @@ function Ocean({ night }: { night: boolean }) {
   );
 }
 
-function CoastalBoat({ phase, night }: { phase: number; night: boolean }) {
-  const boat = useRef<T.Group>(null);
-  useCartoonMotion((time) => {
-    const angle = phase + time * 0.012;
-    boat.current!.position.set(
-      Math.cos(angle) * 118,
-      seaLevel + 0.65 + Math.sin(time * 0.7 + phase) * 0.16,
-      Math.sin(angle) * 102,
-    );
-    boat.current!.rotation.set(
-      Math.sin(time * 0.5 + phase) * 0.035,
-      -angle,
-      Math.sin(time * 0.6) * 0.04,
-    );
-  });
-  return (
-    <group
-      ref={boat}
-      position={[Math.cos(phase) * 118, seaLevel + 0.65, Math.sin(phase) * 102]}
-      rotation={[0, -phase, 0]}
-    >
-      <mesh scale={[1.2, 0.65, 3.8]}>
-        <sphereGeometry args={[1, 10, 6]} />
-        <meshStandardMaterial color="#f4e7c9" roughness={0.8} />
-      </mesh>
-      <mesh position={[0, 0.7, 0.5]}>
-        <boxGeometry args={[1.4, 1.1, 2]} />
-        <meshStandardMaterial color="#c47f5e" />
-      </mesh>
-      <mesh position={[0, 1.5, 0.5]}>
-        <boxGeometry args={[1.8, 0.16, 2.5]} />
-        <meshStandardMaterial color="#f8ecd0" />
-      </mesh>
-      <mesh position={[0, 1.45, -0.55]}>
-        <boxGeometry args={[0.7, 0.3, 0.03]} />
-        <meshBasicMaterial color={night ? "#ffdf91" : "#446a70"} />
-      </mesh>
-      {[0, 1, 2].map((i) => (
-        <mesh
-          key={i}
-          position={[0, -0.55, 5 + i * 3]}
-          rotation={[-Math.PI / 2, 0, 0]}
-        >
-          <planeGeometry args={[1 + i * 1.8, 0.2]} />
-          <meshBasicMaterial
-            color="#d3eee4"
-            transparent
-            opacity={0.3 - i * 0.07}
-            depthWrite={false}
-          />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
 /** Distant silhouettes sit outside every road and interactive destination. */
 export default function CoastalWorld({
   night,
@@ -164,8 +110,8 @@ export default function CoastalWorld({
           </group>
         );
       })}
-      <CoastalBoat phase={0.6} night={night} />
-      {quality === "high" && <CoastalBoat phase={3.8} night={night} />}
+      <ModernMarina night={night} />
+      <MaritimeFleet night={night} quality={quality} />
     </>
   );
 }
