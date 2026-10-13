@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
+import {
+  mainPortfolio,
+  portfolioSectionHref,
+  services,
+  writing,
+} from "../lib/portfolio-story";
 import { projectHref } from "../lib/portfolio-route";
 import {
   ArrowDownIcon,
-  ArrowLeftIcon,
   ArrowRightIcon,
   ArrowUpRightIcon,
   BrainIcon,
@@ -46,24 +51,18 @@ const aiProject = isAIProject;
 export function PortfolioContent({
   section,
   onNavigate,
-  initialProjectId,
   initialProjectFilter = "All",
-  onProjectChange,
   onFilterChange,
 }: {
   section: SectionId;
   onNavigate: (section: SectionId) => void;
-  initialProjectId?: string;
   initialProjectFilter?: ProjectFilter;
-  onProjectChange?: (id?: string) => void;
   onFilterChange?: (filter: ProjectFilter) => void;
 }) {
   if (section === "projects")
     return (
       <Projects
-        initialProjectId={initialProjectId}
         initialFilter={initialProjectFilter}
-        onProjectChange={onProjectChange}
         onFilterChange={onFilterChange}
       />
     );
@@ -85,147 +84,29 @@ function Tags({ tags }: { tags: string[] }) {
 }
 
 function Projects({
-  initialProjectId,
   initialFilter,
-  onProjectChange,
   onFilterChange,
 }: {
-  initialProjectId?: string;
   initialFilter: ProjectFilter;
-  onProjectChange?: (id?: string) => void;
   onFilterChange?: (filter: ProjectFilter) => void;
 }) {
   const [filter, setFilter] = useState<ProjectFilter>(initialFilter);
   const [query, setQuery] = useState("");
-  const [localProjectId, setLocalProjectId] = useState(initialProjectId);
-  const [linkCopied, setLinkCopied] = useState(false);
-  const [copyError, setCopyError] = useState(false);
-  const projectId = onProjectChange ? initialProjectId : localProjectId;
-  const project = projects.find((p) => p.id === projectId);
   useEffect(() => setFilter(initialFilter), [initialFilter]);
-  useEffect(() => {
-    setLinkCopied(false);
-    setCopyError(false);
-  }, [projectId]);
-  const setProject = (project: Project | null) => {
-    setLocalProjectId(project?.id);
-    onProjectChange?.(project?.id);
-    document.querySelector(".drawer-scroll")?.scrollTo({ top: 0 });
-    document
-      .getElementById("portfolio-section")
-      ?.scrollIntoView({ block: "start", behavior: "instant" });
-  };
-  const copyLink = async () => {
-    if (!project) return;
-    try {
-      await navigator.clipboard.writeText(
-        new URL(projectHref(project.id), window.location.href).href,
-      );
-      setLinkCopied(true);
-      setCopyError(false);
-    } catch {
-      setCopyError(true);
-    }
-  };
   const list = sortedProjects.filter((p) => {
     const matches = `${p.title} ${p.description} ${p.tags.join(" ")}`
       .toLowerCase()
       .includes(query.toLowerCase());
     return matches && matchesProjectFilter(p, filter, featured);
   });
-  if (project)
-    return (
-      <article className="project-detail">
-        <div className="case-study-navigation">
-          <button className="text-button" onClick={() => setProject(null)}>
-            <ArrowLeftIcon size={16} /> Back to{" "}
-            {filter === "All" ? "all projects" : `${filter} projects`}
-          </button>
-          <button className="text-button project-share" onClick={copyLink}>
-            {linkCopied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
-            {linkCopied ? "Link copied" : "Copy project link"}
-          </button>
-        </div>
-        <span className="sr-only" role="status">
-          {linkCopied ? "Project link copied to clipboard." : ""}
-        </span>
-        {copyError && (
-          <p role="alert">
-            Copy isn’t available. You can copy the project URL from your address
-            bar.
-          </p>
-        )}
-        <img
-          className="detail-image"
-          src={project.image}
-          alt={`${project.title} product preview`}
-        />
-        <span className="content-kicker">
-          {project.category} /{" "}
-          {project.visibility === "limited"
-            ? "Limited public profile"
-            : "Public project"}
-        </span>
-        <h3>{project.title}</h3>
-        <p className="lead">{project.description}</p>
-        <Tags tags={project.tags} />
-        {project.overview && (
-          <>
-            <h4>Inside the project</h4>
-            <p>{project.overview}</p>
-          </>
-        )}
-        {project.caseStudy && (
-          <>
-            <h4>The problem</h4>
-            <p>{project.caseStudy.problem}</p>
-            <h4>How it’s built</h4>
-            <div className="decisions">
-              {project.caseStudy.decisions.slice(0, 4).map((d) => (
-                <details key={d.title}>
-                  <summary>
-                    {d.title}
-                    <ArrowDownIcon size={14} />
-                  </summary>
-                  <p>{d.body}</p>
-                  {d.tradeoff && <p className="muted">{d.tradeoff}</p>}
-                </details>
-              ))}
-            </div>
-            <h4>The outcome</h4>
-            <p>{project.caseStudy.outcome}</p>
-          </>
-        )}
-        <div className="detail-actions">
-          {project.links.map((link, i) => (
-            <a
-              key={i}
-              className="primary-button"
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {link.kind === "repo" ? "View source" : "Visit project"}
-              <ArrowUpRightIcon size={17} />
-            </a>
-          ))}
-          <a
-            className="text-button"
-            href={`https://www.bondeth.dev/en/projects/${project.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Full case study
-            <ArrowUpRightIcon size={15} />
-          </a>
-        </div>
-      </article>
-    );
   return (
     <>
       <p className="section-intro">
         Real products. Practical problems. A few things I’ve helped bring to
         life.
+      </p>
+      <p className="project-link-note">
+        Open a project to read its full case study on bondeth.dev.
       </p>
       <div className="project-tools">
         <div className="filter-tabs" aria-label="Filter projects">
@@ -267,22 +148,7 @@ function Projects({
       </div>
       <div className="project-grid">
         {list.map((p) => (
-          <a
-            className="project-card"
-            key={p.id}
-            href={projectHref(p.id)}
-            onClick={(event) => {
-              if (
-                event.metaKey ||
-                event.ctrlKey ||
-                event.shiftKey ||
-                event.altKey
-              )
-                return;
-              event.preventDefault();
-              setProject(p);
-            }}
-          >
+          <a className="project-card" key={p.id} href={projectHref(p.id)}>
             <div className="project-image">
               <img src={p.image} loading="lazy" alt={`${p.title} preview`} />
               <span className="project-open">
@@ -380,6 +246,10 @@ function About({ onNavigate }: { onNavigate: (section: SectionId) => void }) {
           <strong>Lasting quality.</strong> Build things that can grow.
         </p>
       </div>
+      <a className="text-button" href={portfolioSectionHref("about")}>
+        More about me on bondeth.dev
+        <ArrowUpRightIcon size={16} />
+      </a>
       <button className="primary-button" onClick={() => onNavigate("contact")}>
         Start a conversation
         <ArrowUpRightIcon size={17} />
@@ -395,6 +265,21 @@ function Skills() {
         The tools behind the work, from the first interface to the last
         deployment.
       </p>
+      <section className="services-overview" aria-labelledby="services-title">
+        <h3 id="services-title">What I can help with</h3>
+        <div>
+          {services.map((service) => (
+            <article key={service.title}>
+              <h4>{service.title}</h4>
+              <p>{service.description}</p>
+            </article>
+          ))}
+        </div>
+        <a className="text-button" href={`${mainPortfolio}#services`}>
+          Explore my services
+          <ArrowUpRightIcon size={16} />
+        </a>
+      </section>
       <div className="skills-grid">
         {data.skills.map((g, i) => (
           <section
@@ -407,6 +292,10 @@ function Skills() {
           </section>
         ))}
       </div>
+      <a className="text-button" href={portfolioSectionHref("skills")}>
+        Full skills overview on bondeth.dev
+        <ArrowUpRightIcon size={16} />
+      </a>
       <div className="note">
         <BrainIcon size={24} />
         <p>
@@ -437,6 +326,10 @@ function Experience() {
           </article>
         ))}
       </div>
+      <a className="text-button" href={portfolioSectionHref("experience")}>
+        Full career story on bondeth.dev
+        <ArrowUpRightIcon size={16} />
+      </a>
       <div className="education">
         <GraduationCapIcon size={27} />
         <div>
@@ -444,6 +337,10 @@ function Experience() {
           <h3>Bachelor of Computer Science</h3>
           <p>Cambodia Academy of Digital Technology</p>
           <strong>Techo Scholar</strong>
+          <a className="text-button" href={`${mainPortfolio}#education`}>
+            Education details
+            <ArrowUpRightIcon size={15} />
+          </a>
         </div>
       </div>
       <a
@@ -511,6 +408,29 @@ function Labs() {
           </a>
         ))}
       </div>
+      <section className="writing-overview" aria-labelledby="writing-title">
+        <h3 id="writing-title">From the notebook</h3>
+        {writing.map((article) => (
+          <a key={article.href} href={`${mainPortfolio}/blog/${article.href}`}>
+            <span>{article.topic}</span>
+            <strong>{article.title}</strong>
+            <ArrowUpRightIcon size={16} />
+          </a>
+        ))}
+      </section>
+      <a
+        className="video-overview"
+        href={data.profile.youtube}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <TerminalWindowIcon size={24} />
+        <span>
+          <strong>Technical videos</strong>
+          <small>Systems and ideas, explained in English and Khmer.</small>
+        </span>
+        <ArrowUpRightIcon size={18} />
+      </a>
       <a
         className="text-button"
         href="https://www.bondeth.dev/en/blog"

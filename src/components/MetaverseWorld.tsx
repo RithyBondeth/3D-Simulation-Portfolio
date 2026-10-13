@@ -16,6 +16,7 @@ import IslandAtmosphere from "./IslandAtmosphere";
 import IslandDistrict from "./IslandDistrict";
 import IslandLandmarks from "./IslandLandmarks";
 import PortalArchitecture from "./PortalArchitecture";
+import { projectHref } from "../lib/portfolio-route";
 import { journeyCarPose } from "../lib/coastal-journey";
 
 const mint = "#92ead0",
@@ -436,12 +437,9 @@ function DistrictLandmark({
             <span className="district-swatch" />
             {district.name}
           </span>
-          <button
+          <a
             className="landmark-project"
-            onClick={(e) => {
-              e.stopPropagation();
-              onProject(project.id);
-            }}
+            href={projectHref(project.id)}
             aria-label={`Explore ${project.title}`}
           >
             <strong key={project.id}>
@@ -451,7 +449,7 @@ function DistrictLandmark({
             <span className="district-project-description">
               {project.description}
             </span>
-          </button>
+          </a>
           <div className="landmark-pagination">
             <span>
               {index + 1} / {district.projects.length}
@@ -500,7 +498,9 @@ function Architecture({
   onDistrict,
   activeDistrictId,
   projectIndex,
+  showProjectLabels,
 }: {
+  showProjectLabels: boolean;
   onProject: (id: string) => void;
   onDistrict: (id: DistrictId) => void;
   activeDistrictId: DistrictId;
@@ -548,7 +548,7 @@ function Architecture({
           key={district.id}
           district={district}
           projectIndex={activeDistrictId === district.id ? projectIndex : 0}
-          showLabel={activeDistrictId === district.id}
+          showLabel={showProjectLabels && activeDistrictId === district.id}
           onProject={onProject}
           onDistrict={onDistrict}
         />
@@ -1248,6 +1248,7 @@ export default function MetaverseWorld({
           onProject={onProject}
           activeDistrictId={activeDistrictId}
           projectIndex={projectIndex}
+          showProjectLabels={chapter === 3 || immersive}
           onDistrict={onDistrict}
         />
         <IslandDistrict night={night} />
@@ -1255,11 +1256,11 @@ export default function MetaverseWorld({
       </group>
       <Park />
       <IslandLandmarks night={night} />
-      <Portal onSelect={onSelect} showLabel={chapter === 2 || immersive} />
-      <Companion onSelect={onSelect} showLabel={immersive} />
+      <Portal onSelect={onSelect} showLabel={chapter === 4 || immersive} />
+      <Companion onSelect={onSelect} showLabel={chapter === 0 || immersive} />
       <ContactBeacon
         onSelect={onSelect}
-        showLabel={chapter === 3 || immersive}
+        showLabel={chapter === 5 || immersive}
       />
       <SkyTram />
       <IslandAtmosphere />

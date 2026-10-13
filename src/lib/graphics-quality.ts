@@ -20,10 +20,6 @@ export function chooseGraphicsQuality(
     : "high";
 }
 
-export function deferWorld(hints: DeviceHints) {
-  return hints.compact || !!hints.saveData;
-}
-
 /** Require a sustained slow window; a single shader-compilation stall isn't enough. */
 export function shouldReduceQuality(frameSeconds: readonly number[]) {
   return (

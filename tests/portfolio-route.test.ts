@@ -9,9 +9,10 @@ import {
 import { projectDocument } from "../src/lib/project-document.ts";
 
 const ids = ["bondex-notch", "apsara-agentic"];
-test("project links survive refresh and take precedence over section hashes", () => {
+test("legacy island links remain recognisable and project links point to the main portfolio", () => {
   for (const id of ids) {
-    const href = new URL(projectHref(id), "https://3d.bondeth.dev").href;
+    const href = `https://3d.bondeth.dev/projects/${id}/`;
+    assert.equal(projectHref(id), `https://www.bondeth.dev/en/projects/${id}`);
     assert.deepEqual(readPortfolioRoute(href, ids), {
       section: "projects",
       projectId: id,
@@ -63,7 +64,7 @@ test("gallery and section navigation clear the project path and preserve unrelat
   );
 });
 
-test("static project documents expose safe titles, descriptions, canonical and social metadata without JavaScript", async () => {
+test("legacy project documents safely forward to canonical case studies without JavaScript", async () => {
   const template = await readFile(
     new URL("../index.html", import.meta.url),
     "utf8",
@@ -91,13 +92,22 @@ test("static project documents expose safe titles, descriptions, canonical and s
   }
   assert.ok(
     html.includes(
-      'rel="canonical" href="https://3d.bondeth.dev/projects/bondex-notch/"',
+      'rel="canonical" href="https://www.bondeth.dev/en/projects/bondex-notch"',
     ),
   );
   assert.ok(
     html.includes(
-      'property="og:url" content="https://3d.bondeth.dev/projects/bondex-notch/"',
+      'property="og:url" content="https://www.bondeth.dev/en/projects/bondex-notch"',
     ),
   );
   assert.ok(html.includes("https://3d.bondeth.dev/social-preview.png"));
+  assert.ok(
+    html.includes(
+      'http-equiv="refresh" content="0;url=https://www.bondeth.dev/en/projects/bondex-notch"',
+    ),
+  );
+  assert.ok(
+    html.includes('href="https://www.bondeth.dev/en/projects/bondex-notch"'),
+  );
+  assert.ok(!html.includes("<script"));
 });

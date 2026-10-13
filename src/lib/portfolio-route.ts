@@ -1,4 +1,5 @@
-import type { SectionId } from "../types";
+import { mainPortfolio } from "./portfolio-story.ts";
+import type { SectionId } from "../types.ts";
 
 export type PortfolioRoute = { section: SectionId | null; projectId?: string };
 const sections = [
@@ -10,7 +11,7 @@ const sections = [
   "labs",
 ];
 
-/** Project documents are emitted at build time; older query-based links remain valid. */
+/** Recognize legacy project links so the app can redirect to the primary portfolio. */
 export function readPortfolioRoute(
   href: string,
   projectIds: readonly string[],
@@ -49,5 +50,5 @@ export function portfolioURL(href: string, route: PortfolioRoute) {
 }
 
 export function projectHref(id: string) {
-  return `/projects/${encodeURIComponent(id)}/`;
+  return `${mainPortfolio}/projects/${encodeURIComponent(id)}`;
 }

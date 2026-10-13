@@ -1177,6 +1177,7 @@
   inset: 0 -7% var(--work-height) 25%;
   height: auto;
 }
+.pavilion-app:not(.driving-mode) .world-shell .island-canvas,
 .pavilion-app:not(.driving-mode) .world-shell canvas {
   touch-action: pan-y !important;
   cursor: auto;

@@ -2,11 +2,7 @@ import { ArrowUpRightIcon } from "@phosphor-icons/react";
 import { featuredProjects } from "../featured-projects";
 import { projectHref } from "../lib/portfolio-route";
 
-export default function SelectedWork({
-  onProject,
-}: {
-  onProject: (id: string) => void;
-}) {
+export default function SelectedWork() {
   return (
     <section className="selected-work" aria-labelledby="selected-work-title">
       <div className="selected-work-heading">
@@ -23,17 +19,6 @@ export default function SelectedWork({
             className="selected-work-card"
             href={projectHref(project.id)}
             key={project.id}
-            onClick={(event) => {
-              if (
-                event.metaKey ||
-                event.ctrlKey ||
-                event.shiftKey ||
-                event.altKey
-              )
-                return;
-              event.preventDefault();
-              onProject(project.id);
-            }}
           >
             <div className="selected-work-image">
               <img

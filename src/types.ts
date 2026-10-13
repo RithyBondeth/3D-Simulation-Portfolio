@@ -11,10 +11,10 @@ export type MovementInput = {
 export const sectionNames: Record<SectionId, string> = {
   projects: "Selected work",
   about: "Meet the maker",
-  skills: "The toolkit",
-  experience: "The journey",
+  skills: "Skills & services",
+  experience: "Career & education",
   contact: "Let’s make something.",
-  labs: "A space for curiosity.",
+  labs: "Labs, writing & videos",
 };
 
 export interface Project {
