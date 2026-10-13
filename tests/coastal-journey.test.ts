@@ -14,15 +14,17 @@ import {
 import { onPavilionRoad, pavilionBlocked } from "../src/lib/pavilion-layout.ts";
 
 test("the scroll route completes a full circuit on clear asphalt", () => {
-  const visited = { front: false, right: false, back: false, left: false };
+  const visited = { front: false, right: false, back: false, left: false, bridge: false, annex: false };
+  // Sample the longer route densely enough to catch tight junction turns.
+  const samples = 40000;
   let last = journeyCarPose(0);
-  for (let i = 0; i <= 2000; i++) {
-    const pose = journeyCarPose(i / 2000);
+  for (let i = 0; i <= samples; i++) {
+    const pose = journeyCarPose(i / samples);
     assert.equal(onPavilionRoad(pose.x, pose.z), true, `offroad at ${i}`);
     assert.equal(pavilionBlocked(pose.x, pose.z), false, `blocked at ${i}`);
     assert.ok(
       Math.hypot(pose.x - last.x, pose.z - last.z) <=
-        journeyLength / 2000 + 1e-6,
+        journeyLength / samples + 1e-6,
     );
     const turn = Math.atan2(
       Math.sin(pose.yaw - last.yaw),
@@ -33,6 +35,8 @@ test("the scroll route completes a full circuit on clear asphalt", () => {
     if (pose.x > 44) visited.right = true;
     if (pose.z < -38) visited.back = true;
     if (pose.x < -44) visited.left = true;
+    if (pose.x > 65 && pose.x < 85) visited.bridge = true;
+    if (pose.x > 129) visited.annex = true;
     last = pose;
   }
   assert.ok(Object.values(visited).every(Boolean));

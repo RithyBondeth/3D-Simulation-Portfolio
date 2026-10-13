@@ -19,8 +19,13 @@ import IslandLandmarks from "./IslandLandmarks";
 import PortalArchitecture from "./PortalArchitecture";
 import ByteCompanion from "./ByteCompanion";
 import WaterEdge from "./WaterEdge";
+import BridgeDistrict from "./BridgeDistrict";
+import ModernBuildings from "./ModernBuildings";
+import SkyRail from "./SkyRail";
+import type { GraphicsQuality } from "../lib/graphics-quality";
 import { projectHref } from "../lib/portfolio-route";
 import { journeyCarPose } from "../lib/coastal-journey";
+import { driveElevation } from "../lib/infrastructure";
 
 const mint = "#92ead0",
   coral = "#ff9c78",
@@ -155,7 +160,7 @@ function IslandGround() {
       centreline: new T.BufferGeometry().setFromPoints(
         Array.from({ length: 241 }, (_, i) => {
           const pose = journeyCarPose(i / 240);
-          return new T.Vector3(pose.x, 0.04, pose.z);
+          return new T.Vector3(pose.x, 0.04 + driveElevation(pose.x, pose.z), pose.z);
         }),
       ),
     };
@@ -1054,37 +1059,6 @@ function ContactBeacon({
   );
 }
 
-function SkyTram() {
-  const tram = useRef<T.Group>(null);
-  useCartoonMotion((t) => {
-    tram.current!.position.x = Math.sin(t * 0.13) * 42;
-    tram.current!.position.y = 27 + Math.sin(t * 0.3) * 0.6;
-    tram.current!.rotation.z = Math.cos(t * 0.13) * -0.04;
-  });
-  return (
-    <group ref={tram} position={[0, 27, -38]}>
-      <Block size={[6.5, 2.1, 2.2]} color="#d8d5ba" radius={0.8} />
-      <Block
-        at={[0.4, 0.15, 1.1]}
-        size={[4.2, 0.85, 0.1]}
-        color="#24525e"
-        radius={0.25}
-      />
-      <Block at={[0, -1, 0]} size={[4.7, 0.1, 1.6]} color={mint} glow />
-      <Block at={[-3.4, 0, 0]} size={[1.5, 0.15, 5]} color="#7dada4" />
-      <Block at={[3.4, 0, 0]} size={[1.5, 0.15, 5]} color="#7dada4" />
-      <mesh position={[-3.35, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[1.35, 0.1, 8, 24]} />
-        <meshBasicMaterial color={mint} />
-      </mesh>
-      <mesh position={[3.35, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[1.35, 0.1, 8, 24]} />
-        <meshBasicMaterial color={mint} />
-      </mesh>
-    </group>
-  );
-}
-
 function SatelliteIsland({
   at,
   scale,
@@ -1203,6 +1177,7 @@ function Sky({ night }: { night: boolean }) {
 /** A compact, collision-aligned world; the portfolio lives inside its landmarks. */
 export default function MetaverseWorld({
   night,
+  quality,
   onSelect,
   onProject,
   buildingsRef,
@@ -1213,6 +1188,7 @@ export default function MetaverseWorld({
   onDistrict,
 }: {
   night: boolean;
+  quality: GraphicsQuality;
   chapter: number;
   immersive: boolean;
   onSelect: (id: SectionId) => void;
@@ -1236,7 +1212,16 @@ export default function MetaverseWorld({
         />
         <IslandDistrict night={night} />
         <PortalArchitecture night={night} />
+        <ModernBuildings night={night} />
       </group>
+      <BridgeDistrict night={night} onSelect={onSelect} immersive={immersive} />
+      <SkyRail
+        night={night}
+        quality={quality}
+        immersive={immersive}
+        chapter={chapter}
+        onSelect={onSelect}
+      />
       <Park night={night} />
       <IslandLandmarks night={night} />
       <Portal onSelect={onSelect} showLabel={chapter === 4 || immersive} />
@@ -1249,7 +1234,6 @@ export default function MetaverseWorld({
         onSelect={onSelect}
         showLabel={chapter === 5 || immersive}
       />
-      <SkyTram />
       <IslandAtmosphere />
       <SatelliteIsland at={[-80, 9, -48]} scale={1.1} phase={0} />
       <SatelliteIsland at={[69, 16, -57]} scale={0.85} phase={2} />

@@ -1,4 +1,11 @@
 import { districtBuildings, districtObstacles } from "./island-district.ts";
+import {
+  onInfrastructureRoad,
+  onInfrastructureLand,
+  innovationBuildings,
+  innovationPlanters,
+} from "./infrastructure.ts";
+import { transitObstacles } from "./sky-rail.ts";
 
 /** Shared metre-scale plan for the architecture and optional coastal drive. */
 export const DRIVE_LIMIT = 51;
@@ -18,6 +25,9 @@ const solidFootprints = [
   ...gardenObstacles,
   ...districtBuildings,
   ...districtObstacles,
+  ...innovationBuildings,
+  ...innovationPlanters,
+  ...transitObstacles,
 ];
 export function roundedDistance(
   x: number,
@@ -36,8 +46,9 @@ export function roundedDistance(
 }
 export function onPavilionRoad(x: number, z: number) {
   return (
-    roundedDistance(x, z, 48, 38, 12) <= 0 &&
-    roundedDistance(x, z, 41, 31, 5) >= 0
+    (roundedDistance(x, z, 48, 38, 12) <= 0 &&
+      roundedDistance(x, z, 41, 31, 5) >= 0) ||
+    onInfrastructureRoad(x, z)
   );
 }
 export function shoreline(x: number) {
@@ -46,9 +57,10 @@ export function shoreline(x: number) {
 export function pavilionBlocked(x: number, z: number) {
   const radius = 1.2;
   return (
-    Math.abs(x) > DRIVE_LIMIT - radius ||
-    z < -45 + radius ||
-    z > shoreline(x) - 3.5 ||
+    ((Math.abs(x) > DRIVE_LIMIT - radius ||
+      z < -45 + radius ||
+      z > shoreline(x) - 3.5) &&
+      !onInfrastructureLand(x, z)) ||
     solidFootprints.some(
       (b) =>
         Math.abs(x - b.x) < b.w / 2 + radius &&

@@ -1,8 +1,17 @@
+export type DistrictBuilding = {
+  x: number;
+  z: number;
+  w: number;
+  d: number;
+  h: number;
+  color: string;
+  style?: "stepped" | "curved";
+};
 /** A denser outer neighbourhood leaves the original driving circuit intact. */
-export const districtBuildings = [
+export const districtBuildings: DistrictBuilding[] = [
   { x: -33, z: -46, w: 7, d: 6, h: 10, color: "#e29a73" },
-  { x: -20, z: -46, w: 8, d: 6, h: 16, color: "#4fae9d" },
-  { x: -7, z: -46, w: 8, d: 6, h: 24, color: "#579fca" },
+  { x: -20, z: -46, w: 8, d: 6, h: 16, color: "#4fae9d", style: "stepped" },
+  { x: -7, z: -46, w: 8, d: 6, h: 24, color: "#579fca", style: "curved" },
   { x: 7, z: -46, w: 8, d: 6, h: 14, color: "#edbc65" },
   { x: 20, z: -46, w: 8, d: 6, h: 20, color: "#7c9bd0" },
   { x: 33, z: -46, w: 7, d: 6, h: 11, color: "#a4c77b" },

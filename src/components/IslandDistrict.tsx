@@ -70,6 +70,7 @@ function createDistrict() {
   const pane = (at: Vec3, size: Vec3, color = "#2f5661", rotation?: Vec3) =>
     glass.push({ at, size, color, rotation });
   districtBuildings.forEach((b, i) => {
+    if (b.style) return;
     const { x, z, w, d, h, color } = b;
     box([x, 0.2, z], [w + 0.6, 0.4, d + 0.6], "#bfcbb5");
     box([x, h / 2 + 0.4, z], [w, h, d], color);
