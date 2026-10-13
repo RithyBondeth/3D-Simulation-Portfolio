@@ -1,9 +1,9 @@
 export type VesselKind = "yacht" | "ferry" | "cargo";
 export const fleet = [
-  { kind: "ferry", phase: 0.45, rx: 112, rz: 100, speed: 0.012 },
-  { kind: "yacht", phase: 2.4, rx: 108, rz: 98, speed: 0.017 },
+  { kind: "ferry", phase: 0.45, rx: 166, rz: 100, speed: 0.012 },
+  { kind: "yacht", phase: 2.4, rx: 166, rz: 98, speed: 0.017 },
   { kind: "cargo", phase: 4.5, rx: 164, rz: 148, speed: 0.006 },
-  { kind: "yacht", phase: 5.65, rx: 112, rz: 96, speed: 0.014 },
+  { kind: "yacht", phase: 5.65, rx: 168, rz: 96, speed: 0.014 },
   { kind: "ferry", phase: 3.5, rx: 158, rz: 140, speed: 0.009 },
   { kind: "cargo", phase: 1.8, rx: 192, rz: 176, speed: 0.005 },
   { kind: "yacht", phase: 0.1, rx: 172, rz: 152, speed: 0.015 },

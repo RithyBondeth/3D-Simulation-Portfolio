@@ -39,6 +39,8 @@ function Ocean({ night }: { night: boolean }) {
         float shore=length(max(q,0.))+min(max(q.x,q.y),0.)-2.5;
         float wash=.55+sin(p.x*.45+p.y*.3+time*.65)*.16;
         float foam=exp(-pow((shore-wash)/.3,2.));
+        float annexShore=length((p-vec2(112.,-8.))/vec2(1.,.889))-11.5;
+        foam=max(foam,exp(-pow((annexShore-wash)/.3,2.)));
         foam*=smoothstep(-.6,.7,sin(p.x*1.2-p.y*.7-time*.6));
         color=mix(color,light,foam*.32);
         float distanceToEye=length(world-cameraPosition);

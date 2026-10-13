@@ -1,4 +1,19 @@
 /* Shared identity, then the editorial portfolio. Scene styling stays in metaverse.css. */
+.infrastructure-sign {
+  display: grid;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: #294d3c;
+  color: #f6f6e8;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.infrastructure-sign small { font-size: 10px; font-weight: 400; }
+.rail-line-label { color: var(--accent); font-size: 8px; letter-spacing: 0.06em; }
+.rail-stop-target:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .district-landmark:hover,
 .district-landmark:focus-within {
   border-color: var(--accent);

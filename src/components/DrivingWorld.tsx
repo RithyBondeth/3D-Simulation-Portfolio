@@ -29,6 +29,7 @@ import {
 import MetaverseWorld from "./MetaverseWorld";
 import CoastalWorld from "./CoastalWorld";
 import GroundingShadows from "./GroundingShadows";
+import { driveElevation, driveSurfacePitch } from "../lib/infrastructure";
 import { CartoonMotion } from "./CartoonMotion";
 import {
   journeyCarPose,
@@ -370,6 +371,8 @@ function Drive({
   }, [paused, immersive, invalidate, movement, car]);
   useEffect(() => {
     car.current = spawnCar();
+    body.current!.rotation.order = "YXZ";
+    body.current!.rotation.x = 0;
     routeProgress.current = progress.current;
     if (!immersive)
       Object.assign(car.current, journeyCarPose(progress.current));
@@ -415,8 +418,13 @@ function Drive({
         Math.abs(travel) > 0.001
           ? T.MathUtils.clamp((-turn / travel) * 5, -1, 1)
           : 0;
-      body.current!.position.set(state.x, 0.09, state.z);
+      body.current!.position.set(
+        state.x,
+        0.09 + driveElevation(state.x, state.z),
+        state.z,
+      );
       body.current!.rotation.y = state.yaw;
+      body.current!.rotation.x = driveSurfacePitch(state.x, state.z, state.yaw);
       if (!paused && Math.abs(destination - routeProgress.current) > 0.00001)
         invalidate();
       return;
@@ -441,8 +449,13 @@ function Drive({
     steering.current = steer;
     car.current = advanceCar(car.current, { throttle, steer, brake }, dt);
     const state = car.current;
-    body.current!.position.set(state.x, 0.09, state.z);
+    body.current!.position.set(
+      state.x,
+      0.09 + driveElevation(state.x, state.z),
+      state.z,
+    );
     body.current!.rotation.y = state.yaw;
+    body.current!.rotation.x = driveSurfacePitch(state.x, state.z, state.yaw);
     const station = stations.reduce<{ id: SectionId | null; distance: number }>(
       (nearest, s) => {
         const d = Math.hypot(s.position[0] - state.x, s.position[2] - state.z);
@@ -464,7 +477,7 @@ function Drive({
     }
     if (immersive && controls.current) {
       const control = controls.current;
-      target.set(state.x, 1.2, state.z);
+      target.set(state.x, 1.2 + driveElevation(state.x, state.z), state.z);
       const delta = target.clone().sub(control.target);
       camera.position.add(delta);
       control.target.copy(target);
@@ -549,6 +562,11 @@ function AdaptiveQuality({
   return null;
 }
 function Scene(props: Props) {
+  const sunTarget = useMemo(() => {
+    const target = new T.Object3D();
+    target.position.set(38, 0, 0);
+    return target;
+  }, []);
   const architecture = useRef<T.Group>(null!);
   const car = useRef(spawnCar()),
     controls = useRef<OrbitControlsImpl | null>(null);
@@ -674,20 +692,22 @@ function Scene(props: Props) {
           props.night ? 0.6 : 0.62,
         ]}
       />
+      <primitive object={sunTarget} />
       <directionalLight
-        position={[-45, 70, 45]}
+        target={sunTarget}
+        position={[-7, 70, 45]}
         intensity={props.night ? 1.8 : 2.6}
         color={props.night ? "#acd5ef" : "#ffe4c1"}
         castShadow
         shadow-mapSize={
           props.graphicsQuality === "low" ? [1024, 1024] : [2048, 2048]
         }
-        shadow-camera-left={-70}
-        shadow-camera-right={70}
-        shadow-camera-top={70}
-        shadow-camera-bottom={-70}
+        shadow-camera-left={-110}
+        shadow-camera-right={110}
+        shadow-camera-top={110}
+        shadow-camera-bottom={-110}
         shadow-camera-near={1}
-        shadow-camera-far={200}
+        shadow-camera-far={250}
         shadow-bias={-0.0002}
         shadow-normalBias={0.04}
         shadow-radius={2}
@@ -709,6 +729,7 @@ function Scene(props: Props) {
       <GroundingShadows />
       <MetaverseWorld
         night={props.night}
+        quality={props.graphicsQuality}
         onSelect={props.onSelect}
         onProject={props.onProject}
         buildingsRef={architecture}

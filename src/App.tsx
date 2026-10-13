@@ -55,10 +55,7 @@ import BrandMark, { BrandName } from "./components/BrandMark";
 import PortfolioIntro from "./components/PortfolioIntro";
 import SelectedWork from "./components/SelectedWork";
 import PortfolioDestinations from "./components/PortfolioDestinations";
-import {
-  portfolioSections,
-  portfolioSectionHref,
-} from "./lib/portfolio-story";
+import { portfolioSections, portfolioSectionHref } from "./lib/portfolio-story";
 import {
   readPortfolioRoute,
   portfolioURL,
@@ -75,6 +72,11 @@ import {
   journeyNames,
   journeyStops,
 } from "./lib/coastal-journey";
+import { bridgePath, annexRoad } from "./lib/infrastructure";
+
+const infrastructureMapPaths = [bridgePath, annexRoad].map((path) =>
+  path.map((point, i) => `${i ? "L" : "M"}${point.x},${point.z}`).join(" "),
+);
 
 const projectIds = islandProjects.map((project) => project.id);
 const deviceHints = () => {
@@ -646,7 +648,8 @@ export default function App() {
             <div className="portfolio-section-heading">
               <span className="portfolio-section-index">
                 0
-                {portfolioSections.findIndex(({ id }) => id === activeSection) + 1}{" "}
+                {portfolioSections.findIndex(({ id }) => id === activeSection) +
+                  1}{" "}
                 / THE PORTFOLIO
               </span>
               <h2 id="portfolio-section-title">
@@ -929,7 +932,11 @@ export default function App() {
                       %
                     </span>
                   </div>
-                  <svg viewBox="-57 -49 114 98" aria-hidden="true">
+                  <svg viewBox="-57 -49 198 98" aria-hidden="true">
+                    <ellipse cx="112" cy="-8" rx="26" ry="23" className="map-island" />
+                    {infrastructureMapPaths.map((path, i) => (
+                      <path key={i} d={path} className="map-road" />
+                    ))}
                     <rect
                       x="-35"
                       y="-25"
@@ -1237,7 +1244,8 @@ export default function App() {
               </span>
               <span>
                 <strong>You’re in the driver’s seat</strong>W / S accelerate and
-                reverse. A / D steer. Space brakes.
+                reverse. A / D steer. Space brakes. Follow the east avenue to
+                the signed bridge for Innovation island.
               </span>
             </div>
             <div>

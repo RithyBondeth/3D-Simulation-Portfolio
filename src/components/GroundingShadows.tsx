@@ -3,6 +3,7 @@ import * as T from "three";
 import { useThree } from "@react-three/fiber";
 import { pavilionFootprints } from "../lib/pavilion-layout";
 import { districtBuildings } from "../lib/island-district";
+import { innovationBuildings } from "../lib/infrastructure";
 
 /** A single static draw adds contact depth without another shadow render pass. */
 export default function GroundingShadows() {
@@ -24,6 +25,7 @@ export default function GroundingShadows() {
     () => [
       ...pavilionFootprints,
       ...districtBuildings,
+      ...innovationBuildings,
       ...[-1, 1].flatMap((side) =>
         [-10, -1, 10].map((z, i) => ({
           x: side * (10.5 + (i % 2)),
