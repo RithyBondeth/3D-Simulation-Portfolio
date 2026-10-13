@@ -1,17 +1,17 @@
 /** A denser outer neighbourhood leaves the original driving circuit intact. */
 export const districtBuildings = [
-  { x: -33, z: -46, w: 7, d: 6, h: 10, color: "#d5b59b" },
-  { x: -20, z: -46, w: 8, d: 6, h: 16, color: "#a9c9be" },
-  { x: -7, z: -46, w: 8, d: 6, h: 24, color: "#8db8c0" },
-  { x: 7, z: -46, w: 8, d: 6, h: 14, color: "#e3c69e" },
-  { x: 20, z: -46, w: 8, d: 6, h: 20, color: "#afbed0" },
-  { x: 33, z: -46, w: 7, d: 6, h: 11, color: "#bdcda9" },
-  { x: -52, z: -18, w: 6, d: 8, h: 11, color: "#cfaf95" },
-  { x: -52, z: -3, w: 6, d: 8, h: 15, color: "#a9c8b7" },
-  { x: -52, z: 12, w: 6, d: 8, h: 8, color: "#e2cba9" },
-  { x: 52, z: -18, w: 6, d: 8, h: 13, color: "#9cbcc9" },
-  { x: 52, z: -3, w: 6, d: 8, h: 17, color: "#c5b6c9" },
-  { x: 52, z: 12, w: 6, d: 8, h: 9, color: "#d8bc9e" },
+  { x: -33, z: -46, w: 7, d: 6, h: 10, color: "#bb8969" },
+  { x: -20, z: -46, w: 8, d: 6, h: 16, color: "#82aa9a" },
+  { x: -7, z: -46, w: 8, d: 6, h: 24, color: "#6d9aab" },
+  { x: 7, z: -46, w: 8, d: 6, h: 14, color: "#d0af78" },
+  { x: 20, z: -46, w: 8, d: 6, h: 20, color: "#829bb5" },
+  { x: 33, z: -46, w: 7, d: 6, h: 11, color: "#9bb282" },
+  { x: -52, z: -18, w: 6, d: 8, h: 11, color: "#b58b6c" },
+  { x: -52, z: -3, w: 6, d: 8, h: 15, color: "#7fa58e" },
+  { x: -52, z: 12, w: 6, d: 8, h: 8, color: "#d2b383" },
+  { x: 52, z: -18, w: 6, d: 8, h: 13, color: "#739cae" },
+  { x: 52, z: -3, w: 6, d: 8, h: 17, color: "#a193aa" },
+  { x: 52, z: 12, w: 6, d: 8, h: 9, color: "#c29c72" },
 ];
 
 export const districtObstacles = [

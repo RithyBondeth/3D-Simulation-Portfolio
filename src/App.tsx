@@ -23,6 +23,7 @@ import {
   GithubLogoIcon,
   HouseIcon,
   ListIcon,
+  SlidersHorizontalIcon,
   MoonIcon,
   PauseIcon,
   PlayIcon,
@@ -52,12 +53,44 @@ import {
 import DistrictBrowser from "./components/DistrictBrowser";
 import BrandMark from "./components/BrandMark";
 import PortfolioIntro from "./components/PortfolioIntro";
+import SelectedWork from "./components/SelectedWork";
+import { readPortfolioRoute, portfolioURL } from "./lib/portfolio-route";
+import {
+  chooseGraphicsQuality,
+  deferWorld,
+  type GraphicsPreference,
+} from "./lib/graphics-quality";
+
 import {
   journeyCarPose,
   journeyChapter,
   journeyNames,
   journeyStops,
 } from "./lib/coastal-journey";
+
+const projectIds = islandProjects.map((project) => project.id);
+const deviceHints = () => {
+  const device = navigator as Navigator & {
+    deviceMemory?: number;
+    connection?: { saveData?: boolean };
+  };
+  return {
+    compact: window.matchMedia("(max-width: 760px)").matches,
+    saveData: device.connection?.saveData,
+    cores: navigator.hardwareConcurrency,
+    memory: device.deviceMemory,
+  };
+};
+const initialRoute = () => readPortfolioRoute(window.location.href, projectIds);
+const writeRoute = (
+  section: SectionId | null,
+  projectId?: string,
+  replace = false,
+) => {
+  const url = portfolioURL(window.location.href, { section, projectId });
+  if (url !== window.location.href)
+    window.history[replace ? "replaceState" : "pushState"](null, "", url);
+};
 
 const DrivingWorld = lazy(() => import("./components/DrivingWorld"));
 import { spawnCar, type RoadTelemetry } from "./lib/driving";
@@ -75,10 +108,6 @@ const icons = {
   experience: HouseIcon,
   contact: EnvelopeSimpleIcon,
 };
-const validSection = (value: string): value is SectionId =>
-  ["projects", "about", "skills", "experience", "contact", "labs"].includes(
-    value,
-  );
 
 class WorldBoundary extends Component<
   { children: ReactNode; onFallback: () => void; onError: () => void },
@@ -168,23 +197,57 @@ function Dialog({
 }
 
 export default function App() {
-  const [section, setSection] = useState<SectionId | null>(() => {
-    const hash = window.location.hash.slice(1);
-    return validSection(hash) ? hash : null;
-  });
+  const [section, setSection] = useState<SectionId | null>(
+    () => initialRoute().section,
+  );
   const [simple, setSimple] = useState(() => {
     try {
-      return localStorage.getItem("bondeth-view") === "simple";
+      return (
+        window.location.pathname.startsWith("/projects/") ||
+        !!initialRoute().projectId ||
+        localStorage.getItem("bondeth-view") === "simple"
+      );
     } catch {
-      return false;
+      return (
+        window.location.pathname.startsWith("/projects/") ||
+        !!initialRoute().projectId
+      );
     }
   });
+  const [liveWorld, setLiveWorld] = useState(() => !deferWorld(deviceHints()));
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const toolsTrigger = useRef<HTMLButtonElement>(null);
+  const [graphicsPreference, setGraphicsPreference] =
+    useState<GraphicsPreference>(() => {
+      try {
+        const saved = localStorage.getItem("bondeth-graphics");
+        return saved === "high" || saved === "low" ? saved : "auto";
+      } catch {
+        return "auto";
+      }
+    });
+  const [graphicsQuality, setGraphicsQuality] = useState(() =>
+    chooseGraphicsQuality(graphicsPreference, deviceHints()),
+  );
+  useEffect(() => {
+    setGraphicsQuality(
+      chooseGraphicsQuality(graphicsPreference, deviceHints()),
+    );
+    try {
+      localStorage.setItem("bondeth-graphics", graphicsPreference);
+    } catch {
+      /* Optional preference. */
+    }
+  }, [graphicsPreference]);
+  const reduceQuality = useCallback(() => {
+    if (graphicsPreference === "auto") setGraphicsQuality("low");
+  }, [graphicsPreference]);
   // Drei's DOM labels own nested React roots. Retain a visited canvas across
   // view changes so those roots aren't torn down during the page's DOM commit.
-  const [worldVisited, setWorldVisited] = useState(!simple);
+  const [worldVisited, setWorldVisited] = useState(!simple && liveWorld);
   useEffect(() => {
-    if (!simple) setWorldVisited(true);
-  }, [simple]);
+    if (!simple && liveWorld) setWorldVisited(true);
+  }, [simple, liveWorld]);
   const [exploring, setExploring] = useState(false);
   const [journeyProgress, setJourneyProgress] = useState(0);
   const journeyMain = useRef<HTMLElement>(null);
@@ -193,7 +256,9 @@ export default function App() {
   const previousMode = useRef(false);
   const chapter = journeyChapter(journeyProgress);
   const routeCar = journeyCarPose(journeyProgress);
-  const [selectedProject, setSelectedProject] = useState<string | undefined>();
+  const [selectedProject, setSelectedProject] = useState<string | undefined>(
+    () => initialRoute().projectId,
+  );
   const [projectFilter, setProjectFilter] = useState<ProjectFilter>("All");
   const [chosenDistrict, setChosenDistrict] = useState<DistrictId | null>(null);
   const [ready, setReady] = useState(false);
@@ -230,19 +295,18 @@ export default function App() {
     setHelp(false);
     setSelectedProject(undefined);
     setProjectFilter("All");
-    if (window.location.hash !== `#${id}`)
-      window.history.pushState(null, "", `#${id}`);
+    writeRoute(id);
   }, []);
   const close = useCallback(() => {
     setSection(null);
-    window.history.replaceState(
-      null,
-      "",
-      window.location.pathname + window.location.search,
-    );
+    setSelectedProject(undefined);
+    writeRoute(null, undefined, true);
   }, []);
   const changeMode = useCallback((drive: boolean) => {
-    if (drive) portfolioScroll.current = window.scrollY;
+    if (drive) {
+      portfolioScroll.current = window.scrollY;
+      setLiveWorld(true);
+    }
     setExploring(drive);
     setChosenDistrict(null);
     setReset((r) => r + 1);
@@ -264,6 +328,7 @@ export default function App() {
   const jumpToChapter = useCallback(
     (index: number) => {
       setChosenDistrict(null);
+      setLiveWorld(true);
       jumpToProgress(journeyStops[index]);
     },
     [jumpToProgress],
@@ -318,13 +383,52 @@ export default function App() {
     );
     return () => cancelAnimationFrame(frame);
   }, [exploring]);
-  const openProject = useCallback(
-    (id: string) => {
-      select("projects");
-      setSelectedProject(id);
-    },
-    [select],
-  );
+  const openProject = useCallback((id?: string) => {
+    setSection("projects");
+    setHelp(false);
+    setSelectedProject(id);
+    writeRoute("projects", id);
+  }, []);
+  useEffect(() => {
+    const project = islandProjects.find((p) => p.id === selectedProject);
+    document.title = project
+      ? `${project.title} | Rithy Bondeth`
+      : "Rithy Bondeth | Full Stack Developer & AI Engineer";
+    const description =
+      project?.description ??
+      "Rithy Bondeth builds thoughtful web, mobile, and AI products. Explore his work and interactive island.";
+    const canonical = project
+      ? `https://3d.bondeth.dev/projects/${project.id}/`
+      : "https://3d.bondeth.dev/";
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute("content", description);
+    document
+      .querySelector('link[rel="canonical"]')
+      ?.setAttribute("href", canonical);
+    for (const selector of [
+      'meta[property="og:title"]',
+      'meta[name="twitter:title"]',
+    ])
+      document.querySelector(selector)?.setAttribute("content", document.title);
+    for (const selector of [
+      'meta[property="og:description"]',
+      'meta[name="twitter:description"]',
+    ])
+      document.querySelector(selector)?.setAttribute("content", description);
+    document
+      .querySelector('meta[property="og:url"]')
+      ?.setAttribute("content", canonical);
+  }, [selectedProject]);
+  useEffect(() => {
+    if (!simple || !selectedProject) return;
+    const frame = requestAnimationFrame(() =>
+      document
+        .getElementById("portfolio-section")
+        ?.scrollIntoView({ block: "start", behavior: "instant" }),
+    );
+    return () => cancelAnimationFrame(frame);
+  }, [simple, selectedProject]);
   const startDrive = useCallback(() => changeMode(true), [changeMode]);
   const onReady = useCallback(() => setReady(true), []);
   const fallback = useCallback(() => {
@@ -352,8 +456,9 @@ export default function App() {
   }, [simple]);
   useEffect(() => {
     const historyChange = () => {
-      const value = window.location.hash.slice(1);
-      setSection(validSection(value) ? value : null);
+      const route = initialRoute();
+      setSection(route.section);
+      setSelectedProject(route.projectId);
     };
     window.addEventListener("popstate", historyChange);
     window.addEventListener("hashchange", historyChange);
@@ -440,9 +545,32 @@ export default function App() {
   };
   const setView = () => {
     setSimple((s) => !s);
+    if (simple) setLiveWorld(true);
     if (!section) setSection("projects");
     if (simple) close();
   };
+  useEffect(() => {
+    if (!toolsOpen) return;
+    const dismiss = (event: PointerEvent) => {
+      if (
+        !(event.target instanceof Element) ||
+        !event.target.closest(".world-tools")
+      )
+        setToolsOpen(false);
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setToolsOpen(false);
+        toolsTrigger.current?.focus();
+      }
+    };
+    window.addEventListener("pointerdown", dismiss);
+    window.addEventListener("keydown", escape);
+    return () => {
+      window.removeEventListener("pointerdown", dismiss);
+      window.removeEventListener("keydown", escape);
+    };
+  }, [toolsOpen]);
   const activeSection = section || "projects";
   const nearStation = stations.find((s) => s.id === near);
   const move = (x?: number, z?: number) => {
@@ -480,12 +608,6 @@ export default function App() {
         </button>
         <nav className="header-nav" aria-label="Main navigation">
           <button
-            className={section === "projects" ? "active" : ""}
-            onClick={() => select("projects")}
-          >
-            Work
-          </button>
-          <button
             className={section === "about" ? "active" : ""}
             onClick={() => select("about")}
           >
@@ -504,15 +626,16 @@ export default function App() {
           <button
             className="all-projects-button"
             onClick={() => select("projects")}
-            aria-label={`Explore all ${islandProjects.length} projects`}
+            aria-label={`Work ${islandProjects.length} — Explore all projects`}
           >
-            All work <span>{islandProjects.length}</span>
+            Work <span>{islandProjects.length}</span>
             <ArrowUpRightIcon size={14} />
           </button>
           <button
             className="view-switch"
             onClick={setView}
             aria-label={simple ? "Switch to 3D view" : "Switch to Simple view"}
+            title={simple ? "3D view" : "Simple view"}
           >
             {simple ? <CubeIcon size={17} /> : <ListIcon size={17} />}
             <span>{simple ? "3D view" : "Simple view"}</span>
@@ -535,8 +658,16 @@ export default function App() {
       </header>
 
       {simple && (
-        <main id="main-content" className="simple-main">
-          <PortfolioIntro section={activeSection} onWorld={setView} />
+        <main
+          id="main-content"
+          className={`simple-main ${activeSection === "projects" ? "work-first" : ""}`}
+        >
+          {!selectedProject && (
+            <PortfolioIntro section={activeSection} onWorld={setView} />
+          )}
+          {activeSection === "projects" && !selectedProject && (
+            <SelectedWork onProject={openProject} />
+          )}
           <nav className="simple-nav" aria-label="Portfolio sections">
             {(
               [
@@ -599,9 +730,11 @@ export default function App() {
               }
             >
               <PortfolioContent
-                key={`${activeSection}:${selectedProject ?? "list"}:${projectFilter}`}
+                key={activeSection}
                 initialProjectId={selectedProject}
                 initialProjectFilter={projectFilter}
+                onProjectChange={openProject}
+                onFilterChange={setProjectFilter}
                 section={activeSection}
                 onNavigate={select}
               />
@@ -628,108 +761,184 @@ export default function App() {
             >
               <WorldBoundary onFallback={fallback} onError={onReady}>
                 <Suspense fallback={null}>
-                  <DrivingWorld
-                    selected={section}
-                    onSelect={select}
-                    onProject={openProject}
-                    activeDistrictId={activeDistrictId}
-                    projectIndex={routeProjectIndex}
-                    onDistrict={browseDistrict}
-                    onReady={onReady}
-                    onNear={setNear}
-                    onTelemetry={setTelemetry}
-                    night={night}
-                    reduceMotion={reduceMotion}
-                    paused={simple || help || !!section}
-                    reset={reset}
-                    movement={movement}
-                    immersive={exploring}
-                    journeyProgress={journeyProgress}
-                    ambientPaused={ambientPaused}
-                    onDrive={startDrive}
-                  />
+                  {liveWorld && (
+                    <DrivingWorld
+                      selected={section}
+                      onSelect={select}
+                      onProject={openProject}
+                      activeDistrictId={activeDistrictId}
+                      projectIndex={routeProjectIndex}
+                      onDistrict={browseDistrict}
+                      onReady={onReady}
+                      onNear={setNear}
+                      onTelemetry={setTelemetry}
+                      night={night}
+                      reduceMotion={reduceMotion}
+                      paused={simple || help || !!section}
+                      reset={reset}
+                      movement={movement}
+                      immersive={exploring}
+                      journeyProgress={journeyProgress}
+                      ambientPaused={ambientPaused}
+                      onDrive={startDrive}
+                      graphicsQuality={graphicsQuality}
+                      automaticQuality={graphicsPreference === "auto"}
+                      onReduceQuality={reduceQuality}
+                    />
+                  )}
                 </Suspense>
               </WorldBoundary>
-              {!ready && (
+              {!liveWorld && (
+                <div className="island-preview">
+                  <img
+                    src="/island-preview.webp"
+                    width="1000"
+                    height="650"
+                    alt="A preview of Bondeth’s floating island, gardens and waterfront"
+                    fetchPriority="high"
+                  />
+                  <div className="island-preview-invitation">
+                    <span>YOUR ADVENTURE AWAITS</span>
+                    <button
+                      className="primary-button"
+                      onClick={() => setLiveWorld(true)}
+                    >
+                      <PlayIcon size={18} /> Enter the island
+                    </button>
+                    <p>
+                      Live 3D loads when you choose. All projects are ready now.
+                    </p>
+                  </div>
+                </div>
+              )}
+              {liveWorld && !ready && (
                 <div className="world-loading" role="status">
                   <div className="loading-model">
                     <CubeIcon size={39} weight="duotone" />
                   </div>
                   <strong>Welcome to Bondeth World.</strong>
                   <span>Preparing your arrival…</span>
-                  {slow && (
-                    <button className="text-button" onClick={fallback}>
-                      Browse in simple view
-                      <ArrowRightIcon size={16} />
-                    </button>
-                  )}
+                  <div className="loading-track" aria-hidden="true">
+                    <span />
+                  </div>
+                  <p>
+                    {slow
+                      ? "Taking a little longer. You can browse while the island loads."
+                      : "The world is loading. Your work is ready to browse."}
+                  </p>
+                  <button className="text-button" onClick={fallback}>
+                    Browse projects now
+                    <ArrowRightIcon size={16} />
+                  </button>
                 </div>
               )}
             </div>
 
-            <div className="world-tools">
+            <div className={`world-tools ${toolsOpen ? "tools-expanded" : ""}`}>
               <button
-                className="icon-button"
-                onClick={() => setNight((n) => !n)}
-                aria-label={night ? "Switch to daytime" : "Switch to nighttime"}
-                title={night ? "Daytime" : "Nighttime"}
-              >
-                {night ? <MoonIcon size={19} /> : <SunIcon size={20} />}
-              </button>
-              <button
-                className="icon-button"
-                onClick={toggleSound}
+                className="icon-button tools-toggle"
+                ref={toolsTrigger}
                 aria-label={
-                  muted
-                    ? "Enable interaction sounds"
-                    : "Mute interaction sounds"
+                  toolsOpen ? "Close world settings" : "World settings"
                 }
-                title={muted ? "Sound off" : "Sound on"}
+                aria-expanded={toolsOpen}
+                aria-controls="world-settings"
+                onClick={() => setToolsOpen((value) => !value)}
               >
-                {muted ? (
-                  <SpeakerSlashIcon size={19} />
+                {toolsOpen ? (
+                  <XIcon size={20} />
                 ) : (
-                  <SpeakerHighIcon size={19} />
+                  <SlidersHorizontalIcon size={20} />
                 )}
               </button>
-              <button
-                className="icon-button"
-                onClick={() => setAmbientPaused((value) => !value)}
-                aria-label={
-                  ambientPaused
-                    ? "Play scene animation"
-                    : "Pause scene animation"
-                }
-                aria-pressed={ambientPaused}
-                title={ambientPaused ? "Play animation" : "Pause animation"}
-                disabled={reduceMotion}
+              <div
+                className="world-settings"
+                id="world-settings"
+                role="group"
+                aria-label="World controls"
+                hidden={!toolsOpen}
               >
-                {ambientPaused || reduceMotion ? (
-                  <PlayIcon size={19} />
-                ) : (
-                  <PauseIcon size={19} />
-                )}
-              </button>
-              <span className="tool-divider" />
-              <button
-                className="icon-button"
-                onClick={() => {
-                  if (!exploring) jumpToChapter(0);
-                  setReset((r) => r + 1);
-                }}
-                aria-label="Reset car and camera"
-                title="Return to start"
-              >
-                <ArrowCounterClockwiseIcon size={19} />
-              </button>
-              <button
-                className="icon-button"
-                onClick={() => setHelp(true)}
-                aria-label="How to explore"
-                title="How to explore"
-              >
-                <QuestionIcon size={20} />
-              </button>
+                <button
+                  className="icon-button"
+                  onClick={() => setNight((n) => !n)}
+                  aria-label={
+                    night ? "Switch to daytime" : "Switch to nighttime"
+                  }
+                  title={night ? "Daytime" : "Nighttime"}
+                >
+                  {night ? <MoonIcon size={19} /> : <SunIcon size={20} />}
+                </button>
+                <button
+                  className="icon-button"
+                  onClick={toggleSound}
+                  aria-label={
+                    muted
+                      ? "Enable interaction sounds"
+                      : "Mute interaction sounds"
+                  }
+                  title={muted ? "Sound off" : "Sound on"}
+                >
+                  {muted ? (
+                    <SpeakerSlashIcon size={19} />
+                  ) : (
+                    <SpeakerHighIcon size={19} />
+                  )}
+                </button>
+                <button
+                  className="icon-button"
+                  onClick={() => setAmbientPaused((value) => !value)}
+                  aria-label={
+                    ambientPaused
+                      ? "Play scene animation"
+                      : "Pause scene animation"
+                  }
+                  aria-pressed={ambientPaused}
+                  title={ambientPaused ? "Play animation" : "Pause animation"}
+                  disabled={reduceMotion}
+                >
+                  {ambientPaused || reduceMotion ? (
+                    <PlayIcon size={19} />
+                  ) : (
+                    <PauseIcon size={19} />
+                  )}
+                </button>
+                <span className="tool-divider" />
+                <button
+                  className="icon-button"
+                  onClick={() => {
+                    if (!exploring) jumpToChapter(0);
+                    setReset((r) => r + 1);
+                  }}
+                  aria-label="Reset car and camera"
+                  title="Return to start"
+                >
+                  <ArrowCounterClockwiseIcon size={19} />
+                </button>
+                <button
+                  className="icon-button"
+                  onClick={() => setHelp(true)}
+                  aria-label="How to explore"
+                  title="How to explore"
+                >
+                  <QuestionIcon size={20} />
+                </button>
+                <label className="graphics-control">
+                  <span>Graphics</span>
+                  <select
+                    aria-label="Graphics quality"
+                    value={graphicsPreference}
+                    onChange={(event) =>
+                      setGraphicsPreference(
+                        event.target.value as GraphicsPreference,
+                      )
+                    }
+                  >
+                    <option value="auto">Auto</option>
+                    <option value="high">Detailed</option>
+                    <option value="low">Battery saver</option>
+                  </select>
+                </label>
+              </div>
             </div>
 
             {!exploring ? (
@@ -1060,6 +1269,7 @@ export default function App() {
                 onFollow={() => setChosenDistrict(null)}
                 onChoose={(id) => {
                   setChosenDistrict(id);
+                  setLiveWorld(true);
                   jumpToProgress(districts.find((d) => d.id === id)!.stop);
                 }}
                 onAll={() => select("projects")}
@@ -1140,9 +1350,11 @@ export default function App() {
               }
             >
               <PortfolioContent
-                key={`${section}:${selectedProject ?? "list"}:${projectFilter}`}
+                key={section}
                 initialProjectId={selectedProject}
                 initialProjectFilter={projectFilter}
+                onProjectChange={openProject}
+                onFilterChange={setProjectFilter}
                 section={section}
                 onNavigate={select}
               />

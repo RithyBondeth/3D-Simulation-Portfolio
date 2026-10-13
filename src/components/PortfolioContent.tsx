@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { projectHref } from "../lib/portfolio-route";
 import {
   ArrowDownIcon,
   ArrowLeftIcon,
@@ -47,17 +48,23 @@ export function PortfolioContent({
   onNavigate,
   initialProjectId,
   initialProjectFilter = "All",
+  onProjectChange,
+  onFilterChange,
 }: {
   section: SectionId;
   onNavigate: (section: SectionId) => void;
   initialProjectId?: string;
   initialProjectFilter?: ProjectFilter;
+  onProjectChange?: (id?: string) => void;
+  onFilterChange?: (filter: ProjectFilter) => void;
 }) {
   if (section === "projects")
     return (
       <Projects
         initialProjectId={initialProjectId}
         initialFilter={initialProjectFilter}
+        onProjectChange={onProjectChange}
+        onFilterChange={onFilterChange}
       />
     );
   if (section === "about") return <About onNavigate={onNavigate} />;
@@ -80,15 +87,46 @@ function Tags({ tags }: { tags: string[] }) {
 function Projects({
   initialProjectId,
   initialFilter,
+  onProjectChange,
+  onFilterChange,
 }: {
   initialProjectId?: string;
   initialFilter: ProjectFilter;
+  onProjectChange?: (id?: string) => void;
+  onFilterChange?: (filter: ProjectFilter) => void;
 }) {
   const [filter, setFilter] = useState<ProjectFilter>(initialFilter);
   const [query, setQuery] = useState("");
-  const [project, setProject] = useState<Project | null>(
-    () => projects.find((p) => p.id === initialProjectId) ?? null,
-  );
+  const [localProjectId, setLocalProjectId] = useState(initialProjectId);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
+  const projectId = onProjectChange ? initialProjectId : localProjectId;
+  const project = projects.find((p) => p.id === projectId);
+  useEffect(() => setFilter(initialFilter), [initialFilter]);
+  useEffect(() => {
+    setLinkCopied(false);
+    setCopyError(false);
+  }, [projectId]);
+  const setProject = (project: Project | null) => {
+    setLocalProjectId(project?.id);
+    onProjectChange?.(project?.id);
+    document.querySelector(".drawer-scroll")?.scrollTo({ top: 0 });
+    document
+      .getElementById("portfolio-section")
+      ?.scrollIntoView({ block: "start", behavior: "instant" });
+  };
+  const copyLink = async () => {
+    if (!project) return;
+    try {
+      await navigator.clipboard.writeText(
+        new URL(projectHref(project.id), window.location.href).href,
+      );
+      setLinkCopied(true);
+      setCopyError(false);
+    } catch {
+      setCopyError(true);
+    }
+  };
   const list = sortedProjects.filter((p) => {
     const matches = `${p.title} ${p.description} ${p.tags.join(" ")}`
       .toLowerCase()
@@ -98,10 +136,25 @@ function Projects({
   if (project)
     return (
       <article className="project-detail">
-        <button className="text-button" onClick={() => setProject(null)}>
-          <ArrowLeftIcon size={16} /> Back to{" "}
-          {filter === "All" ? "all projects" : `${filter} projects`}
-        </button>
+        <div className="case-study-navigation">
+          <button className="text-button" onClick={() => setProject(null)}>
+            <ArrowLeftIcon size={16} /> Back to{" "}
+            {filter === "All" ? "all projects" : `${filter} projects`}
+          </button>
+          <button className="text-button project-share" onClick={copyLink}>
+            {linkCopied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
+            {linkCopied ? "Link copied" : "Copy project link"}
+          </button>
+        </div>
+        <span className="sr-only" role="status">
+          {linkCopied ? "Project link copied to clipboard." : ""}
+        </span>
+        {copyError && (
+          <p role="alert">
+            Copy isn’t available. You can copy the project URL from your address
+            bar.
+          </p>
+        )}
         <img
           className="detail-image"
           src={project.image}
@@ -190,7 +243,10 @@ function Projects({
               key={f}
               className={f === filter ? "active" : ""}
               aria-pressed={f === filter}
-              onClick={() => setFilter(f)}
+              onClick={() => {
+                setFilter(f);
+                onFilterChange?.(f);
+              }}
             >
               {f}
             </button>
@@ -211,10 +267,21 @@ function Projects({
       </div>
       <div className="project-grid">
         {list.map((p) => (
-          <button
+          <a
             className="project-card"
             key={p.id}
-            onClick={() => setProject(p)}
+            href={projectHref(p.id)}
+            onClick={(event) => {
+              if (
+                event.metaKey ||
+                event.ctrlKey ||
+                event.shiftKey ||
+                event.altKey
+              )
+                return;
+              event.preventDefault();
+              setProject(p);
+            }}
           >
             <div className="project-image">
               <img src={p.image} loading="lazy" alt={`${p.title} preview`} />
@@ -236,7 +303,7 @@ function Projects({
                 {p.tags.slice(0, 3).join(" · ")}
               </div>
             </div>
-          </button>
+          </a>
         ))}
       </div>
       {!list.length && (
@@ -249,6 +316,7 @@ function Projects({
             onClick={() => {
               setQuery("");
               setFilter("All");
+              onFilterChange?.("All");
             }}
           >
             Show all projects

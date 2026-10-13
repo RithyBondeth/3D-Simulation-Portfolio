@@ -7,7 +7,7 @@ import IslandPeople from "./IslandPeople";
 import type { Vec3 } from "../types";
 
 export type Piece = { at: Vec3; size: Vec3; color: string; rotation?: Vec3 };
-const stone = "#f0e9d5",
+const stone = "#dfd5be",
   dark = "#3b5d62",
   timber = "#bb9877",
   green = "#78a68b";
@@ -67,7 +67,7 @@ function createDistrict() {
     glass: Piece[] = [];
   const box = (at: Vec3, size: Vec3, color: string, rotation?: Vec3) =>
     solid.push({ at, size, color, rotation });
-  const pane = (at: Vec3, size: Vec3, color = "#537e88", rotation?: Vec3) =>
+  const pane = (at: Vec3, size: Vec3, color = "#2f5661", rotation?: Vec3) =>
     glass.push({ at, size, color, rotation });
   districtBuildings.forEach((b, i) => {
     const { x, z, w, d, h, color } = b;

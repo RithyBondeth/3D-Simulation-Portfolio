@@ -15,6 +15,7 @@ import type { SectionId, Vec3 } from "../types";
 import IslandAtmosphere from "./IslandAtmosphere";
 import IslandDistrict from "./IslandDistrict";
 import IslandLandmarks from "./IslandLandmarks";
+import KhmerPavilion from "./KhmerPavilion";
 import { journeyCarPose } from "../lib/coastal-journey";
 
 const mint = "#92ead0",
@@ -1249,6 +1250,7 @@ export default function MetaverseWorld({
           onDistrict={onDistrict}
         />
         <IslandDistrict night={night} />
+        <KhmerPavilion night={night} />
       </group>
       <Park />
       <IslandLandmarks night={night} />

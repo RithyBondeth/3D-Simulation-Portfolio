@@ -39,7 +39,7 @@ export default function DistrictBrowser({
             key={district.id}
             className={`district-option district-${district.id}`}
             aria-pressed={active === district.id}
-            aria-label={`Visit ${district.title} district, ${district.projects.length} projects`}
+            title={`Visit ${district.title} district, ${district.projects.length} projects`}
             onClick={() => onChoose(district.id)}
           >
             <span className="district-swatch" aria-hidden="true" />
