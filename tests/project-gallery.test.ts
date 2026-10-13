@@ -20,6 +20,21 @@ test("the gallery renders all projects by default, matching district collections
     const { districts, islandProjects } = await server.ssrLoadModule(
       "/src/project-catalog.ts",
     );
+    const { default: SelectedWork } = await server.ssrLoadModule(
+      "/src/components/SelectedWork.tsx",
+    );
+    const highlights = renderToStaticMarkup(
+      createElement(SelectedWork, { onProject: () => {} }),
+    );
+    const highlightLinks = [
+      ...highlights.matchAll(/href="\/projects\/([^/]+)\/"/g),
+    ].map((match) => match[1]);
+    assert.equal(highlightLinks.length, 3);
+    assert.ok(
+      highlightLinks.every((id) =>
+        islandProjects.some((project: { id: string }) => project.id === id),
+      ),
+    );
     const base = { section: "projects", onNavigate: () => {} };
     const cards = (markup: string) =>
       (markup.match(/class="project-card"/g) ?? []).length;

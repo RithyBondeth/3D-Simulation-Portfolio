@@ -36,8 +36,15 @@ import {
 } from "../lib/coastal-journey";
 
 import { projectDistricts, type DistrictId } from "../lib/project-districts";
+import {
+  shouldReduceQuality,
+  type GraphicsQuality,
+} from "../lib/graphics-quality";
 
 type Props = {
+  graphicsQuality: GraphicsQuality;
+  automaticQuality: boolean;
+  onReduceQuality: () => void;
   selected: SectionId | null;
   onSelect: (id: SectionId) => void;
   onProject: (id: string) => void;
@@ -513,6 +520,31 @@ function Drive({
     </group>
   );
 }
+function AdaptiveQuality({
+  enabled,
+  onReduce,
+}: {
+  enabled: boolean;
+  onReduce: () => void;
+}) {
+  const frames = useRef<number[]>([]);
+  const warmup = useRef(0);
+  useFrame((_, dt) => {
+    if (!enabled || document.hidden) {
+      frames.current = [];
+      warmup.current = 0;
+      return;
+    }
+    warmup.current += Math.min(dt, 0.1);
+    if (warmup.current < 3) return;
+    frames.current.push(Math.min(dt, 0.25));
+    if (frames.current.length === 90) {
+      if (shouldReduceQuality(frames.current)) onReduce();
+      frames.current = [];
+    }
+  });
+  return null;
+}
 function Scene(props: Props) {
   const architecture = useRef<T.Group>(null!);
   const car = useRef(spawnCar()),
@@ -590,10 +622,20 @@ function Scene(props: Props) {
     <CartoonMotion
       active={!props.paused && !props.reduceMotion && !props.ambientPaused}
     >
+      <AdaptiveQuality
+        enabled={
+          props.automaticQuality &&
+          props.graphicsQuality === "high" &&
+          !props.paused &&
+          !props.ambientPaused &&
+          !props.reduceMotion
+        }
+        onReduce={props.onReduceQuality}
+      />
       <color attach="background" args={[props.night ? "#142c35" : "#edf1e7"]} />
       <fog
         attach="fog"
-        args={[props.night ? "#224952" : "#edf1e7", 170, 380]}
+        args={[props.night ? "#224952" : "#edf1e7", 260, 560]}
       />
       <PerspectiveCamera
         ref={perspective}
@@ -611,20 +653,22 @@ function Scene(props: Props) {
         far={800}
         position={[75, 57, 95]}
       />
-      <ambientLight intensity={props.night ? 0.5 : 0.4} />
+      <ambientLight intensity={props.night ? 0.4 : 0.28} />
       <hemisphereLight
         args={[
           props.night ? "#9cc8e5" : "#e8f5ee",
           "#739d8c",
-          props.night ? 0.8 : 1.1,
+          props.night ? 0.7 : 0.8,
         ]}
       />
       <directionalLight
         position={[-45, 70, 45]}
-        intensity={props.night ? 1.8 : 2.2}
+        intensity={props.night ? 1.8 : 2.5}
         color={props.night ? "#acd5ef" : "#ffe4c1"}
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={
+          props.graphicsQuality === "low" ? [1024, 1024] : [2048, 2048]
+        }
         shadow-camera-left={-70}
         shadow-camera-right={70}
         shadow-camera-top={70}
@@ -635,16 +679,18 @@ function Scene(props: Props) {
         shadow-normalBias={0.08}
         shadow-radius={3}
       />
-      <Environment
-        files="/environment/city-sky.hdr"
-        background={false}
-        environmentIntensity={props.night ? 0.45 : 0.7}
-        environmentRotation={[0, 2.2, 0]}
-      />
+      {props.graphicsQuality === "high" && (
+        <Environment
+          files="/environment/city-sky.hdr"
+          background={false}
+          environmentIntensity={props.night ? 0.4 : 0.45}
+          environmentRotation={[0, 2.2, 0]}
+        />
+      )}
       <directionalLight
         position={[35, 25, -35]}
         color="#7bd6cd"
-        intensity={props.night ? 1.2 : 1.6}
+        intensity={props.night ? 1 : 0.75}
       />
       <MetaverseWorld
         night={props.night}
@@ -721,7 +767,7 @@ export default memo(function DrivingWorld(props: Props) {
     <Canvas
       shadows="percentage"
       frameloop="demand"
-      dpr={[1, 1.5]}
+      dpr={props.graphicsQuality === "low" ? [1, 1.1] : [1, 1.5]}
       gl={{
         antialias: true,
         alpha: false,

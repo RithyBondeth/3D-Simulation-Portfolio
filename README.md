@@ -25,21 +25,31 @@ The production preview defaults to http://localhost:4173 (Vite uses the next ava
 
 - Scroll vertically or use the four chapter buttons to follow the M4 through the world.
 - Open Work, About, Toolkit, Journey, AI lab, and Contact directly from the interface.
-- All 17 projects belong to one of four districts: AI (4), Web (10), Mobile (2), and macOS (1). A single active text label changes district and project as the car follows the route. Previous/next controls browse that district; clicking the project opens its case study. Project screenshots appear only inside case studies.
+- All 17 projects belong to one of four districts: AI (4), Web (10), Mobile (2), and macOS (1). A single active text label changes district and project as the car follows the route. Previous/next controls browse that district; clicking the project opens its case study. Project screenshots appear in the normal-view highlights, gallery, and case studies.
 - Choose a district along the bottom to visit its landmark and pin its selection. **Follow car** restores automatic discovery. Chapter navigation also restores automatic discovery.
-- **All work** in the header and **Explore all 17 projects** in the district strip open the complete searchable gallery. **All AI / Web / Mobile / macOS** on a landmark opens its matching filtered collection. The gallery defaults to All; Featured remains an optional filter.
+- **Work** in the header and **Explore all 17 projects** in the district strip open the complete searchable gallery. **All AI / Web / Mobile / macOS** on a landmark opens its matching filtered collection. The gallery defaults to All; Featured remains an optional filter.
 - The flying companion opens About, the animated portal opens the AI lab, and the floating contact beacon opens Contact. Chapter-specific labels keep the scene readable.
 - Choose **Take the wheel** for manual driving. **M** switches modes and restores the previous portfolio scroll position.
 - **W / Up** accelerates, **S / Down** brakes into reverse, **A / D** or **Left / Right** steers, and **Space** brakes. Drag to orbit; scroll or pinch to zoom.
 - **E** opens a nearby destination while driving. **R** resets; **1–5** opens destinations; **?** opens controls and asset credits. **Escape** closes a panel.
 - Phones have separate steering and pedal controls with simultaneous touch support. The scroll-driven scene allows vertical touch scrolling.
-- The scene toolbar offers day/night lighting, optional interaction sounds, ambient animation pause/play, reset, and help. **Simple view** provides all portfolio content without WebGL.
+- The **World settings** menu offers day/night lighting, optional interaction sounds, ambient animation pause/play, reset, and help. **Simple view** provides all portfolio content without WebGL.
 
 The expanded district adds 12 buildings with varied heights, solar rooftops, planted terraces, and two wind turbines. Waterfront cafés, benches, recycling bins, railings, solar streetlights, an electric shuttle and sheltered stop, EV charging bays, and bike parking connect the neighbourhood. Twenty-eight articulated pedestrians follow four sidewalk loops; three cyclists ride a separate waterfront cycle lane. Building windows and street lamps glow at night. A timber footbridge arches over the waterfront canal to a small harbour lookout. Repeated architecture and street details share two instanced geometry batches; pedestrians use three more.
 
 Driving retains acceleration, coasting, braking, reversing, speed-dependent steering, slower unpaved surfaces, building collisions, and the waterfront boundary. The road and architectural footprints are shared between the rendered world and vehicle handling, including the new buildings, cafés, transit shelter, shuttle, and charging posts. Decorative trees, street furniture, people, sky traffic, and floating props are not collision obstacles.
 
 Content panels suspend the car, camera, and ambient animation. Held inputs clear on blur and tab visibility changes. Ambient motion shares a 30 fps clock and stops offscreen, in hidden tabs, or when paused. Reduced motion disables ambient animation and pointer parallax, uses static district views. Manual driving remains available.
+
+## Mobile loading and project sharing
+
+Phones and data-saving visits start with a lightweight island preview. **Enter the island** loads the live scene on demand; normal view stays available immediately. World settings include Auto, Detailed, and Battery saver graphics. Auto uses device hints and reduces quality after sustained slow frames. Battery saver lowers pixel density and shadow resolution and skips the HDR environment.
+
+Normal view opens with three real product previews above the searchable gallery. Each project has a refreshable `/projects/<id>/` URL. The production build emits 17 static HTML documents with individual titles, descriptions, canonical URLs, and social metadata, plus a sitemap. The public origin is `https://3d.bondeth.dev/`. Serve the generated project directories as static pages before any SPA fallback.
+
+The branded social preview is generated with `npm run assets:social`; both SVG source and a crawler-compatible PNG are in `public/`.
+
+See [portfolio polish verification](artifacts/portfolio-polish-verification.md) and [mobile audit comparison](artifacts/mobile-performance-comparison.json) for current checks.
 
 ## Content and implementation
 
@@ -67,7 +77,7 @@ Earlier room, city, and pavilion scene components remain in the repository as de
 
 ## Validation and assets
 
-Twenty-four Node tests cover vehicle handling, collision bounds, continuous roads, a full circuit with continuous vehicle tangents, camera interpolation, vehicle projection bounds, pedestrian/cycle separation from the driving circuit, cycle-loop continuity, parked-shuttle collision, project classification, complete district discovery, shared gallery filters, and rendering every project/case study. See [current verification](artifacts/metaverse-verification.md) for checks and limitations. Earlier screenshots document their respective previous designs.
+Thirty-one Node tests cover vehicle handling, collision bounds, continuous roads, a full circuit with continuous vehicle tangents, camera interpolation, vehicle projection bounds, pedestrian/cycle separation from the driving circuit, cycle-loop continuity, parked-shuttle collision, project classification, complete district discovery, shared gallery filters, and rendering every project/case study. See [current verification](artifacts/metaverse-verification.md) for checks and limitations. Earlier screenshots document their respective previous designs.
 
 The Three.js scene and portfolio interface are lazy loaded. Project records are shared with the opening-page district catalogue so the island and gallery stay in sync. The M4 is approximately 3.9 MB. Vite retains its size advisory for the Three.js bundle. A WebGL error provides a Simple view fallback.
 
