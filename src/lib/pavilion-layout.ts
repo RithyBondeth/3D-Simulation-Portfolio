@@ -1,3 +1,5 @@
+import { districtBuildings, districtObstacles } from "./island-district.ts";
+
 /** Shared metre-scale plan for the architecture and optional coastal drive. */
 export const DRIVE_LIMIT = 51;
 export const ROAD_CENTRE_Z = -4;
@@ -10,6 +12,12 @@ export const gardenObstacles = [
   { x: 0, z: 2, w: 8, d: 16 },
   { x: -19, z: 18, w: 16, d: 5 },
   { x: 20, z: 18, w: 15, d: 5 },
+];
+const solidFootprints = [
+  ...pavilionFootprints,
+  ...gardenObstacles,
+  ...districtBuildings,
+  ...districtObstacles,
 ];
 export function roundedDistance(
   x: number,
@@ -41,7 +49,7 @@ export function pavilionBlocked(x: number, z: number) {
     Math.abs(x) > DRIVE_LIMIT - radius ||
     z < -45 + radius ||
     z > shoreline(x) - 3.5 ||
-    [...pavilionFootprints, ...gardenObstacles].some(
+    solidFootprints.some(
       (b) =>
         Math.abs(x - b.x) < b.w / 2 + radius &&
         Math.abs(z - b.z) < b.d / 2 + radius,

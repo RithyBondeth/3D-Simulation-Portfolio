@@ -29,12 +29,13 @@ import {
 import MetaverseWorld from "./MetaverseWorld";
 import { CartoonMotion } from "./CartoonMotion";
 import {
-  journeyCarX,
+  journeyCarPose,
   journeyFov,
   journeyChapter,
   journeyShot,
-  journeyStops,
 } from "../lib/coastal-journey";
+
+import { projectDistricts, type DistrictId } from "../lib/project-districts";
 
 type Props = {
   selected: SectionId | null;
@@ -52,6 +53,9 @@ type Props = {
   onDrive: () => void;
   journeyProgress: number;
   ambientPaused: boolean;
+  activeDistrictId: DistrictId;
+  projectIndex: number;
+  onDistrict: (id: DistrictId) => void;
 };
 function CambodiaPlates() {
   const texture = useTexture("/textures/cambodia-plate.png");
@@ -252,6 +256,7 @@ function Drive({
   immersive,
   reduceMotion,
   journeyProgress,
+  activeDistrictId,
   onDrive,
 }: Omit<Props, "onSelect" | "selected" | "night" | "onReady"> & {
   car: MutableRefObject<CarState>;
@@ -259,9 +264,11 @@ function Drive({
   dragging: MutableRefObject<boolean>;
 }) {
   const steering = useRef(0);
-  const initialArrival = useRef(true);
+  const routeProgress = useRef(journeyProgress);
   const progress = useRef(journeyProgress);
-  progress.current = journeyProgress;
+  progress.current = reduceMotion
+    ? projectDistricts.find((d) => d.id === activeDistrictId)!.stop
+    : journeyProgress;
   const contactShadow = useMemo(() => {
     const canvas = document.createElement("canvas");
     canvas.width = canvas.height = 64;
@@ -353,22 +360,15 @@ function Drive({
   }, [paused, immersive, invalidate, movement, car]);
   useEffect(() => {
     car.current = spawnCar();
+    routeProgress.current = progress.current;
     if (!immersive)
-      car.current.x =
-        initialArrival.current && !reduceMotion
-          ? -33
-          : journeyCarX(
-              reduceMotion
-                ? journeyStops[journeyChapter(progress.current)]
-                : progress.current,
-            );
-    initialArrival.current = false;
+      Object.assign(car.current, journeyCarPose(progress.current));
     cameraSettling.current = 0;
     invalidate();
   }, [reset, immersive, reduceMotion, car, invalidate]);
   useEffect(() => {
     invalidate();
-  }, [journeyProgress, invalidate]);
+  }, [journeyProgress, activeDistrictId, invalidate]);
   useEffect(() => {
     if (paused) {
       keys.current.clear();
@@ -381,36 +381,34 @@ function Drive({
   }, [paused, car, movement, invalidate]);
   useFrame((_, dt) => {
     if (!immersive) {
-      const step = Math.min(dt, 0.05),
-        wantedX = journeyCarX(
-          reduceMotion
-            ? journeyStops[journeyChapter(progress.current)]
-            : progress.current,
-        ),
-        state = car.current;
-      const delta = wantedX - state.x;
-      const distance = paused
-        ? 0
-        : reduceMotion
-          ? delta
-          : Math.sign(delta) *
-            Math.min(
-              Math.abs(delta),
-              17 * step,
-              Math.abs(delta) * (1 - Math.exp(-step * 4)),
-            );
-      state.x += distance;
-      state.z = 30.5;
-      state.yaw = -Math.PI / 2;
+      const step = Math.min(dt, 0.05);
+      const destination = progress.current;
+      const previous = routeProgress.current;
+      if (!paused)
+        routeProgress.current = reduceMotion
+          ? destination
+          : T.MathUtils.damp(previous, destination, 7, step);
+      const pose = journeyCarPose(routeProgress.current);
+      const state = car.current;
+      const travel = pose.distance - state.distance;
+      const lastYaw = state.yaw;
+      Object.assign(state, pose);
       state.speed =
-        Math.abs(distance) < 0.002 || reduceMotion
+        reduceMotion || paused || Math.abs(travel) < 0.001
           ? 0
-          : distance / Math.max(step, 0.001);
-      state.distance += Math.abs(distance);
-      steering.current = 0;
+          : travel / Math.max(step, 0.001);
+      const turn = Math.atan2(
+        Math.sin(pose.yaw - lastYaw),
+        Math.cos(pose.yaw - lastYaw),
+      );
+      steering.current =
+        Math.abs(travel) > 0.001
+          ? T.MathUtils.clamp((-turn / travel) * 5, -1, 1)
+          : 0;
       body.current!.position.set(state.x, 0.09, state.z);
       body.current!.rotation.y = state.yaw;
-      if (!paused && Math.abs(delta) > 0.002) invalidate();
+      if (!paused && Math.abs(destination - routeProgress.current) > 0.00001)
+        invalidate();
       return;
     }
     const k = keys.current,
@@ -482,23 +480,26 @@ function Drive({
   }, -0.5);
   return (
     <group ref={body}>
-      <BMW car={car} steering={steering} />
-      {!immersive && (
-        <Html
-          position={[0, 2.8, 0]}
-          center
-          zIndexRange={[12, 1]}
-          style={{ pointerEvents: paused ? "none" : "auto" }}
+      <group scale={1.2}>
+        <BMW car={car} steering={steering} />
+      </group>
+      <Html
+        position={[0, 4.8, 0]}
+        center
+        zIndexRange={[12, 1]}
+        style={{
+          display: immersive ? "none" : "block",
+          pointerEvents: paused ? "none" : "auto",
+        }}
+      >
+        <button
+          className="pavilion-label car-label"
+          aria-label="Drive the BMW M4"
+          onClick={onDrive}
         >
-          <button
-            className="pavilion-label car-label"
-            aria-label="Drive the BMW M4"
-            onClick={onDrive}
-          >
-            BMW M4 <ArrowUpRightIcon size={12} />
-          </button>
-        </Html>
-      )}
+          BMW M4 <ArrowUpRightIcon size={12} />
+        </button>
+      </Html>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.015, 0]}>
         <planeGeometry args={[2.6, 5.4]} />
         <meshBasicMaterial
@@ -523,17 +524,17 @@ function Scene(props: Props) {
     overview = useRef<T.PerspectiveCamera>(null);
   useEffect(() => {
     const c = props.immersive ? perspective.current : overview.current;
-    if (!c) return;
+    if (!c || size.width <= 0 || size.height <= 0) return;
     const target = props.immersive
       ? new T.Vector3(car.current.x, 1.2, car.current.z)
       : new T.Vector3(0, 0.5, 3);
     if (props.immersive)
       c.position.set(car.current.x - 12, 5.5, car.current.z + 5);
     else {
-      const frame = Math.max(1, (size.height / size.width) * 0.85);
+      const frame = Math.max(1, (size.height / size.width) * 1.12) * 1.28;
       const shot = journeyShot(
         props.reduceMotion
-          ? journeyStops[journeyChapter(props.journeyProgress)]
+          ? projectDistricts.find((d) => d.id === props.activeDistrictId)!.stop
           : props.journeyProgress,
       );
       c.position.set(
@@ -553,14 +554,14 @@ function Scene(props: Props) {
   }, [props.immersive, props.reset, size.width, size.height, invalidate]);
   useEffect(() => {
     invalidate();
-  }, [props.journeyProgress, props.paused, invalidate]);
+  }, [props.journeyProgress, props.activeDistrictId, props.paused, invalidate]);
   useFrame((state, dt) => {
     if (props.immersive || !overview.current || props.paused) return;
     const p = props.reduceMotion
-      ? journeyStops[journeyChapter(props.journeyProgress)]
-      : Math.max(0, Math.min(1, (car.current.x + 17) / 49));
+      ? projectDistricts.find((d) => d.id === props.activeDistrictId)!.stop
+      : car.current.distance / journeyCarPose(1).distance;
     const shot = journeyShot(p),
-      frame = Math.max(1, (size.height / size.width) * 0.85);
+      frame = Math.max(1, (size.height / size.width) * 1.12) * 1.28;
     const c = overview.current,
       wanted = new T.Vector3(
         ...(shot.camera as [number, number, number]),
@@ -589,10 +590,10 @@ function Scene(props: Props) {
     <CartoonMotion
       active={!props.paused && !props.reduceMotion && !props.ambientPaused}
     >
-      <color attach="background" args={[props.night ? "#091321" : "#102637"]} />
+      <color attach="background" args={[props.night ? "#142c35" : "#edf1e7"]} />
       <fog
         attach="fog"
-        args={[props.night ? "#16374e" : "#356a72", 170, 380]}
+        args={[props.night ? "#224952" : "#edf1e7", 170, 380]}
       />
       <PerspectiveCamera
         ref={perspective}
@@ -610,17 +611,17 @@ function Scene(props: Props) {
         far={800}
         position={[75, 57, 95]}
       />
-      <ambientLight intensity={props.night ? 0.5 : 0.6} />
+      <ambientLight intensity={props.night ? 0.5 : 0.4} />
       <hemisphereLight
         args={[
-          props.night ? "#9cc8e5" : "#a7ddd7",
-          "#30556c",
+          props.night ? "#9cc8e5" : "#e8f5ee",
+          "#739d8c",
           props.night ? 0.8 : 1.1,
         ]}
       />
       <directionalLight
         position={[-45, 70, 45]}
-        intensity={props.night ? 1.8 : 3.2}
+        intensity={props.night ? 1.8 : 2.2}
         color={props.night ? "#acd5ef" : "#ffe4c1"}
         castShadow
         shadow-mapSize={[2048, 2048]}
@@ -652,8 +653,11 @@ function Scene(props: Props) {
         buildingsRef={architecture}
         chapter={journeyChapter(props.journeyProgress)}
         immersive={props.immersive}
+        activeDistrictId={props.activeDistrictId}
+        projectIndex={props.projectIndex}
+        onDistrict={props.onDistrict}
       />
-      {(props.immersive ? stations : []).map((s) => (
+      {stations.map((s) => (
         <Html
           key={s.id}
           position={s.position}
@@ -662,7 +666,10 @@ function Scene(props: Props) {
           occlude={props.immersive ? [architecture] : false}
           wrapperClass="pavilion-world-label"
           zIndexRange={[12, 1]}
-          style={{ pointerEvents: props.paused ? "none" : "auto" }}
+          style={{
+            display: props.immersive ? "block" : "none",
+            pointerEvents: props.paused ? "none" : "auto",
+          }}
         >
           <button
             className={`pavilion-label ${props.selected === s.id ? "active" : ""}`}

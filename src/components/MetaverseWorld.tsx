@@ -5,12 +5,17 @@ import {
   useState,
   type MutableRefObject,
 } from "react";
-import { Html, RoundedBox, useCursor, useTexture } from "@react-three/drei";
+import { Html, RoundedBox, useCursor } from "@react-three/drei";
 import * as T from "three";
-import { featuredProjects } from "../featured-projects";
+import { districts, type ProjectDistrict } from "../project-catalog";
+import type { DistrictId } from "../lib/project-districts";
 import { pavilionFootprints } from "../lib/pavilion-layout";
 import { useCartoonMotion } from "./CartoonMotion";
 import type { SectionId, Vec3 } from "../types";
+import IslandAtmosphere from "./IslandAtmosphere";
+import IslandDistrict from "./IslandDistrict";
+import IslandLandmarks from "./IslandLandmarks";
+import { journeyCarPose } from "../lib/coastal-journey";
 
 const mint = "#92ead0",
   coral = "#ff9c78",
@@ -126,6 +131,12 @@ function IslandGround() {
       }),
       road: new T.ShapeGeometry(roadShape, 24),
       plaza: new T.ShapeGeometry(roundedRect(72, 54, 3), 16),
+      centreline: new T.BufferGeometry().setFromPoints(
+        Array.from({ length: 241 }, (_, i) => {
+          const pose = journeyCarPose(i / 240);
+          return new T.Vector3(pose.x, 0.04, pose.z);
+        }),
+      ),
     };
   }, []);
   useEffect(
@@ -141,18 +152,18 @@ function IslandGround() {
         castShadow
         receiveShadow
       >
-        <meshStandardMaterial color="#263f56" roughness={0.85} />
+        <meshStandardMaterial color="#c9b99c" roughness={0.85} />
       </mesh>
-      <Block at={[0, -8, 3]} size={[91, 8, 83]} radius={7} color="#182c42" />
-      <Block at={[0, -13, 3]} size={[67, 6, 65]} radius={8} color="#13283c" />
-      <Block at={[0, -17.5, 3]} size={[38, 4, 42]} radius={7} color="#203d4b" />
+      <Block at={[0, -8, 3]} size={[91, 8, 83]} radius={7} color="#acb79c" />
+      <Block at={[0, -13, 3]} size={[67, 6, 65]} radius={8} color="#92a58e" />
+      <Block at={[0, -17.5, 3]} size={[38, 4, 42]} radius={7} color="#7d9683" />
       <mesh
         geometry={geometries.land}
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -0.035, 4]}
         receiveShadow
       >
-        <meshStandardMaterial color="#497b77" roughness={0.95} />
+        <meshStandardMaterial color="#8fb99c" roughness={0.95} />
       </mesh>
       <mesh
         geometry={geometries.road}
@@ -160,7 +171,7 @@ function IslandGround() {
         position={[0, 0.015, -4]}
         receiveShadow
       >
-        <meshStandardMaterial color="#1c3046" roughness={0.78} />
+        <meshStandardMaterial color="#465e62" roughness={0.78} />
       </mesh>
       <mesh
         geometry={geometries.plaza}
@@ -168,28 +179,23 @@ function IslandGround() {
         position={[0, 0.15, -2]}
         receiveShadow
       >
-        <meshStandardMaterial color="#779b98" roughness={0.8} />
+        <meshStandardMaterial color="#d2d7ba" roughness={0.8} />
       </mesh>
       <Block at={[0, -2.1, 59.55]} size={[80, 0.15, 0.18]} color={mint} glow />
       <Block at={[-58.55, -2.1, 4]} size={[0.18, 0.15, 66]} color={mint} glow />
       <Block at={[58.55, -2.1, 4]} size={[0.18, 0.15, 66]} color={mint} glow />
-      {Array.from({ length: 17 }, (_, i) => (
-        <mesh
-          key={i}
-          position={[-40 + i * 5, 0.03, 30.5]}
-          rotation={[-Math.PI / 2, 0, 0]}
-        >
-          <planeGeometry args={[1.5, 0.13]} />
-          <meshBasicMaterial color="#b3c9c9" />
-        </mesh>
-      ))}
+      <lineLoop
+        onUpdate={(line) => line.computeLineDistances()}
+        geometry={geometries.centreline}
+      >
+        <lineDashedMaterial color="#d3dccc" dashSize={1.6} gapSize={2.2} />
+      </lineLoop>
       {[-1, 1].map((side) => (
         <Block
           key={side}
           at={[side * 44.5, 0.05, -5]}
           size={[0.1, 0.05, 48]}
-          color={mint}
-          glow
+          color="#c0d6c1"
         />
       ))}
       {Array.from({ length: 8 }, (_, i) => (
@@ -277,61 +283,228 @@ function Tower({
   );
 }
 
-function ProjectScreen({
-  index,
-  at,
-  width,
+function DistrictLandmark({
+  district,
+  projectIndex,
   onProject,
+  onDistrict,
+  showLabel,
 }: {
-  index: number;
-  at: Vec3;
-  width: number;
+  district: ProjectDistrict;
+  projectIndex: number;
   onProject: (id: string) => void;
+  onDistrict: (id: DistrictId) => void;
+  showLabel: boolean;
 }) {
-  const project = featuredProjects[index],
-    map = useTexture(project.image);
-  map.colorSpace = T.SRGBColorSpace;
   const [hover, setHover] = useState(false);
+  const [selection, setSelection] = useState<{
+    step: number;
+    index: number;
+  } | null>(null);
+  const index =
+    selection?.step === projectIndex ? selection.index : projectIndex;
+  const project =
+    district.projects[
+      Math.max(0, Math.min(index, district.projects.length - 1))
+    ];
+  const sculpture = useRef<T.Group>(null);
   useCursor(hover);
+  useCartoonMotion((t) => {
+    if (!sculpture.current) return;
+    sculpture.current.position.y =
+      1.9 + Math.sin(t * 0.8 + district.stop * 5) * 0.2;
+    sculpture.current.rotation.y =
+      district.id === "mobile" || district.id === "macos"
+        ? Math.sin(t * 0.3) * 0.18
+        : t * 0.13;
+  });
   return (
-    <group
-      position={at}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHover(true);
-      }}
-      onPointerOut={() => setHover(false)}
-      onClick={(e) => {
-        e.stopPropagation();
-        onProject(project.id);
-      }}
-    >
-      <Block
-        size={[width + 0.55, width * 0.56 + 0.65, 0.5]}
-        color={hover ? mint : "#172e40"}
-        radius={0.3}
-      />
-      <mesh position={[0, 0, 0.26]}>
-        <planeGeometry args={[width, width * 0.56]} />
-        <meshBasicMaterial map={map} toneMapped={false} />
-      </mesh>
-      <Block
-        at={[0, -width * 0.28 - 0.47, 0]}
-        size={[width * 0.7, 0.1, 0.25]}
-        color={mint}
-        glow
-      />
+    <group position={[...district.position]}>
+      <Block at={[0, -0.25, 0]} size={[6.5, 0.45, 5]} color="#e7e7cf" />
+      <Block at={[0, 0.05, 0]} size={[5.3, 0.14, 4]} color={district.color} />
+      <group
+        ref={sculpture}
+        position={[0, 1.9, 0]}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          setHover(true);
+        }}
+        onPointerOut={() => setHover(false)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDistrict(district.id);
+        }}
+      >
+        {district.id === "mobile" ? (
+          <group rotation={[0, -0.18, -0.12]}>
+            <Block
+              size={[2.5, 4.4, 0.48]}
+              color={hover ? "#ffe4b6" : "#496476"}
+              radius={0.35}
+            />
+            <Block at={[0, 0, 0.26]} size={[2.13, 3.7, 0.06]} color="#c0d7db" />
+            <Block
+              at={[0, 1.65, 0.32]}
+              size={[0.7, 0.12, 0.04]}
+              color="#496476"
+            />
+            {[0, 1, 2].map((i) => (
+              <Block
+                key={i}
+                at={[-0.55 + i * 0.55, -0.9, 0.33]}
+                size={[0.38, 0.38, 0.08]}
+                color={["#c78b62", "#70a899", "#ba9cae"][i]}
+              />
+            ))}
+          </group>
+        ) : district.id === "macos" ? (
+          <group rotation={[0, 0.15, 0]}>
+            <Block
+              at={[0, 0.4, 0]}
+              size={[4.5, 2.9, 0.3]}
+              color={hover ? "#ffe4b6" : "#536873"}
+            />
+            <Block
+              at={[0, 0.4, 0.18]}
+              size={[4.1, 2.5, 0.07]}
+              color="#bfc6d4"
+            />
+            <Block
+              at={[0, 1.57, 0.24]}
+              size={[1.3, 0.18, 0.07]}
+              color="#536873"
+            />
+            <Block
+              at={[0, -1.05, 0.8]}
+              size={[4.8, 0.2, 2.3]}
+              color="#d0c4ca"
+            />
+            <Block
+              at={[0, 0.4, 0.24]}
+              size={[1.3, 0.7, 0.06]}
+              color="#e9d7b4"
+            />
+          </group>
+        ) : (
+          <>
+            {[0, 1].map((i) => (
+              <mesh
+                key={i}
+                rotation={[(i * Math.PI) / 2, 0, Math.PI / 4]}
+                castShadow
+              >
+                <torusGeometry
+                  args={[2.1, 0.25, 8, district.id === "ai" ? 40 : 4]}
+                />
+                <meshStandardMaterial
+                  color={hover ? "#ffe4b6" : district.color}
+                  roughness={0.4}
+                  metalness={0.25}
+                />
+              </mesh>
+            ))}
+            <mesh>
+              <icosahedronGeometry args={[0.8, district.id === "ai" ? 1 : 0]} />
+              <meshStandardMaterial
+                color="#f4deb5"
+                emissive="#e9c385"
+                emissiveIntensity={0.25}
+              />
+            </mesh>
+          </>
+        )}
+      </group>
       <Sign
-        text={project.title.toUpperCase()}
-        at={[0, width * 0.28 + 0.85, 0.1]}
-        width={width}
-        height={0.7}
+        text={`${district.title.toUpperCase()} / ${district.projects.length} PROJECT${district.projects.length === 1 ? "" : "S"}`}
+        at={[0, 0.45, 2.56]}
+        width={5.6}
+        height={0.6}
+        color="#4c655b"
       />
+      <Html
+        position={[0, district.id === "macos" ? 12.2 : 6.2, 0]}
+        center
+        zIndexRange={[12, 1]}
+        style={{ display: showLabel ? "block" : "none" }}
+      >
+        <article
+          className={`project-landmark district-landmark district-${district.id}`}
+          aria-label={`${district.title} district project`}
+        >
+          <span className="landmark-meta">
+            <span className="district-swatch" />
+            {district.name}
+          </span>
+          <button
+            className="landmark-project"
+            onClick={(e) => {
+              e.stopPropagation();
+              onProject(project.id);
+            }}
+            aria-label={`Explore ${project.title}`}
+          >
+            <strong key={project.id}>
+              {project.title}
+              <span aria-hidden="true">↗</span>
+            </strong>
+            <span className="district-project-description">
+              {project.description}
+            </span>
+          </button>
+          <div className="landmark-pagination">
+            <span>
+              {index + 1} / {district.projects.length}
+            </span>
+            <button
+              aria-label={`Previous ${district.title} project`}
+              disabled={district.projects.length < 2}
+              onClick={() =>
+                setSelection({
+                  step: projectIndex,
+                  index:
+                    (index - 1 + district.projects.length) %
+                    district.projects.length,
+                })
+              }
+            >
+              ←
+            </button>
+            <button
+              aria-label={`Next ${district.title} project`}
+              disabled={district.projects.length < 2}
+              onClick={() =>
+                setSelection({
+                  step: projectIndex,
+                  index: (index + 1) % district.projects.length,
+                })
+              }
+            >
+              →
+            </button>
+            <button
+              className="landmark-browse"
+              onClick={() => onDistrict(district.id)}
+            >
+              All {district.title} ↗
+            </button>
+          </div>
+        </article>
+      </Html>
     </group>
   );
 }
 
-function Architecture({ onProject }: { onProject: (id: string) => void }) {
+function Architecture({
+  onProject,
+  onDistrict,
+  activeDistrictId,
+  projectIndex,
+}: {
+  onProject: (id: string) => void;
+  onDistrict: (id: DistrictId) => void;
+  activeDistrictId: DistrictId;
+  projectIndex: number;
+}) {
   return (
     <>
       {pavilionFootprints.map((b, i) => (
@@ -339,18 +512,18 @@ function Architecture({ onProject }: { onProject: (id: string) => void }) {
           <Block
             at={[0, 0.15, 0]}
             size={[b.w + 0.9, 0.3, b.d + 0.9]}
-            color="#344e5d"
+            color="#b7bda5"
           />
           <Block
             at={[0, b.h / 2, 0]}
             size={[b.w, b.h, b.d]}
-            color={["#305e65", "#386579", "#4d6980"][i]}
+            color={["#b3cbb2", "#d6cab0", "#adc5be"][i]}
             radius={0.8}
           />
           <Block
             at={[0, b.h + 0.15, 0]}
             size={[b.w + 1.6, 0.7, b.d + 1.6]}
-            color="#aed7ca"
+            color="#eff0d5"
             radius={0.5}
           />
           <Block
@@ -358,12 +531,6 @@ function Architecture({ onProject }: { onProject: (id: string) => void }) {
             size={[b.w + 1, 0.1, 0.12]}
             color={i === 1 ? coral : mint}
             glow
-          />
-          <ProjectScreen
-            index={i}
-            at={[0, b.h / 2 + 0.1, b.d / 2 + 0.45]}
-            width={i === 1 ? 10 : 9}
-            onProject={onProject}
           />
           {[-1, 1].map((side) => (
             <Block
@@ -375,36 +542,46 @@ function Architecture({ onProject }: { onProject: (id: string) => void }) {
           ))}
         </group>
       ))}
-      <Tower at={[-25, 13, -11]} size={[9, 14, 12]} color="#68baa9" terraces />
-      <Tower at={[-21, 10.3, 3]} size={[8, 8.5, 10]} color="#d2d5be" />
-      <Tower at={[-7, 19.8, -20]} size={[11, 25, 8]} color="#9cc9cb" terraces />
-      <Tower at={[7, 15.8, -20]} size={[11, 17, 8]} color="#668fa9" />
-      <group position={[24, 14, -9]}>
+      {districts.map((district) => (
+        <DistrictLandmark
+          key={district.id}
+          district={district}
+          projectIndex={activeDistrictId === district.id ? projectIndex : 0}
+          showLabel={activeDistrictId === district.id}
+          onProject={onProject}
+          onDistrict={onDistrict}
+        />
+      ))}
+      <Tower at={[-25, 10.5, -11]} size={[9, 9, 12]} color="#68baa9" terraces />
+      <Tower at={[-23, 8, 1]} size={[8, 4, 10]} color="#d2d5be" />
+      <Tower at={[-7, 15.3, -20]} size={[11, 16, 8]} color="#9dc8c4" terraces />
+      <Tower at={[7, 11.8, -20]} size={[11, 9, 8]} color="#a7bcd2" />
+      <group position={[24, 11, -11]}>
         <mesh castShadow receiveShadow>
-          <cylinderGeometry args={[4.4, 5.2, 16, 32]} />
+          <cylinderGeometry args={[4.4, 5.2, 10, 32]} />
           <meshStandardMaterial
             color="#d59981"
             roughness={0.65}
             metalness={0.12}
           />
         </mesh>
-        {[0, 1, 2, 3, 4].map((i) => (
-          <group key={i} position={[0, -5 + i * 3, 0]}>
+        {[0, 1, 2].map((i) => (
+          <group key={i} position={[0, -3 + i * 3, 0]}>
             <mesh rotation={[Math.PI / 2, 0, 0]}>
               <torusGeometry args={[4.9 - i * 0.15, 0.19, 8, 40]} />
               <meshStandardMaterial color="#f2d5bb" roughness={0.5} />
             </mesh>
           </group>
         ))}
-        <mesh position={[0, 8.4, 0]}>
+        <mesh position={[0, 5.4, 0]}>
           <cylinderGeometry args={[5.4, 5.4, 0.65, 32]} />
           <meshStandardMaterial color="#ecc5aa" roughness={0.7} />
         </mesh>
-        <mesh position={[0, 9, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <mesh position={[0, 6, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[3, 0.12, 8, 40]} />
           <meshBasicMaterial color={mint} />
         </mesh>
-        <mesh position={[0, 10.2, 0]}>
+        <mesh position={[0, 7.2, 0]}>
           <sphereGeometry args={[1.1, 16, 12]} />
           <meshStandardMaterial
             color={mint}
@@ -414,10 +591,10 @@ function Architecture({ onProject }: { onProject: (id: string) => void }) {
           />
         </mesh>
       </group>
-      <Block at={[-6, 34.7, -20]} size={[8, 0.16, 7]} color={mint} glow />
+      <Block at={[-6, 25.7, -20]} size={[8, 0.16, 7]} color={mint} glow />
       <Sign
         text="BUILD / EXPLORE / REPEAT"
-        at={[-7, 30.3, -15.85]}
+        at={[-7, 21.3, -15.85]}
         width={8.6}
         height={0.7}
         color="#d4e9e1"
@@ -516,20 +693,23 @@ function Portal({
           <meshBasicMaterial color={coral} />
         </mesh>
       </group>
-      {showLabel && (
-        <Html position={[0, -7.1, 1]} center zIndexRange={[12, 1]}>
-          <button
-            className="world-marker portal-marker"
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect("labs");
-            }}
-          >
-            <span className="marker-dot" />
-            AI lab<span>Enter portal ↗</span>
-          </button>
-        </Html>
-      )}
+      <Html
+        position={[0, -7.1, 1]}
+        center
+        zIndexRange={[12, 1]}
+        style={{ display: showLabel ? "block" : "none" }}
+      >
+        <button
+          className="world-marker portal-marker"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect("labs");
+          }}
+        >
+          <span className="marker-dot" />
+          AI lab<span>Enter portal ↗</span>
+        </button>
+      </Html>
     </group>
   );
 }
@@ -796,19 +976,22 @@ function Companion({
           depthWrite={false}
         />
       </mesh>
-      {showLabel && (
-        <Html position={[0, 3.9, 0]} center zIndexRange={[12, 1]}>
-          <button
-            className="world-marker companion-marker"
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect("about");
-            }}
-          >
-            Hey, I’m Bondeth<span>Meet the maker ↗</span>
-          </button>
-        </Html>
-      )}
+      <Html
+        position={[0, 3.9, 0]}
+        center
+        zIndexRange={[12, 1]}
+        style={{ display: showLabel ? "block" : "none" }}
+      >
+        <button
+          className="world-marker companion-marker"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect("about");
+          }}
+        >
+          Hey, I’m Bondeth<span>Meet the maker ↗</span>
+        </button>
+      </Html>
     </group>
   );
 }
@@ -866,19 +1049,22 @@ function ContactBeacon({
           depthWrite={false}
         />
       </mesh>
-      {showLabel && (
-        <Html position={[0, -3, 0]} center zIndexRange={[12, 1]}>
-          <button
-            className="world-marker"
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect("contact");
-            }}
-          >
-            Let’s make something<span>Say hello ↗</span>
-          </button>
-        </Html>
-      )}
+      <Html
+        position={[0, -3, 0]}
+        center
+        zIndexRange={[12, 1]}
+        style={{ display: showLabel ? "block" : "none" }}
+      >
+        <button
+          className="world-marker"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect("contact");
+          }}
+        >
+          Let’s make something<span>Say hello ↗</span>
+        </button>
+      </Html>
     </group>
   );
 }
@@ -931,15 +1117,15 @@ function SatelliteIsland({
     <group ref={island} position={at} scale={scale}>
       <mesh position={[0, -2, 0]} castShadow>
         <cylinderGeometry args={[9, 5, 4, 7]} />
-        <meshStandardMaterial color="#2d5265" roughness={0.85} />
+        <meshStandardMaterial color="#bbc4a5" roughness={0.85} />
       </mesh>
       <mesh position={[0, -5.5, 0]} rotation={[0, 0, Math.PI]}>
         <coneGeometry args={[5, 5, 7]} />
-        <meshStandardMaterial color="#1b354c" roughness={0.9} />
+        <meshStandardMaterial color="#91a88d" roughness={0.9} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[9, 7]} />
-        <meshStandardMaterial color="#57917b" roughness={0.85} />
+        <meshStandardMaterial color="#95bfa2" roughness={0.85} />
       </mesh>
       <Tree at={[-3, 0, 0]} scale={0.9} />
       <Tree at={[3, 0, -2]} scale={0.65} />
@@ -973,8 +1159,8 @@ function Sky({ night }: { night: boolean }) {
     [],
   );
   useEffect(() => {
-    material.uniforms.horizon.value.set(night ? "#16374e" : "#356a72");
-    material.uniforms.zenith.value.set(night ? "#091321" : "#102637");
+    material.uniforms.horizon.value.set(night ? "#224952" : "#edf1e7");
+    material.uniforms.zenith.value.set(night ? "#142c35" : "#d9e9df");
   }, [night, material]);
   useEffect(() => () => material.dispose(), [material]);
   const stars = useMemo(() => {
@@ -1001,7 +1187,7 @@ function Sky({ night }: { night: boolean }) {
           color="#afcfcf"
           size={0.35}
           transparent
-          opacity={night ? 0.8 : 0.35}
+          opacity={night ? 0.8 : 0}
           sizeAttenuation
           depthWrite={false}
         />
@@ -1037,6 +1223,9 @@ export default function MetaverseWorld({
   buildingsRef,
   chapter,
   immersive,
+  activeDistrictId,
+  projectIndex,
+  onDistrict,
 }: {
   night: boolean;
   chapter: number;
@@ -1044,22 +1233,33 @@ export default function MetaverseWorld({
   onSelect: (id: SectionId) => void;
   onProject: (id: string) => void;
   buildingsRef: MutableRefObject<T.Group | null>;
+  activeDistrictId: DistrictId;
+  projectIndex: number;
+  onDistrict: (id: DistrictId) => void;
 }) {
   return (
     <>
       <Sky night={night} />
       <IslandGround />
       <group ref={buildingsRef}>
-        <Architecture onProject={onProject} />
+        <Architecture
+          onProject={onProject}
+          activeDistrictId={activeDistrictId}
+          projectIndex={projectIndex}
+          onDistrict={onDistrict}
+        />
+        <IslandDistrict night={night} />
       </group>
       <Park />
+      <IslandLandmarks night={night} />
       <Portal onSelect={onSelect} showLabel={chapter === 2 || immersive} />
-      <Companion onSelect={onSelect} showLabel={chapter === 0 || immersive} />
+      <Companion onSelect={onSelect} showLabel={immersive} />
       <ContactBeacon
         onSelect={onSelect}
         showLabel={chapter === 3 || immersive}
       />
       <SkyTram />
+      <IslandAtmosphere />
       <SatelliteIsland at={[-80, 9, -48]} scale={1.1} phase={0} />
       <SatelliteIsland at={[69, 16, -57]} scale={0.85} phase={2} />
       <SatelliteIsland at={[18, 32, -100]} scale={0.6} phase={4} />

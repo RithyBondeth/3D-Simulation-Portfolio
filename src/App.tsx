@@ -42,8 +42,18 @@ import {
   type MovementInput,
 } from "./types";
 import profile from "./profile.json";
-import { featuredProjects } from "./featured-projects";
+import { districts, islandProjects } from "./project-catalog";
 import {
+  nearbyDistrict,
+  routeDistrict,
+  type DistrictId,
+  type ProjectFilter,
+} from "./lib/project-districts";
+import DistrictBrowser from "./components/DistrictBrowser";
+import BrandMark from "./components/BrandMark";
+import PortfolioIntro from "./components/PortfolioIntro";
+import {
+  journeyCarPose,
   journeyChapter,
   journeyNames,
   journeyStops,
@@ -169,6 +179,12 @@ export default function App() {
       return false;
     }
   });
+  // Drei's DOM labels own nested React roots. Retain a visited canvas across
+  // view changes so those roots aren't torn down during the page's DOM commit.
+  const [worldVisited, setWorldVisited] = useState(!simple);
+  useEffect(() => {
+    if (!simple) setWorldVisited(true);
+  }, [simple]);
   const [exploring, setExploring] = useState(false);
   const [journeyProgress, setJourneyProgress] = useState(0);
   const journeyMain = useRef<HTMLElement>(null);
@@ -176,7 +192,10 @@ export default function App() {
   const portfolioScroll = useRef(0);
   const previousMode = useRef(false);
   const chapter = journeyChapter(journeyProgress);
+  const routeCar = journeyCarPose(journeyProgress);
   const [selectedProject, setSelectedProject] = useState<string | undefined>();
+  const [projectFilter, setProjectFilter] = useState<ProjectFilter>("All");
+  const [chosenDistrict, setChosenDistrict] = useState<DistrictId | null>(null);
   const [ready, setReady] = useState(false);
   const [slow, setSlow] = useState(false);
   const [help, setHelp] = useState(false);
@@ -194,10 +213,23 @@ export default function App() {
   const movement = useRef<MovementInput>({ x: 0, z: 0 });
   const audio = useRef<AudioContext | null>(null);
   const reduceMotion = useReducedMotion();
+  const route = routeDistrict(journeyProgress);
+  const activeDistrictId =
+    chosenDistrict ??
+    (exploring ? nearbyDistrict(telemetry.x, telemetry.z) : route.id);
+  const activeDistrict = districts.find((d) => d.id === activeDistrictId)!;
+  const routeProjectIndex =
+    chosenDistrict || exploring
+      ? 0
+      : Math.min(
+          activeDistrict.projects.length - 1,
+          Math.floor(route.progress * activeDistrict.projects.length),
+        );
   const select = useCallback((id: SectionId) => {
     setSection(id);
     setHelp(false);
     setSelectedProject(undefined);
+    setProjectFilter("All");
     if (window.location.hash !== `#${id}`)
       window.history.pushState(null, "", `#${id}`);
   }, []);
@@ -212,23 +244,36 @@ export default function App() {
   const changeMode = useCallback((drive: boolean) => {
     if (drive) portfolioScroll.current = window.scrollY;
     setExploring(drive);
+    setChosenDistrict(null);
     setReset((r) => r + 1);
   }, []);
-  const jumpToChapter = useCallback(
-    (index: number) => {
+  const jumpToProgress = useCallback(
+    (progress: number) => {
       const main = journeyMain.current,
         stage = journeyStage.current;
       if (!main || !stage) return;
       const header = document.querySelector(".site-header")?.clientHeight ?? 92;
       const start = main.getBoundingClientRect().top + window.scrollY - header;
       window.scrollTo({
-        top:
-          start +
-          (main.offsetHeight - stage.offsetHeight) * journeyStops[index],
+        top: start + (main.offsetHeight - stage.offsetHeight) * progress,
         behavior: reduceMotion ? "instant" : "smooth",
       });
     },
     [reduceMotion],
+  );
+  const jumpToChapter = useCallback(
+    (index: number) => {
+      setChosenDistrict(null);
+      jumpToProgress(journeyStops[index]);
+    },
+    [jumpToProgress],
+  );
+  const browseDistrict = useCallback(
+    (id: DistrictId) => {
+      select("projects");
+      setProjectFilter(districts.find((d) => d.id === id)!.filter);
+    },
+    [select],
   );
   useEffect(() => {
     if (simple || exploring) return;
@@ -424,15 +469,13 @@ export default function App() {
             jumpToChapter(0);
           }}
         >
-          <span className="brand-mark" aria-hidden="true">
-            b<span>.</span>
-          </span>
+          <BrandMark />
           <span>
             Bondeth
             <span className="brand-separator" aria-hidden="true">
               /
             </span>
-            <span className="brand-studio">world / portfolio</span>
+            <span className="brand-studio">code, with curiosity</span>
           </span>
         </button>
         <nav className="header-nav" aria-label="Main navigation">
@@ -458,10 +501,32 @@ export default function App() {
           </a>
         </nav>
         <div className="header-actions">
-          <button className="view-switch" onClick={setView}>
+          <button
+            className="all-projects-button"
+            onClick={() => select("projects")}
+            aria-label={`Explore all ${islandProjects.length} projects`}
+          >
+            All work <span>{islandProjects.length}</span>
+            <ArrowUpRightIcon size={14} />
+          </button>
+          <button
+            className="view-switch"
+            onClick={setView}
+            aria-label={simple ? "Switch to 3D view" : "Switch to Simple view"}
+          >
             {simple ? <CubeIcon size={17} /> : <ListIcon size={17} />}
             <span>{simple ? "3D view" : "Simple view"}</span>
           </button>
+          {simple && (
+            <button
+              className="portfolio-theme-toggle"
+              onClick={() => setNight((value) => !value)}
+              aria-label={night ? "Switch to daytime" : "Switch to nighttime"}
+              title={night ? "Light theme" : "Dark theme"}
+            >
+              {night ? <SunIcon size={18} /> : <MoonIcon size={18} />}
+            </button>
+          )}
           <button className="contact-button" onClick={() => select("contact")}>
             Let’s talk
             <ArrowUpRightIcon size={16} />
@@ -469,13 +534,9 @@ export default function App() {
         </div>
       </header>
 
-      {simple ? (
+      {simple && (
         <main id="main-content" className="simple-main">
-          <div className="simple-heading">
-            <span className="eyebrow">THE PERSON. THE PROCESS. THE WORK.</span>
-            <h1>Get to know the work.</h1>
-            <p>Rithy Bondeth · Full Stack Developer & AI Engineer</p>
-          </div>
+          <PortfolioIntro section={activeSection} onWorld={setView} />
           <nav className="simple-nav" aria-label="Portfolio sections">
             {(
               [
@@ -492,20 +553,44 @@ export default function App() {
                 <button
                   key={id}
                   className={id === activeSection ? "active" : ""}
+                  aria-current={id === activeSection ? "page" : undefined}
                   onClick={() => select(id)}
                 >
                   <Icon size={19} />
                   {id === "experience"
                     ? "Experience"
-                    : id === "skills"
-                      ? "Skills"
-                      : id.charAt(0).toUpperCase() + id.slice(1)}
+                    : id === "projects"
+                      ? "Work"
+                      : id === "skills"
+                        ? "Skills"
+                        : id.charAt(0).toUpperCase() + id.slice(1)}
                 </button>
               );
             })}
           </nav>
-          <section className="simple-content">
-            <h2>{sectionNames[activeSection]}</h2>
+          <section
+            id="portfolio-section"
+            className={`simple-content portfolio-section-${activeSection}`}
+            aria-labelledby="portfolio-section-title"
+          >
+            <div className="portfolio-section-heading">
+              <span className="portfolio-section-index">
+                0
+                {[
+                  "projects",
+                  "about",
+                  "skills",
+                  "experience",
+                  "labs",
+                  "contact",
+                ].indexOf(activeSection) + 1}{" "}
+                / THE PORTFOLIO
+              </span>
+              <h2 id="portfolio-section-title">
+                {sectionNames[activeSection].replace(/\.$/, "")}
+                <span>.</span>
+              </h2>
+            </div>
             <Suspense
               fallback={
                 <p className="section-intro" role="status">
@@ -514,19 +599,22 @@ export default function App() {
               }
             >
               <PortfolioContent
-                key={`${activeSection}:${selectedProject ?? "list"}`}
+                key={`${activeSection}:${selectedProject ?? "list"}:${projectFilter}`}
                 initialProjectId={selectedProject}
+                initialProjectFilter={projectFilter}
                 section={activeSection}
                 onNavigate={select}
               />
             </Suspense>
           </section>
         </main>
-      ) : (
+      )}
+      {(worldVisited || !simple) && (
         <main
           ref={journeyMain}
-          id="main-content"
+          id={simple ? undefined : "main-content"}
           className="studio-main pavilion-main"
+          hidden={simple}
         >
           <div ref={journeyStage} className="journey-stage">
             <div
@@ -535,7 +623,7 @@ export default function App() {
               aria-label={
                 exploring
                   ? "Optional BMW M4 drive through Bondeth World. Use WASD or arrow keys, and Space to brake."
-                  : "Scroll to explore a floating cartoon world with a BMW M4, project galleries, an interactive AI portal, and animated sky islands."
+                  : "Scroll to drive the BMW M4 around the island. Click the floating project labels to explore the work."
               }
             >
               <WorldBoundary onFallback={fallback} onError={onReady}>
@@ -544,12 +632,15 @@ export default function App() {
                     selected={section}
                     onSelect={select}
                     onProject={openProject}
+                    activeDistrictId={activeDistrictId}
+                    projectIndex={routeProjectIndex}
+                    onDistrict={browseDistrict}
                     onReady={onReady}
                     onNear={setNear}
                     onTelemetry={setTelemetry}
                     night={night}
                     reduceMotion={reduceMotion}
-                    paused={help || !!section}
+                    paused={simple || help || !!section}
                     reset={reset}
                     movement={movement}
                     immersive={exploring}
@@ -652,9 +743,9 @@ export default function App() {
                     <span />{" "}
                     {
                       [
-                        "A portfolio with a world of its own.",
+                        "Developer. Maker. Curious human.",
                         "Ideas, brought into the real world",
-                        "Step into the AI lab",
+                        "A little space for big what-ifs",
                         "The next chapter starts with a hello",
                       ][chapter]
                     }
@@ -698,7 +789,7 @@ export default function App() {
                   <p className="pavilion-description">
                     {
                       [
-                        "Full stack ideas, brought to life. I build web, mobile, and AI products — from Cambodia to your screen.",
+                        "I turn curious ideas into useful digital things. Explore my work, meet the maker, and take the scenic route.",
                         "From local coding agents to commerce assistants and native macOS apps. Explore the products, and the thinking behind them.",
                         "I’m drawn to useful AI, careful interfaces, and ideas that make everyday life a little better. There’s always another experiment on my desk.",
                         "A new product, a fresh perspective, or a good conversation. I’d love to hear what you’re working on.",
@@ -774,6 +865,7 @@ export default function App() {
                     {journeyNames.map((name, i) => (
                       <button
                         key={name}
+                        aria-label={`0${i + 1} ${name}`}
                         aria-current={chapter === i ? "step" : undefined}
                         onClick={() => jumpToChapter(i)}
                       >
@@ -783,20 +875,70 @@ export default function App() {
                     ))}
                   </div>
                   <span className="journey-scroll">
-                    <MouseIcon size={13} />{" "}
+                    <ArrowDownIcon size={13} />{" "}
                     {reduceMotion
                       ? "Scroll to change the view"
-                      : "Scroll to travel through my world"}
+                      : "Scroll to take the scenic route"}
                   </span>
                 </nav>
+                <div className="island-caption" aria-hidden="true">
+                  <span>{activeDistrict.name}</span>
+                  <span>{activeDistrict.description}</span>
+                </div>
+                <aside
+                  className="route-map"
+                  aria-label={`Island route, ${Math.round(journeyProgress * 100)} percent complete`}
+                >
+                  <div>
+                    <span className="route-status" /> Scenic route{" "}
+                    <span>
+                      {String(Math.round(journeyProgress * 100)).padStart(
+                        2,
+                        "0",
+                      )}
+                      %
+                    </span>
+                  </div>
+                  <svg viewBox="-57 -49 114 98" aria-hidden="true">
+                    <rect
+                      x="-35"
+                      y="-25"
+                      width="70"
+                      height="44"
+                      rx="6"
+                      className="map-island"
+                    />
+                    <rect
+                      x="-44.5"
+                      y="-38.5"
+                      width="89"
+                      height="69"
+                      rx="8.5"
+                      className="map-road"
+                    />
+                    <rect x="-28" y="-15" width="13" height="22" rx="2" />
+                    <rect x="-12" y="-23" width="25" height="8" rx="2" />
+                    <rect x="18" y="-15" width="12" height="22" rx="2" />
+                    <circle
+                      cx={routeCar.x}
+                      cy={routeCar.z}
+                      r="3"
+                      className="map-car"
+                    />
+                  </svg>
+                  <span>
+                    {activeDistrict.name} · {activeDistrict.projects.length}{" "}
+                    projects
+                  </span>
+                </aside>
                 <button
                   className="pavilion-drive-button"
                   onClick={() => changeMode(true)}
                 >
                   <CarIcon size={18} />
                   <span>
-                    Drive the M4
-                    <small>Explore at your own pace</small>
+                    Take the wheel
+                    <small>WASD · Your own adventure</small>
                   </span>
                   <ArrowUpRightIcon size={17} />
                 </button>
@@ -912,46 +1054,16 @@ export default function App() {
               </div>
             )}
             {!exploring && (
-              <section
-                className="featured-work"
-                aria-labelledby="featured-heading"
-              >
-                <div className="featured-heading">
-                  <span className="pavilion-eyebrow">
-                    Made in the real world
-                  </span>
-                  <h2 id="featured-heading">
-                    Featured projects<span>.</span>
-                  </h2>
-                  <button onClick={() => select("projects")}>
-                    View all projects <ArrowUpRightIcon size={15} />
-                  </button>
-                </div>
-                <div className="featured-list">
-                  {featuredProjects.map((project, i) => (
-                    <button
-                      className="featured-project"
-                      key={project.id}
-                      onClick={() => openProject(project.id)}
-                      aria-label={`View ${project.title} case study`}
-                    >
-                      <div className="featured-image">
-                        <img
-                          src={project.image}
-                          alt={`${project.title} product preview`}
-                        />
-                        <span>0{i + 1}</span>
-                      </div>
-                      <div className="featured-copy">
-                        <span>{project.category}</span>
-                        <h3>{project.title}</h3>
-                        <p>{project.description}</p>
-                      </div>
-                      <ArrowUpRightIcon className="featured-arrow" size={17} />
-                    </button>
-                  ))}
-                </div>
-              </section>
+              <DistrictBrowser
+                active={activeDistrictId}
+                following={chosenDistrict === null}
+                onFollow={() => setChosenDistrict(null)}
+                onChoose={(id) => {
+                  setChosenDistrict(id);
+                  jumpToProgress(districts.find((d) => d.id === id)!.stop);
+                }}
+                onAll={() => select("projects")}
+              />
             )}
           </div>
         </main>
@@ -1028,8 +1140,9 @@ export default function App() {
               }
             >
               <PortfolioContent
-                key={`${section}:${selectedProject ?? "list"}`}
+                key={`${section}:${selectedProject ?? "list"}:${projectFilter}`}
                 initialProjectId={selectedProject}
+                initialProjectFilter={projectFilter}
                 section={section}
                 onNavigate={select}
               />
