@@ -1,5 +1,26 @@
 import sharp from "sharp";
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
+
+import opentype from "opentype.js";
+import { byteHead, byteEyes, byteMouth, byteLightPalette } from "../src/lib/brand.ts";
+
+// Outline local Ubuntu glyphs so SVG and PNG use the same font on every machine.
+const fonts = await Promise.all([400, 700].map(async (weight) => {
+  const bytes = await readFile(`node_modules/@fontsource/ubuntu/files/ubuntu-latin-${weight}-normal.woff`);
+  return opentype.parse(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
+}));
+const text = (value, x, y, size, color, bold = false, spacing = 0) => {
+  const font = fonts[bold ? 1 : 0];
+  let cursor = x;
+  return `<g aria-label="${value.replaceAll("&", "&amp;").replaceAll('"', "&quot;")}" fill="${color}">${font.stringToGlyphs(value).map((glyph, index, glyphs) => {
+    const path = glyph.getPath(cursor, y, size).toPathData(2);
+    cursor += (glyph.advanceWidth + (glyphs[index + 1] ? font.getKerningValue(glyph, glyphs[index + 1]) : 0)) * size / font.unitsPerEm + spacing;
+    return `<path d="${path}"/>`;
+  }).join("")}</g>`;
+};
+const byte = [...byteHead, ...byteEyes, ...byteMouth].map(([x, y, width, height, paint]) =>
+  `<rect x="${x}" y="${y}" width="${width}" height="${height}" fill="${byteLightPalette[paint]}"/>`
+).join("");
 
 // Original vector artwork; the PNG is committed so production needs no image service.
 const buildings = [
@@ -17,15 +38,16 @@ const towers = buildings
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
 <defs><pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".8" fill="#294d3c" opacity=".1"/></pattern><linearGradient id="base" x2="0" y2="1"><stop stop-color="#9eaf8b"/><stop offset="1" stop-color="#698877"/></linearGradient></defs>
 <rect width="1200" height="630" fill="#edf1e7"/><rect x="590" width="610" height="630" fill="url(#dots)"/>
-<g transform="translate(64 56)"><rect width="56" height="56" rx="16" fill="#294d3c"/><path d="M17 14v29h12c6 0 11-3 11-7s-5-7-11-7H17m0 0h12c5 0 9-3 9-7s-4-8-9-8h-5" fill="none" stroke="#f6f6e8" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="44" cy="45" r="3" fill="#e5ad82"/></g>
-<text x="136" y="92" fill="#294d3c" font-family="Arial,sans-serif" font-size="24" font-weight="700">Bondeth World</text>
-<text x="66" y="224" fill="#294d3c" font-family="Arial,sans-serif" font-size="66" font-weight="700" letter-spacing="-3">Useful software.</text>
-<text x="66" y="301" fill="#a24f33" font-family="Arial,sans-serif" font-size="66" font-weight="700" letter-spacing="-3">A curious world.</text>
-<text x="69" y="363" fill="#536659" font-family="Arial,sans-serif" font-size="22">Rithy Bondeth · Developer &amp; AI Engineer</text>
-<text x="69" y="402" fill="#536659" font-family="Arial,sans-serif" font-size="20">Explore the work. Take the scenic route.</text>
+<g transform="translate(64 61) scale(1.8)" shape-rendering="crispEdges">${byte}</g>
+${text("Bondeth", 136, 89, 24, "#294d3c", true, -1.08)}
+<g transform="translate(136 97)"><path d="M0 0h20v4H0Z" fill="${byteLightPalette.accent}"/><path d="M24 0h13v4H24Z" fill="#536659" opacity=".7"/><path d="M41 0h8v4H41Z" fill="#536659" opacity=".45"/><path d="M53 0h4v4H53Z" fill="#536659" opacity=".25"/></g>
+${text("Useful software.", 66, 224, 66, "#294d3c", true, -3)}
+${text("A curious world.", 66, 301, 66, byteLightPalette.accent, true, -3)}
+${text("Rithy Bondeth · Developer & AI Engineer", 69, 363, 22, "#536659")}
+${text("Explore the work. Take the scenic route.", 69, 402, 20, "#536659")}
 <path d="M66 502h452" stroke="#294d3c" stroke-opacity=".2"/>
-<text x="69" y="549" fill="#294d3c" font-family="monospace" font-size="20">3d.bondeth.dev</text>
-<text x="69" y="580" fill="#536659" font-family="Arial,sans-serif" font-size="15">Made in Phnom Penh, Cambodia</text>
+${text("3d.bondeth.dev", 69, 549, 20, "#294d3c")}
+${text("Made in Phnom Penh, Cambodia", 69, 580, 15, "#536659")}
 <ellipse cx="891" cy="510" rx="241" ry="43" fill="#294d3c" opacity=".08"/>
 <path d="M652 361 878 258 1139 398 906 516 668 404Z" fill="url(#base)"/>
 <path d="M652 361 878 258 1139 398 906 468Z" fill="#b1c4a2"/>
@@ -47,7 +69,7 @@ ${towers}
 <g fill="#6f957c"><circle cx="735" cy="393" r="13"/><circle cx="727" cy="387" r="9"/><circle cx="1058" cy="412" r="13"/><circle cx="1005" cy="438" r="10"/></g>
 <g transform="translate(1073 198)"><circle r="28" fill="#d5b89b"/><ellipse rx="45" ry="12" fill="none" stroke="#8fb2a7" stroke-width="5" transform="rotate(-25)"/></g>
 <path d="M735 209h43m-21-21v42" stroke="#b77951" stroke-width="2"/>
-<text x="990" y="558" fill="#536659" font-family="monospace" font-size="12">17 PROJECTS / 4 DISTRICTS</text>
+${text("17 PROJECTS / 4 DISTRICTS", 990, 558, 12, "#536659")}
 </svg>`;
 await writeFile("public/social-preview.svg", svg);
 await sharp(Buffer.from(svg)).png().toFile("public/social-preview.png");

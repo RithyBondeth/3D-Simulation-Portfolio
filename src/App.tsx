@@ -51,7 +51,7 @@ import {
   type ProjectFilter,
 } from "./lib/project-districts";
 
-import BrandMark from "./components/BrandMark";
+import BrandMark, { BrandName } from "./components/BrandMark";
 import PortfolioIntro from "./components/PortfolioIntro";
 import SelectedWork from "./components/SelectedWork";
 import PortfolioDestinations from "./components/PortfolioDestinations";
@@ -565,10 +565,7 @@ export default function App() {
             }}
           >
             <BrandMark />
-            <span className="brand-copy">
-              <strong>Bondeth</strong>
-              <span className="brand-studio">Developer & maker</span>
-            </span>
+            <BrandName />
           </button>
           <nav className="header-nav" aria-label="Main navigation">
             <button
@@ -1109,7 +1106,7 @@ export default function App() {
           <div className="footer-identity">
             <BrandMark />
             <div>
-              <strong>Bondeth</strong>
+              <BrandName />
               <p>Thoughtful software, built with care.</p>
             </div>
           </div>

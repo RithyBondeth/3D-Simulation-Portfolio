@@ -79,7 +79,7 @@ function Sign({
     ctx.fillStyle = invert ? "#fff3db" : "#3b6863";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.font = `500 ${c.height * 0.52}px 'Sora Variable', sans-serif`;
+    ctx.font = `500 ${c.height * 0.52}px 'Ubuntu', sans-serif`;
     ctx.fillText(text, 512, c.height / 2, 975);
     const t = new T.CanvasTexture(c);
     t.colorSpace = T.SRGBColorSpace;

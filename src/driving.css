@@ -6,8 +6,8 @@
   --ink: #243b40;
   --muted: #596e70;
   --line: #c8d5d1;
-  --coral: #236889;
-  --coral-soft: #dceaf0;
+  --accent: var(--brand-accent);
+  --accent-soft: var(--brand-accent-soft);
   --sage-soft: #e0e8db;
   --button: #236889;
   --button-text: #fff;
@@ -21,8 +21,8 @@
   --ink: #ecf3eb;
   --muted: #b5c8c8;
   --line: #4c656e;
-  --coral: #9dcbdc;
-  --coral-soft: #345461;
+  --accent: var(--brand-accent);
+  --accent-soft: var(--brand-accent-soft);
   --button: #b0d9e5;
   --button-text: #20353c;
   --glass: #263d47ec;
@@ -74,7 +74,7 @@
   box-shadow: var(--shadow);
 }
 .driving-app .contact-button:hover {
-  background: var(--coral);
+  background: var(--accent);
   color: var(--button-text);
   transform: translateY(-2px);
 }
@@ -120,21 +120,21 @@
   align-items: center;
   gap: 8px;
   font-size: 9px;
-  font-weight: 750;
+  font-weight: 700;
   letter-spacing: 1.6px;
   color: var(--ink);
 }
 .island-kicker > span {
   width: 6px;
   height: 6px;
-  background: var(--coral);
+  background: var(--accent);
   border-radius: 50%;
   box-shadow: 0 0 0 4px #ffffff45;
 }
 .island-intro h1 {
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   font-size: clamp(36px, 3.5vw, 54px);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.06em;
   line-height: 1.09;
   margin: 19px 0 16px;
@@ -146,7 +146,7 @@
 }
 .island-intro p {
   font-size: 11px;
-  font-weight: 550;
+  font-weight: 500;
   line-height: 1.8;
   color: var(--muted);
   margin: 0 0 21px;
@@ -187,15 +187,15 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   font-size: 11px;
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: -0.2px;
 }
 .vehicle-name > span:last-child {
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-ui);
   font-size: 7px;
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: 1px;
   color: var(--muted);
 }
@@ -223,7 +223,7 @@
   margin-top: 11px;
 }
 .speed-value {
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   font-size: 52px;
   font-weight: 450;
   line-height: 1.1;
@@ -240,14 +240,14 @@
 }
 .speed-unit > span {
   color: var(--ink);
-  font-weight: 750;
+  font-weight: 700;
   font-size: 11px;
 }
 .drive-status {
   margin-left: auto;
   font-size: 7px;
   letter-spacing: 0.8px;
-  font-weight: 750;
+  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -273,7 +273,7 @@
   width: 100%;
   height: 100%;
   transform-origin: left;
-  background: var(--coral);
+  background: var(--accent);
   transition: transform 0.12s linear;
 }
 .vehicle-footer {
@@ -314,7 +314,7 @@
   padding: 14px 15px 10px;
   width: 100%;
   font-size: 10px;
-  font-weight: 650;
+  font-weight: 700;
 }
 .minimap-title > span {
   display: flex;
@@ -322,7 +322,7 @@
   gap: 8px;
 }
 .minimap-title:hover {
-  color: var(--coral);
+  color: var(--accent);
 }
 .minimap-board {
   position: relative;
@@ -347,7 +347,7 @@
   color: #33494d;
   box-shadow: 0 2px 6px #304e4320;
   font-size: 8px;
-  font-weight: 750;
+  font-weight: 700;
 }
 .minimap-stop:hover,
 .minimap-stop.visited {
@@ -361,7 +361,7 @@
   position: absolute;
   top: 6px;
   right: 7px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   font-size: 7px;
   color: #385a60;
 }
@@ -381,9 +381,9 @@
   height: 29px;
   display: grid;
   place-items: center;
-  background: var(--coral-soft);
+  background: var(--accent-soft);
   border-radius: 9px;
-  color: var(--coral);
+  color: var(--accent);
 }
 .next-stop small {
   display: block;
@@ -396,7 +396,7 @@
 .next-stop strong {
   display: block;
   font-size: 10px;
-  font-weight: 650;
+  font-weight: 700;
 }
 .next-stop:hover {
   background: var(--surface-subtle);
@@ -429,15 +429,15 @@
   gap: 9px;
 }
 .driving-app .destination-icon {
-  background: var(--coral-soft);
-  color: var(--coral);
+  background: var(--accent-soft);
+  color: var(--accent);
   width: 32px;
   height: 32px;
   border-radius: 9px;
 }
 .driving-app .destination-copy strong {
   font-size: 10px;
-  font-weight: 650;
+  font-weight: 700;
 }
 .driving-app .destination-copy > span {
   font-size: 8px;
@@ -484,11 +484,11 @@
   height: 29px;
   display: grid;
   place-items: center;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   font-size: 10px;
 }
 .marker-name {
-  font-weight: 650;
+  font-weight: 700;
 }
 .map-marker:hover {
   background: #fff;
@@ -510,7 +510,7 @@
   z-index: 22;
 }
 .driving-app .loading-model {
-  color: var(--coral);
+  color: var(--accent);
 }
 @media (max-width: 1200px) {
   .island-intro h1 {
@@ -888,7 +888,7 @@
     user-select: none;
   }
   .drive-touch-controls button:active {
-    background: var(--coral);
+    background: var(--accent);
     color: var(--button-text);
     transform: scale(0.95);
   }
@@ -905,7 +905,7 @@
     grid-row: 1;
     width: 42px;
     font-size: 6px;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0.3px;
   }
   .drive-touch-controls .reverse {
@@ -1058,7 +1058,7 @@
   padding: 5px;
 }
 .credits-button:hover {
-  color: var(--coral);
+  color: var(--accent);
 }
 .model-credit {
   font-size: 10px !important;
