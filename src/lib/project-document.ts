@@ -1,3 +1,4 @@
+import { projectHref } from "./portfolio-route.ts";
 const escapeHTML = (value: string) =>
   value.replace(
     /[&<>"']/g,
@@ -11,14 +12,14 @@ const escapeHTML = (value: string) =>
       })[character]!,
   );
 
-/** Static metadata is available to social crawlers before JavaScript runs. */
+/** Keep legacy static links usable without loading the island application. */
 export function projectDocument(
   html: string,
   project: { id: string; title: string; description: string },
 ) {
   const title = escapeHTML(`${project.title} | Rithy Bondeth`);
   const description = escapeHTML(project.description);
-  const canonical = `https://3d.bondeth.dev/projects/${encodeURIComponent(project.id)}/`;
+  const canonical = projectHref(project.id);
   const withMeta = (
     source: string,
     attribute: "name" | "property",
@@ -46,5 +47,15 @@ export function projectDocument(
     /<link rel="canonical" href="[^"]*"\s*\/?>/,
     () => `<link rel="canonical" href="${canonical}" />`,
   );
-  return document;
+  return document
+    .replace(/<script\b[\s\S]*?<\/script>/g, "")
+    .replace(/<link[^>]+rel="stylesheet"[^>]*>/g, "")
+    .replace(
+      "</head>",
+      `<meta http-equiv="refresh" content="0;url=${canonical}" /><meta name="robots" content="noindex,follow" /></head>`,
+    )
+    .replace(
+      /<body[^>]*>[\s\S]*<\/body>/,
+      `<body><p>Continue to <a href="${canonical}">${title}</a> on bondeth.dev.</p></body>`,
+    );
 }

@@ -2,15 +2,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   chooseGraphicsQuality,
-  deferWorld,
   shouldReduceQuality,
 } from "../src/lib/graphics-quality.ts";
-
-test("mobile and data-saving visits defer WebGL; desktop visits keep the live island", () => {
-  assert.equal(deferWorld({ compact: true }), true);
-  assert.equal(deferWorld({ compact: false, saveData: true }), true);
-  assert.equal(deferWorld({ compact: false }), false);
-});
 
 test("automatic graphics use device capabilities while explicit preferences always win", () => {
   assert.equal(chooseGraphicsQuality("auto", { compact: true }), "low");

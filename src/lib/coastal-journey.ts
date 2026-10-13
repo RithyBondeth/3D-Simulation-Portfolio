@@ -1,3 +1,4 @@
+import { portfolioSections } from "./portfolio-story.ts";
 /** Portrait phones favour the island itself over fitting every distant satellite. */
 export function journeyFrame(width: number, height: number) {
   if (width <= 0 || height <= 0) return 1.28;
@@ -5,15 +6,15 @@ export function journeyFrame(width: number, height: number) {
 }
 
 export const journeyFov = 42;
-export const journeyStops = [0, 0.32, 0.65, 1] as const;
-export const journeyNames = [
-  "Welcome",
-  "The work",
-  "The playground",
-  "Say hello",
-] as const;
+export const journeyStops = portfolioSections.map((section) => section.stop);
+export const journeyNames = portfolioSections.map((section) => section.name);
 export function journeyChapter(progress: number) {
-  return progress < 0.17 ? 0 : progress < 0.49 ? 1 : progress < 0.83 ? 2 : 3;
+  const index = journeyStops.findIndex(
+    (stop, i) =>
+      i < journeyStops.length - 1 &&
+      progress < (stop + journeyStops[i + 1]) / 2,
+  );
+  return index < 0 ? journeyStops.length - 1 : index;
 }
 
 const radius = 8.5;

@@ -729,7 +729,14 @@ function Scene(props: Props) {
             wrapperClass="pavilion-world-label"
             zIndexRange={[12, 1]}
             style={{
-              display: props.immersive ? "block" : "none",
+              display:
+                props.immersive ||
+                (s.id === "skills" &&
+                  journeyChapter(props.journeyProgress) === 1) ||
+                (s.id === "experience" &&
+                  journeyChapter(props.journeyProgress) === 2)
+                  ? "block"
+                  : "none",
               pointerEvents: props.paused ? "none" : "auto",
             }}
           >
@@ -781,6 +788,7 @@ function Scene(props: Props) {
 export default memo(function DrivingWorld(props: Props) {
   return (
     <Canvas
+      className="island-canvas"
       shadows="percentage"
       frameloop="demand"
       dpr={props.graphicsQuality === "low" ? [1, 1.1] : [1, 1.5]}

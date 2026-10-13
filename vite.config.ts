@@ -25,12 +25,7 @@ function projectPages() {
           );
         }),
       );
-      const urls = [
-        "https://3d.bondeth.dev/",
-        ...data.projects.map(
-          (project) => `https://3d.bondeth.dev/projects/${project.id}/`,
-        ),
-      ];
+      const urls = ["https://3d.bondeth.dev/"];
       await writeFile(
         resolve(output, "sitemap.xml"),
         `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((url) => `  <url><loc>${url}</loc></url>`).join("\n")}\n</urlset>\n`,

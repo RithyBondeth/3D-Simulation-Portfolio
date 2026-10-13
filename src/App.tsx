@@ -50,14 +50,22 @@ import {
   type DistrictId,
   type ProjectFilter,
 } from "./lib/project-districts";
-import DistrictBrowser from "./components/DistrictBrowser";
+
 import BrandMark from "./components/BrandMark";
 import PortfolioIntro from "./components/PortfolioIntro";
 import SelectedWork from "./components/SelectedWork";
-import { readPortfolioRoute, portfolioURL } from "./lib/portfolio-route";
+import PortfolioDestinations from "./components/PortfolioDestinations";
+import {
+  portfolioSections,
+  portfolioSectionHref,
+} from "./lib/portfolio-story";
+import {
+  readPortfolioRoute,
+  portfolioURL,
+  projectHref,
+} from "./lib/portfolio-route";
 import {
   chooseGraphicsQuality,
-  deferWorld,
   type GraphicsPreference,
 } from "./lib/graphics-quality";
 
@@ -214,7 +222,6 @@ export default function App() {
       );
     }
   });
-  const [liveWorld, setLiveWorld] = useState(() => !deferWorld(deviceHints()));
   const [toolsOpen, setToolsOpen] = useState(false);
   const toolsTrigger = useRef<HTMLButtonElement>(null);
   const [graphicsPreference, setGraphicsPreference] =
@@ -244,10 +251,10 @@ export default function App() {
   }, [graphicsPreference]);
   // Drei's DOM labels own nested React roots. Retain a visited canvas across
   // view changes so those roots aren't torn down during the page's DOM commit.
-  const [worldVisited, setWorldVisited] = useState(!simple && liveWorld);
+  const [worldVisited, setWorldVisited] = useState(!simple);
   useEffect(() => {
-    if (!simple && liveWorld) setWorldVisited(true);
-  }, [simple, liveWorld]);
+    if (!simple) setWorldVisited(true);
+  }, [simple]);
   const [exploring, setExploring] = useState(false);
   const [journeyProgress, setJourneyProgress] = useState(0);
   const journeyMain = useRef<HTMLElement>(null);
@@ -256,9 +263,6 @@ export default function App() {
   const previousMode = useRef(false);
   const chapter = journeyChapter(journeyProgress);
   const routeCar = journeyCarPose(journeyProgress);
-  const [selectedProject, setSelectedProject] = useState<string | undefined>(
-    () => initialRoute().projectId,
-  );
   const [projectFilter, setProjectFilter] = useState<ProjectFilter>("All");
   const [chosenDistrict, setChosenDistrict] = useState<DistrictId | null>(null);
   const [ready, setReady] = useState(false);
@@ -293,19 +297,16 @@ export default function App() {
   const select = useCallback((id: SectionId) => {
     setSection(id);
     setHelp(false);
-    setSelectedProject(undefined);
     setProjectFilter("All");
     writeRoute(id);
   }, []);
   const close = useCallback(() => {
     setSection(null);
-    setSelectedProject(undefined);
     writeRoute(null, undefined, true);
   }, []);
   const changeMode = useCallback((drive: boolean) => {
     if (drive) {
       portfolioScroll.current = window.scrollY;
-      setLiveWorld(true);
     }
     setExploring(drive);
     setChosenDistrict(null);
@@ -328,7 +329,6 @@ export default function App() {
   const jumpToChapter = useCallback(
     (index: number) => {
       setChosenDistrict(null);
-      setLiveWorld(true);
       jumpToProgress(journeyStops[index]);
     },
     [jumpToProgress],
@@ -383,57 +383,22 @@ export default function App() {
     );
     return () => cancelAnimationFrame(frame);
   }, [exploring]);
-  const openProject = useCallback((id?: string) => {
-    setSection("projects");
-    setHelp(false);
-    setSelectedProject(id);
-    writeRoute("projects", id);
+  const openProject = useCallback(
+    (id?: string) => {
+      if (id) window.location.assign(projectHref(id));
+      else select("projects");
+    },
+    [select],
+  );
+  useEffect(() => {
+    const legacy = initialRoute().projectId;
+    if (legacy) window.location.replace(projectHref(legacy));
   }, []);
-  useEffect(() => {
-    const project = islandProjects.find((p) => p.id === selectedProject);
-    document.title = project
-      ? `${project.title} | Rithy Bondeth`
-      : "Rithy Bondeth | Full Stack Developer & AI Engineer";
-    const description =
-      project?.description ??
-      "Rithy Bondeth builds thoughtful web, mobile, and AI products. Explore his work and interactive island.";
-    const canonical = project
-      ? `https://3d.bondeth.dev/projects/${project.id}/`
-      : "https://3d.bondeth.dev/";
-    document
-      .querySelector('meta[name="description"]')
-      ?.setAttribute("content", description);
-    document
-      .querySelector('link[rel="canonical"]')
-      ?.setAttribute("href", canonical);
-    for (const selector of [
-      'meta[property="og:title"]',
-      'meta[name="twitter:title"]',
-    ])
-      document.querySelector(selector)?.setAttribute("content", document.title);
-    for (const selector of [
-      'meta[property="og:description"]',
-      'meta[name="twitter:description"]',
-    ])
-      document.querySelector(selector)?.setAttribute("content", description);
-    document
-      .querySelector('meta[property="og:url"]')
-      ?.setAttribute("content", canonical);
-  }, [selectedProject]);
-  useEffect(() => {
-    if (!simple || !selectedProject) return;
-    const frame = requestAnimationFrame(() =>
-      document
-        .getElementById("portfolio-section")
-        ?.scrollIntoView({ block: "start", behavior: "instant" }),
-    );
-    return () => cancelAnimationFrame(frame);
-  }, [simple, selectedProject]);
   const startDrive = useCallback(() => changeMode(true), [changeMode]);
   const onReady = useCallback(() => setReady(true), []);
   const fallback = useCallback(() => {
     setSimple(true);
-    setSection("projects");
+    setSection("about");
   }, []);
   useEffect(() => {
     document.documentElement.dataset.theme = night ? "dark" : "light";
@@ -458,7 +423,8 @@ export default function App() {
     const historyChange = () => {
       const route = initialRoute();
       setSection(route.section);
-      setSelectedProject(route.projectId);
+      if (route.projectId)
+        window.location.replace(projectHref(route.projectId));
     };
     window.addEventListener("popstate", historyChange);
     window.addEventListener("hashchange", historyChange);
@@ -494,7 +460,8 @@ export default function App() {
         return;
       }
       const index = Number(e.key) - 1;
-      if (index >= 0 && index < stations.length) select(stations[index].id);
+      if (index >= 0 && index < portfolioSections.length)
+        select(portfolioSections[index].id);
     };
     window.addEventListener("keydown", keys);
     return () => window.removeEventListener("keydown", keys);
@@ -545,8 +512,7 @@ export default function App() {
   };
   const setView = () => {
     setSimple((s) => !s);
-    if (simple) setLiveWorld(true);
-    if (!section) setSection("projects");
+    if (!section) setSection("about");
     if (simple) close();
   };
   useEffect(() => {
@@ -571,7 +537,7 @@ export default function App() {
       window.removeEventListener("keydown", escape);
     };
   }, [toolsOpen]);
-  const activeSection = section || "projects";
+  const activeSection = section || "about";
   const nearStation = stations.find((s) => s.id === near);
   const move = (x?: number, z?: number) => {
     if (x !== undefined) movement.current.x = x;
@@ -657,23 +623,10 @@ export default function App() {
           id="main-content"
           className={`simple-main ${activeSection === "projects" ? "work-first" : ""}`}
         >
-          {!selectedProject && (
-            <PortfolioIntro section={activeSection} onWorld={setView} />
-          )}
-          {activeSection === "projects" && !selectedProject && (
-            <SelectedWork onProject={openProject} />
-          )}
+          <PortfolioIntro section={activeSection} onWorld={setView} />
+          {activeSection === "projects" && <SelectedWork />}
           <nav className="simple-nav" aria-label="Portfolio sections">
-            {(
-              [
-                "projects",
-                "about",
-                "skills",
-                "experience",
-                "labs",
-                "contact",
-              ] as SectionId[]
-            ).map((id) => {
+            {portfolioSections.map(({ id, name }) => {
               const Icon = icons[id];
               return (
                 <button
@@ -683,13 +636,7 @@ export default function App() {
                   onClick={() => select(id)}
                 >
                   <Icon size={19} />
-                  {id === "experience"
-                    ? "Experience"
-                    : id === "projects"
-                      ? "Work"
-                      : id === "skills"
-                        ? "Skills"
-                        : id.charAt(0).toUpperCase() + id.slice(1)}
+                  {name}
                 </button>
               );
             })}
@@ -702,14 +649,7 @@ export default function App() {
             <div className="portfolio-section-heading">
               <span className="portfolio-section-index">
                 0
-                {[
-                  "projects",
-                  "about",
-                  "skills",
-                  "experience",
-                  "labs",
-                  "contact",
-                ].indexOf(activeSection) + 1}{" "}
+                {portfolioSections.findIndex(({ id }) => id === activeSection) + 1}{" "}
                 / THE PORTFOLIO
               </span>
               <h2 id="portfolio-section-title">
@@ -726,9 +666,7 @@ export default function App() {
             >
               <PortfolioContent
                 key={activeSection}
-                initialProjectId={selectedProject}
                 initialProjectFilter={projectFilter}
-                onProjectChange={openProject}
                 onFilterChange={setProjectFilter}
                 section={activeSection}
                 onNavigate={select}
@@ -751,62 +689,37 @@ export default function App() {
               aria-label={
                 exploring
                   ? "Optional BMW M4 drive through Bondeth World. Use WASD or arrow keys, and Space to brake."
-                  : "Scroll to drive the BMW M4 around the island. Click the floating project labels to explore the work."
+                  : "Scroll to drive the BMW M4 around the island. Choose a destination to explore my background, skills, journey, work, experiments, and contact."
               }
             >
               <WorldBoundary onFallback={fallback} onError={onReady}>
                 <Suspense fallback={null}>
-                  {liveWorld && (
-                    <DrivingWorld
-                      selected={section}
-                      onSelect={select}
-                      onProject={openProject}
-                      activeDistrictId={activeDistrictId}
-                      projectIndex={routeProjectIndex}
-                      onDistrict={browseDistrict}
-                      onReady={onReady}
-                      onNear={setNear}
-                      onTelemetry={setTelemetry}
-                      night={night}
-                      reduceMotion={reduceMotion}
-                      paused={simple || help || !!section}
-                      reset={reset}
-                      movement={movement}
-                      immersive={exploring}
-                      journeyProgress={journeyProgress}
-                      ambientPaused={ambientPaused}
-                      onDrive={startDrive}
-                      graphicsQuality={graphicsQuality}
-                      automaticQuality={graphicsPreference === "auto"}
-                      onReduceQuality={reduceQuality}
-                    />
-                  )}
+                  <DrivingWorld
+                    selected={section}
+                    onSelect={select}
+                    onProject={openProject}
+                    activeDistrictId={activeDistrictId}
+                    projectIndex={routeProjectIndex}
+                    onDistrict={browseDistrict}
+                    onReady={onReady}
+                    onNear={setNear}
+                    onTelemetry={setTelemetry}
+                    night={night}
+                    reduceMotion={reduceMotion}
+                    paused={simple || help || !!section}
+                    reset={reset}
+                    movement={movement}
+                    immersive={exploring}
+                    journeyProgress={journeyProgress}
+                    ambientPaused={ambientPaused}
+                    onDrive={startDrive}
+                    graphicsQuality={graphicsQuality}
+                    automaticQuality={graphicsPreference === "auto"}
+                    onReduceQuality={reduceQuality}
+                  />
                 </Suspense>
               </WorldBoundary>
-              {!liveWorld && (
-                <div className="island-preview">
-                  <img
-                    src="/island-preview.webp"
-                    width="1000"
-                    height="466"
-                    alt="A preview of Bondeth’s island above a living coastal ocean"
-                    fetchPriority="high"
-                  />
-                  <div className="island-preview-invitation">
-                    <span>YOUR ADVENTURE AWAITS</span>
-                    <button
-                      className="primary-button"
-                      onClick={() => setLiveWorld(true)}
-                    >
-                      <PlayIcon size={18} /> Enter the island
-                    </button>
-                    <p>
-                      Live 3D loads when you choose. All projects are ready now.
-                    </p>
-                  </div>
-                </div>
-              )}
-              {liveWorld && !ready && (
+              {!ready && (
                 <div className="world-loading" role="status">
                   <div className="loading-model">
                     <CubeIcon size={39} weight="duotone" />
@@ -944,15 +857,8 @@ export default function App() {
                   aria-label={journeyNames[chapter]}
                 >
                   <div className="pavilion-eyebrow">
-                    <span />{" "}
-                    {
-                      [
-                        "Developer. Maker. Curious human.",
-                        "Ideas, brought into the real world",
-                        "A little space for big what-ifs",
-                        "The next chapter starts with a hello",
-                      ][chapter]
-                    }
+                    <span />
+                    {portfolioSections[chapter].eyebrow}
                   </div>
                   {chapter === 0 ? (
                     <>
@@ -968,126 +874,49 @@ export default function App() {
                     </>
                   ) : (
                     <h2 className="journey-title">
-                      {
-                        [
-                          null,
-                          <>
-                            Real problems.
-                            <br />
-                            Useful software<span className="name-dot">.</span>
-                          </>,
-                          <>
-                            Always
-                            <br />
-                            building<span className="name-dot">.</span>
-                          </>,
-                          <>
-                            Have something
-                            <br />
-                            in mind<span className="name-dot">?</span>
-                          </>,
-                        ][chapter]
-                      }
+                      {portfolioSections[chapter].title}
                     </h2>
                   )}
                   <p className="pavilion-description">
-                    {
-                      [
-                        "I turn curious ideas into useful digital things. Explore my work, meet the maker, and take the scenic route.",
-                        "From local coding agents to commerce assistants and native macOS apps. Explore the products, and the thinking behind them.",
-                        "I’m drawn to useful AI, careful interfaces, and ideas that make everyday life a little better. There’s always another experiment on my desk.",
-                        "A new product, a fresh perspective, or a good conversation. I’d love to hear what you’re working on.",
-                      ][chapter]
-                    }
+                    {portfolioSections[chapter].description}
                   </p>
+                  <ul className="story-facts">
+                    {portfolioSections[chapter].facts.map((fact) => (
+                      <li key={fact}>{fact}</li>
+                    ))}
+                  </ul>
                   <div className="pavilion-actions">
                     <button
                       className="pavilion-work-button"
-                      onClick={() =>
-                        select(
-                          chapter === 2
-                            ? "labs"
-                            : chapter === 3
-                              ? "contact"
-                              : "projects",
-                        )
-                      }
+                      onClick={() => select(portfolioSections[chapter].id)}
                     >
-                      {
-                        [
-                          "Explore my work",
-                          "Explore the projects",
-                          "Visit my AI lab",
-                          "Let’s talk",
-                        ][chapter]
-                      }{" "}
+                      {portfolioSections[chapter].action}
                       <ArrowUpRightIcon size={18} />
                     </button>
-                    {chapter === 3 ? (
-                      <a
-                        className="pavilion-about-button"
-                        href={profile.resume}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        My resume <ArrowUpRightIcon size={16} />
-                      </a>
-                    ) : (
-                      <button
-                        className="pavilion-about-button"
-                        onClick={() =>
-                          select(chapter === 2 ? "skills" : "about")
-                        }
-                      >
-                        {chapter === 2 ? "My toolkit" : "Meet the maker"}{" "}
-                        <ArrowRightIcon size={16} />
-                      </button>
-                    )}
+                    <a
+                      className="pavilion-about-button"
+                      href={portfolioSectionHref(portfolioSections[chapter].id)}
+                    >
+                      More on bondeth.dev
+                      <ArrowUpRightIcon size={16} />
+                    </a>
                   </div>
-                  <nav
-                    className="pavilion-links"
-                    aria-label="More about Bondeth"
-                  >
-                    <button onClick={() => select("skills")}>Toolkit</button>
-                    <span>/</span>
-                    <button onClick={() => select("experience")}>
-                      Journey
-                    </button>
-                    <span>/</span>
-                    <button onClick={() => select("labs")}>AI lab</button>
-                  </nav>
                   <div className="pavilion-location">
                     <span /> Phnom Penh, Cambodia{" "}
                     <span className="location-line" /> Open to collaborations
                   </div>
                 </section>
-                <nav className="journey-navigation" aria-label="World chapters">
-                  <div className="journey-progress" aria-hidden="true">
-                    <span style={{ transform: `scaleX(${journeyProgress})` }} />
-                  </div>
-                  <div className="journey-chapters">
-                    {journeyNames.map((name, i) => (
-                      <button
-                        key={name}
-                        aria-label={`0${i + 1} ${name}`}
-                        aria-current={chapter === i ? "step" : undefined}
-                        onClick={() => jumpToChapter(i)}
-                      >
-                        <span>0{i + 1}</span>
-                        <span>{name}</span>
-                      </button>
-                    ))}
-                  </div>
-                  <span className="journey-scroll">
-                    <ArrowDownIcon size={13} />{" "}
-                    {reduceMotion
-                      ? "Scroll to change the view"
-                      : "Scroll to take the scenic route"}
-                  </span>
-                </nav>
                 <div className="island-caption" aria-hidden="true">
-                  <span>{activeDistrict.name}</span>
-                  <span>{activeDistrict.description}</span>
+                  <span>
+                    {chapter === 3
+                      ? activeDistrict.name
+                      : portfolioSections[chapter].name}
+                  </span>
+                  <span>
+                    {chapter === 3
+                      ? activeDistrict.description
+                      : portfolioSections[chapter].detail}
+                  </span>
                 </div>
                 <aside
                   className="route-map"
@@ -1131,8 +960,9 @@ export default function App() {
                     />
                   </svg>
                   <span>
-                    {activeDistrict.name} · {activeDistrict.projects.length}{" "}
-                    projects
+                    {chapter === 3
+                      ? `${activeDistrict.name} · ${activeDistrict.projects.length} projects`
+                      : `${portfolioSections[chapter].name} · ${portfolioSections[chapter].detail}`}
                   </span>
                 </aside>
                 <button
@@ -1258,16 +1088,16 @@ export default function App() {
               </div>
             )}
             {!exploring && (
-              <DistrictBrowser
-                active={activeDistrictId}
-                following={chosenDistrict === null}
-                onFollow={() => setChosenDistrict(null)}
-                onChoose={(id) => {
-                  setChosenDistrict(id);
-                  setLiveWorld(true);
-                  jumpToProgress(districts.find((d) => d.id === id)!.stop);
+              <PortfolioDestinations
+                active={section ?? portfolioSections[chapter].id}
+                onSelect={(id) => {
+                  jumpToChapter(
+                    portfolioSections.findIndex(
+                      (destination) => destination.id === id,
+                    ),
+                  );
+                  select(id);
                 }}
-                onAll={() => select("projects")}
               />
             )}
           </div>
@@ -1354,9 +1184,7 @@ export default function App() {
             >
               <PortfolioContent
                 key={section}
-                initialProjectId={selectedProject}
                 initialProjectFilter={projectFilter}
-                onProjectChange={openProject}
                 onFilterChange={setProjectFilter}
                 section={section}
                 onNavigate={select}
@@ -1398,9 +1226,9 @@ export default function App() {
             <div>
               <MouseIcon size={23} />
               <span>
-                <strong>Explore the world</strong>Scroll through four views, or
-                choose a chapter below the introduction. In driving mode, drag
-                to look around and scroll to zoom.
+                <strong>Explore the world</strong>Scroll through six chapters,
+                or choose an island destination. In driving mode, drag to look
+                around and scroll to zoom.
               </span>
             </div>
             <div>
@@ -1424,10 +1252,10 @@ export default function App() {
               </span>
             </div>
             <div>
-              <kbd>1-5</kbd>
+              <kbd>1-6</kbd>
               <span>
-                <strong>Jump right in</strong>Number keys open the five
-                portfolio destinations.
+                <strong>Jump right in</strong>Number keys open the six portfolio
+                destinations.
               </span>
             </div>
           </div>

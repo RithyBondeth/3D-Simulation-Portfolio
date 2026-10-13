@@ -4,7 +4,7 @@ import { createServer } from "vite";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-test("the gallery renders all projects by default, matching district collections and every case study", async () => {
+test("the gallery and highlights link to canonical case studies and all portfolio destinations are covered", async () => {
   const server = await createServer({
     server: { middlewareMode: true, hmr: false, watch: null },
     appType: "custom",
@@ -23,11 +23,11 @@ test("the gallery renders all projects by default, matching district collections
     const { default: SelectedWork } = await server.ssrLoadModule(
       "/src/components/SelectedWork.tsx",
     );
-    const highlights = renderToStaticMarkup(
-      createElement(SelectedWork, { onProject: () => {} }),
-    );
+    const highlights = renderToStaticMarkup(createElement(SelectedWork));
     const highlightLinks = [
-      ...highlights.matchAll(/href="\/projects\/([^/]+)\/"/g),
+      ...highlights.matchAll(
+        /href="https:\/\/www.bondeth.dev\/en\/projects\/([^"/]+)"/g,
+      ),
     ].map((match) => match[1]);
     assert.equal(highlightLinks.length, 3);
     assert.ok(
@@ -51,16 +51,61 @@ test("the gallery renders all projects by default, matching district collections
       );
       assert.equal(cards(gallery), district.projects.length);
     }
-    for (const project of islandProjects) {
-      const detail = renderToStaticMarkup(
-        createElement(PortfolioContent, {
-          ...base,
-          initialProjectId: project.id,
-        }),
+    const gallery = renderToStaticMarkup(createElement(PortfolioContent, base));
+    assert.ok(!gallery.includes('class="project-detail"'));
+    for (const project of islandProjects)
+      assert.ok(
+        gallery.includes(
+          `href="https://www.bondeth.dev/en/projects/${project.id}"`,
+        ),
       );
-      assert.ok(detail.includes('class="project-detail"'));
-      assert.ok(detail.includes(project.title));
-    }
+    const about = renderToStaticMarkup(
+      createElement(PortfolioContent, { ...base, section: "about" }),
+    );
+    assert.ok(about.includes("Phnom Penh"));
+    assert.ok(about.includes("https://www.bondeth.dev/en#about"));
+    const skills = renderToStaticMarkup(
+      createElement(PortfolioContent, { ...base, section: "skills" }),
+    );
+    for (const title of [
+      "Web development",
+      "Mobile development",
+      "AI integration",
+      "Custom software",
+    ])
+      assert.ok(skills.includes(title));
+    assert.ok(skills.includes("https://www.bondeth.dev/en#services"));
+    const journey = renderToStaticMarkup(
+      createElement(PortfolioContent, { ...base, section: "experience" }),
+    );
+    assert.ok(journey.includes("Bachelor of Computer Science"));
+    assert.ok(journey.includes("Techo Scholar"));
+    assert.ok(journey.includes("https://www.bondeth.dev/en#education"));
+    const labs = renderToStaticMarkup(
+      createElement(PortfolioContent, { ...base, section: "labs" }),
+    );
+    assert.ok(labs.includes("/en/labs/rag-retrieval"));
+    assert.ok(labs.includes("/en/blog/background-jobs-idempotency-retries"));
+    assert.ok(labs.includes("Technical videos"));
+    assert.ok(labs.includes("youtube.com"));
+    const { default: PortfolioDestinations } = await server.ssrLoadModule(
+      "/src/components/PortfolioDestinations.tsx",
+    );
+    const destinations = renderToStaticMarkup(
+      createElement(PortfolioDestinations, {
+        active: "about",
+        onSelect: () => {},
+      }),
+    );
+    for (const name of [
+      "About",
+      "Skills",
+      "Journey",
+      "Work",
+      "Explore",
+      "Contact",
+    ])
+      assert.ok(destinations.includes(`<strong>${name}</strong>`));
     const navigation = renderToStaticMarkup(
       createElement(DistrictBrowser, {
         active: "macos",

@@ -2,7 +2,7 @@
 
 # Bondeth World — 3D Portfolio
 
-**An interactive 3D portfolio set in a floating cartoon world, with four scroll-driven camera scenes: arrival, selected work, the AI portal, and contact.**
+**Explore the person, skills, journey, projects, experiments, and contact details behind [bondeth.dev](https://www.bondeth.dev/en) on a living island.**
 
 [![Live Site](https://img.shields.io/badge/Live_site-3d.bondeth.dev-0A0A0A?style=for-the-badge&logo=vercel&logoColor=white)](https://3d.bondeth.dev/)
 
@@ -18,20 +18,20 @@
 
 ## Overview
 
-Bondeth World presents Rithy Bondeth's portfolio as a living island. As you scroll, a blue BMW M4 drives a 301-metre circuit around the island while the camera follows it through four connected chapters. You can also take the wheel and drive yourself.
+Bondeth World presents Rithy Bondeth’s portfolio as a floating coastal island. Scrolling follows a blue BMW M4 around a 301-metre route through six chapters: About, Skills, Journey, Work, Explore, and Contact. Each chapter introduces part of the portfolio; full details and case studies open on [bondeth.dev](https://www.bondeth.dev/en).
 
-The island holds sculpted towers, rooftop gardens, four interactive project districts, a flying companion, sky trams, a waterfall, a busy waterfront, and a sunlit ocean full of ferries, yachts, and sailboats.
+The island holds colorful project districts, a companion, an AI portal, sky trams, a waterfall, and a waterfront with ferries, yachts, and sailboats. Manual driving is also available.
 
 ## Features
 
-- **Scroll-driven storytelling** through four camera chapters: arrival, selected work, AI portal, and contact.
-- **Project districts:** 17 projects grouped into AI, Web, Mobile, and macOS districts, plus a searchable gallery and case studies.
-- **Manual driving:** acceleration, braking, reversing, speed-dependent steering, and collisions. Works on desktop (WASD or arrow keys) and phones (touch steering and pedals).
-- **A living world:** pedestrians, cyclists, an electric shuttle, glowing windows at night, and animated waves and boats.
-- **World settings:** day and night lighting, optional sounds, ambient-animation pause, and Auto, Detailed, or Battery saver graphics.
-- **Accessible fallbacks:** a Simple view with all content and no WebGL, reduced-motion support, and keyboard shortcuts.
-- **Mobile-friendly loading:** a lightweight preview first, with the live scene loaded on demand.
-- **SEO-ready:** 17 prerendered project pages with their own metadata, a sitemap, and a generated social preview.
+- **Six-chapter journey:** About, skills and services, career and education, 17 projects, labs/writing/videos, and contact. The destination rail opens a local overview for each topic.
+- **Project discovery:** AI, Web, Mobile, and macOS districts and a searchable gallery. Every project link opens its matching case study on bondeth.dev.
+- **Manual driving:** acceleration, braking, reversing, steering, and collisions. Use WASD or arrow keys on desktop, or steering and pedal controls on phones.
+- **A living world:** pedestrians, cyclists, an electric shuttle, glowing windows at night, waves, and moving boats.
+- **World settings:** day/night lighting, optional sounds, ambient animation pause, and Auto, Detailed, or Battery saver graphics.
+- **Accessible fallback:** Simple view, reduced-motion support, keyboard controls, and a WebGL error fallback.
+- **Mobile:** the live island loads automatically. Vertical swipes scroll the cinematic route. Compact labels and a single-row destination rail leave the island visible while retaining 44 px tap targets.
+- **Project sharing:** legacy island project URLs forward to the matching primary-site case study with a fallback link. The island sitemap includes its homepage.
 
 ## Tech Stack
 
@@ -45,11 +45,7 @@ The island holds sculpted towers, rooftop gardens, four interactive project dist
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js 22.18 or newer
-
-### Installation
+Node.js 22.18 or newer is required.
 
 ```bash
 git clone https://github.com/RithyBondeth/3D-Simulation-Portfolio.git
@@ -59,8 +55,6 @@ npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173). No API keys or environment variables are required.
-
-### Scripts
 
 | Command | Description |
 | --- | --- |
@@ -74,12 +68,12 @@ Open [http://localhost:5173](http://localhost:5173). No API keys or environment 
 
 | Input | Action |
 | --- | --- |
-| Scroll or chapter buttons | Follow the car through the world |
+| Scroll or destination buttons | Follow the car through the six chapters |
 | **M** | Switch between portfolio and manual driving |
 | **W / ↑**, **S / ↓**, **A / D**, **← / →** | Accelerate, brake or reverse, steer |
 | **Space** | Brake |
 | **E** | Open a nearby destination |
-| **R** / **1–5** / **?** / **Esc** | Reset / open destinations / help / close panel |
+| **R** / **1–6** / **?** / **Esc** | Reset / open chapters / help / close panel |
 
 ## Project Structure
 
@@ -88,14 +82,18 @@ Open [http://localhost:5173](http://localhost:5173). No API keys or environment 
 ├── src/
 │   ├── App.tsx            # Navigation, scroll stage, chapters, dialogs, driving mode
 │   ├── components/        # World scenes, districts, fleet, driving HUD, portfolio UI
-│   ├── lib/               # Layout, routes, driving physics, graphics quality, districts
+│   ├── lib/               # Portfolio story, routes, driving physics, graphics quality
 │   ├── content.json       # Portfolio content
-│   └── project-catalog.ts # Project metadata
+│   └── project-catalog.ts # Island project metadata
 ├── tests/                 # Unit tests for routes, driving, districts, gallery
-├── artifacts/             # Verification notes and Lighthouse reports
+├── artifacts/             # Verification notes and screenshots
 ├── public/models/         # 3D models and attributions
 └── scripts/               # Social preview generator
 ```
+
+The production build emits 17 static legacy project documents. Serve their directories before any SPA fallback. Their canonical URLs point to `https://www.bondeth.dev/en/projects/<id>`; older query-based links redirect in the app. The social preview is generated with `npm run assets:social`.
+
+See [full-portfolio verification](artifacts/full-portfolio-verification.md), [automatic mobile island verification](artifacts/mobile-auto-island-verification.md), and [compact mobile verification](artifacts/mobile-compact-verification.md). All 33 Node tests and the production build pass. The Three.js bundle retains Vite’s size advisory.
 
 ## Credits
 
