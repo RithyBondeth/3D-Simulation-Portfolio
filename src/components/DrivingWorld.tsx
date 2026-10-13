@@ -28,6 +28,7 @@ import {
 } from "../lib/driving";
 import MetaverseWorld from "./MetaverseWorld";
 import CoastalWorld from "./CoastalWorld";
+import GroundingShadows from "./GroundingShadows";
 import { CartoonMotion } from "./CartoonMotion";
 import {
   journeyCarPose,
@@ -515,7 +516,7 @@ function Drive({
           map={contactShadow}
           color="#1b3037"
           transparent
-          opacity={0.4}
+          opacity={0.55}
           depthWrite={false}
         />
       </mesh>
@@ -665,17 +666,17 @@ function Scene(props: Props) {
         far={800}
         position={[75, 57, 95]}
       />
-      <ambientLight intensity={props.night ? 0.4 : 0.28} />
+      <ambientLight intensity={props.night ? 0.28 : 0.18} />
       <hemisphereLight
         args={[
           props.night ? "#9cc8e5" : "#e8f5ee",
           "#739d8c",
-          props.night ? 0.7 : 0.8,
+          props.night ? 0.6 : 0.62,
         ]}
       />
       <directionalLight
         position={[-45, 70, 45]}
-        intensity={props.night ? 1.8 : 2.5}
+        intensity={props.night ? 1.8 : 2.6}
         color={props.night ? "#acd5ef" : "#ffe4c1"}
         castShadow
         shadow-mapSize={
@@ -688,23 +689,24 @@ function Scene(props: Props) {
         shadow-camera-near={1}
         shadow-camera-far={200}
         shadow-bias={-0.0002}
-        shadow-normalBias={0.08}
-        shadow-radius={3}
+        shadow-normalBias={0.04}
+        shadow-radius={2}
       />
       {props.graphicsQuality === "high" && (
         <Environment
           files="/environment/city-sky.hdr"
           background={false}
-          environmentIntensity={props.night ? 0.4 : 0.45}
+          environmentIntensity={props.night ? 0.35 : 0.3}
           environmentRotation={[0, 2.2, 0]}
         />
       )}
       <directionalLight
         position={[35, 25, -35]}
         color="#7bd6cd"
-        intensity={props.night ? 1 : 0.75}
+        intensity={props.night ? 0.75 : 0.45}
       />
       <CoastalWorld night={props.night} quality={props.graphicsQuality} />
+      <GroundingShadows />
       <MetaverseWorld
         night={props.night}
         onSelect={props.onSelect}

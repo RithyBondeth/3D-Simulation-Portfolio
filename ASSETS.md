@@ -29,6 +29,8 @@ The floating island, layered foundations, rounded gallery architecture, sculpted
 
 The world reuses the compact road and architectural footprints from the preceding pavilion, including its tested collision bounds. Camera routes and animation are authored locally. The original portfolio content and model attribution remain accessible from the interface.
 
+The scene refinement adds a single instanced contact-shadow draw, chapter-focused camera framing, a browser-window sculpture for the Web district, and consistent green destination feedback. Byte's floating 3D head extrudes the shared logo pixel geometry; its face turns toward the camera and winks on hover or keyboard focus. Waterfront foam and ocean contact foam use local shaders. Boat wakes use tapered ribbons sampled from historical stern positions, so they follow the actual fleet routes at a fixed water height. Low graphics uses fewer wake segments and vessels; ambient effects share the existing pause, visibility, and reduced-motion clock.
+
 Two assets from [Poly Haven](https://polyhaven.com/license), licensed under CC0, remain hosted locally:
 
 - [Kloppenheim 06 (Pure Sky)](https://polyhaven.com/a/kloppenheim_06_puresky), by Greg Zaal with sky edits by Jarod Guest: the unchanged 1K HDR at `public/environment/city-sky.hdr` provides reflections. The visible world sky is procedural.

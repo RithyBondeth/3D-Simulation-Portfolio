@@ -6,6 +6,7 @@ import {
   type MutableRefObject,
 } from "react";
 import { Html, RoundedBox, useCursor } from "@react-three/drei";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as T from "three";
 import { districts, type ProjectDistrict } from "../project-catalog";
 import type { DistrictId } from "../lib/project-districts";
@@ -16,6 +17,8 @@ import IslandAtmosphere from "./IslandAtmosphere";
 import IslandDistrict from "./IslandDistrict";
 import IslandLandmarks from "./IslandLandmarks";
 import PortalArchitecture from "./PortalArchitecture";
+import ByteCompanion from "./ByteCompanion";
+import WaterEdge from "./WaterEdge";
 import { projectHref } from "../lib/portfolio-route";
 import { journeyCarPose } from "../lib/coastal-journey";
 
@@ -86,6 +89,7 @@ function Sign({
   color?: string;
   height?: number;
 }) {
+  const invalidate = useThree((state) => state.invalidate);
   const texture = useMemo(() => {
     const c = document.createElement("canvas");
     c.width = 1024;
@@ -106,12 +110,15 @@ function Sign({
       ctx.font = "700 86px Ubuntu, sans-serif";
       ctx.fillText(text, 512, 84, 980);
       texture.needsUpdate = true;
+      invalidate();
     };
     paint();
     // Canvas does not repaint when a web font arrives, unlike DOM text.
     void document.fonts.load("700 86px Ubuntu").then(paint, () => {});
-    return () => { active = false; };
-  }, [texture, text, color]);
+    return () => {
+      active = false;
+    };
+  }, [texture, text, color, invalidate]);
   useEffect(() => () => texture.dispose(), [texture]);
   return (
     <mesh position={at}>
@@ -322,23 +329,38 @@ function DistrictLandmark({
       Math.max(0, Math.min(index, district.projects.length - 1))
     ];
   const sculpture = useRef<T.Group>(null);
+  const highlighted = hover || showLabel;
   useCursor(hover);
   useCartoonMotion((t) => {
     if (!sculpture.current) return;
     sculpture.current.position.y =
-      1.9 + Math.sin(t * 0.8 + district.stop * 5) * 0.2;
-    sculpture.current.rotation.y =
-      district.id === "mobile" || district.id === "macos"
-        ? Math.sin(t * 0.3) * 0.18
-        : t * 0.13;
+      1.9 + (hover ? 0.45 : 0) + Math.sin(t * 0.8 + district.stop * 5) * 0.2;
+    if (district.id === "ai") sculpture.current.rotation.y = t * 0.13;
+  });
+  useFrame(({ camera }) => {
+    if (sculpture.current && district.id !== "ai")
+      sculpture.current.rotation.y = Math.atan2(
+        camera.position.x - district.position[0],
+        camera.position.z - district.position[2],
+      );
   });
   return (
     <group position={[...district.position]}>
       <Block at={[0, -0.25, 0]} size={[6.5, 0.45, 5]} color="#e7e7cf" />
       <Block at={[0, 0.05, 0]} size={[5.3, 0.14, 4]} color={district.color} />
+      <mesh position={[0, 0.2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[3.5, highlighted ? 3.8 : 3.62, 48]} />
+        <meshBasicMaterial
+          color={highlighted ? "#9be7ad" : "#38664e"}
+          transparent
+          opacity={highlighted ? 0.95 : 0.4}
+          depthWrite={false}
+        />
+      </mesh>
       <group
         ref={sculpture}
-        position={[0, 1.9, 0]}
+        position={[0, hover ? 2.35 : 1.9, 0]}
+        scale={hover ? 1.06 : 1}
         onPointerOver={(e) => {
           e.stopPropagation();
           setHover(true);
@@ -353,7 +375,7 @@ function DistrictLandmark({
           <group rotation={[0, -0.18, -0.12]}>
             <Block
               size={[2.5, 4.4, 0.48]}
-              color={hover ? "#ffe4b6" : "#496476"}
+              color={highlighted ? "#38664e" : "#496476"}
               radius={0.35}
             />
             <Block at={[0, 0, 0.26]} size={[2.13, 3.7, 0.06]} color="#c0d7db" />
@@ -376,7 +398,7 @@ function DistrictLandmark({
             <Block
               at={[0, 0.4, 0]}
               size={[4.5, 2.9, 0.3]}
-              color={hover ? "#ffe4b6" : "#536873"}
+              color={highlighted ? "#38664e" : "#536873"}
             />
             <Block
               at={[0, 0.4, 0.18]}
@@ -399,6 +421,36 @@ function DistrictLandmark({
               color="#e9d7b4"
             />
           </group>
+        ) : district.id === "web" ? (
+          <group rotation={[0, -0.12, 0]}>
+            <Block
+              size={[6.2, 4.2, 0.45]}
+              color={highlighted ? "#38664e" : "#426b69"}
+              radius={0.25}
+            />
+            <Block
+              at={[0, -0.25, 0.26]}
+              size={[5.6, 2.9, 0.08]}
+              color="#edf2df"
+              radius={0.12}
+            />
+            {[-2.3, -1.7, -1.1].map((x) => (
+              <Block
+                key={x}
+                at={[x, 1.5, 0.27]}
+                size={[0.28, 0.28, 0.07]}
+                color="#b6d9ab"
+                radius={0.1}
+              />
+            ))}
+            <Sign
+              text="</>"
+              at={[0, -0.15, 0.32]}
+              width={3.6}
+              height={1.7}
+              color="#38664e"
+            />
+          </group>
         ) : (
           <>
             {[0, 1].map((i) => (
@@ -411,7 +463,7 @@ function DistrictLandmark({
                   args={[2.1, 0.25, 8, district.id === "ai" ? 40 : 4]}
                 />
                 <meshStandardMaterial
-                  color={hover ? "#ffe4b6" : district.color}
+                  color={highlighted ? "#38664e" : district.color}
                   roughness={0.4}
                   metalness={0.25}
                 />
@@ -420,11 +472,21 @@ function DistrictLandmark({
             <mesh>
               <icosahedronGeometry args={[0.8, district.id === "ai" ? 1 : 0]} />
               <meshStandardMaterial
-                color="#f4deb5"
-                emissive="#e9c385"
+                color="#b6d9ab"
+                emissive="#70b984"
                 emissiveIntensity={0.25}
               />
             </mesh>
+            {[
+              [2.1, 0, 0],
+              [0, 2.1, 0],
+              [-1.5, 0, 1.5],
+            ].map((at, i) => (
+              <mesh key={i} position={at as [number, number, number]}>
+                <sphereGeometry args={[0.35, 12, 8]} />
+                <meshStandardMaterial color="#b6d9ab" roughness={0.35} />
+              </mesh>
+            ))}
           </>
         )}
       </group>
@@ -436,7 +498,7 @@ function DistrictLandmark({
         color="#4c655b"
       />
       <Html
-        position={[0, district.id === "macos" ? 12.2 : 6.2, 0]}
+        position={[0, district.id === "macos" ? 12.2 : 11.5, 0]}
         center
         zIndexRange={[12, 1]}
         style={{ display: showLabel ? "block" : "none" }}
@@ -444,6 +506,13 @@ function DistrictLandmark({
         <article
           className={`project-landmark district-landmark district-${district.id}`}
           aria-label={`${district.title} district project`}
+          onPointerEnter={() => setHover(true)}
+          onPointerLeave={() => setHover(false)}
+          onFocusCapture={() => setHover(true)}
+          onBlurCapture={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget))
+              setHover(false);
+          }}
         >
           <span className="landmark-meta">
             <span className="district-swatch" />
@@ -757,7 +826,7 @@ function Tree({ at, scale = 1 }: { at: Vec3; scale?: number }) {
   );
 }
 
-function Park() {
+function Park({ night }: { night: boolean }) {
   return (
     <>
       {[-1, 1].map((side) => (
@@ -835,12 +904,7 @@ function Park() {
         color="#bba988"
         radius={3}
       />
-      <Block
-        at={[0, -0.04, 51]}
-        size={[96, 0.08, 6]}
-        color="#4caaa5"
-        radius={1}
-      />
+      <WaterEdge night={night} />
       {[-38, 37].map((x) => (
         <group key={x} position={[x, 0, 42]}>
           <mesh position={[0, 2.7, 0]} rotation={[0, 0, -0.1]} castShadow>
@@ -916,99 +980,6 @@ function Waterfall() {
   );
 }
 
-function Companion({
-  onSelect,
-  showLabel,
-}: {
-  onSelect: (id: SectionId) => void;
-  showLabel: boolean;
-}) {
-  const drone = useRef<T.Group>(null),
-    propellers = useRef<T.Group>(null);
-  const [hover, setHover] = useState(false);
-  useCursor(hover);
-  useCartoonMotion((t) => {
-    drone.current!.position.y = 16 + Math.sin(t * 0.8) * 0.8;
-    drone.current!.rotation.y = Math.sin(t * 0.35) * 0.2;
-    propellers.current!.rotation.y = t * 3;
-  });
-  return (
-    <group
-      ref={drone}
-      position={[-15, 16, 12]}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        setHover(true);
-      }}
-      onPointerOut={() => setHover(false)}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect("about");
-      }}
-    >
-      <Block
-        size={[3.8, 2.3, 2.5]}
-        color={hover ? "#e3f6da" : "#b9dcd0"}
-        radius={0.8}
-      />
-      <Block
-        at={[0, 0.1, 1.25]}
-        size={[2.8, 1.1, 0.12]}
-        color="#183d4c"
-        radius={0.3}
-      />
-      {[-0.7, 0.7].map((x) => (
-        <Block
-          key={x}
-          at={[x, 0.15, 1.34]}
-          size={[0.3, 0.44, 0.04]}
-          color={mint}
-          radius={0.12}
-          glow
-        />
-      ))}
-      <mesh position={[0, 1.7, 0]}>
-        <cylinderGeometry args={[0.07, 0.07, 1, 8]} />
-        <meshStandardMaterial color="#94c8b5" />
-      </mesh>
-      <mesh position={[0, 2.25, 0]}>
-        <sphereGeometry args={[0.22, 12, 8]} />
-        <meshBasicMaterial color={coral} />
-      </mesh>
-      <group ref={propellers} position={[0, 1.55, 0]}>
-        <Block size={[5, 0.08, 0.4]} color="#82b9ab" />
-        <Block size={[0.4, 0.08, 5]} color="#82b9ab" />
-      </group>
-      <mesh position={[0, -1.8, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <coneGeometry args={[1.1, 1.4, 16, 1, true]} />
-        <meshBasicMaterial
-          color={mint}
-          transparent
-          opacity={0.08}
-          side={T.DoubleSide}
-          depthWrite={false}
-        />
-      </mesh>
-      <Html
-        position={[0, 3.9, 0]}
-        center
-        zIndexRange={[12, 1]}
-        style={{ display: showLabel ? "block" : "none" }}
-      >
-        <button
-          className="world-marker companion-marker"
-          onClick={(e) => {
-            e.stopPropagation();
-            onSelect("about");
-          }}
-        >
-          Hey, I’m Bondeth<span>Meet the maker ↗</span>
-        </button>
-      </Html>
-    </group>
-  );
-}
-
 function ContactBeacon({
   onSelect,
   showLabel,
@@ -1039,7 +1010,7 @@ function ContactBeacon({
     >
       <Block
         size={[4.6, 3.4, 0.9]}
-        color={hover ? "#ffba8e" : coral}
+        color={hover ? "#b6d9ab" : "#38664e"}
         radius={0.65}
       />
       <Sign
@@ -1266,10 +1237,14 @@ export default function MetaverseWorld({
         <IslandDistrict night={night} />
         <PortalArchitecture night={night} />
       </group>
-      <Park />
+      <Park night={night} />
       <IslandLandmarks night={night} />
       <Portal onSelect={onSelect} showLabel={chapter === 4 || immersive} />
-      <Companion onSelect={onSelect} showLabel={chapter === 0 || immersive} />
+      <ByteCompanion
+        night={night}
+        onSelect={onSelect}
+        showLabel={chapter === 0 || immersive}
+      />
       <ContactBeacon
         onSelect={onSelect}
         showLabel={chapter === 5 || immersive}

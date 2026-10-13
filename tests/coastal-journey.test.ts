@@ -9,6 +9,7 @@ import {
   journeyShot,
   journeyStops,
   journeyLength,
+  journeyLandmarks,
 } from "../src/lib/coastal-journey.ts";
 import { onPavilionRoad, pavilionBlocked } from "../src/lib/pavilion-layout.ts";
 
@@ -155,4 +156,31 @@ test("portrait framing brings the island closer while keeping the car visible th
   }
   assert.equal(journeyFrame(1440, 900), 1.28);
   assert.equal(journeyFrame(0, 0), 1.28);
+});
+
+test("chapter landmarks remain visible beside the copy during closer camera moments", () => {
+  for (const [width, height] of [
+    [320, 700],
+    [768, 900],
+    [1440, 900],
+  ]) {
+    const camera = new PerspectiveCamera(journeyFov, width / height, 0.1, 800);
+    if (width > 900)
+      camera.setViewOffset(width, height, -width * 0.15, 0, width, height);
+    journeyStops.forEach((stop, i) => {
+      const shot = journeyShot(stop);
+      camera.position
+        .set(...(shot.camera as [number, number, number]))
+        .multiplyScalar(journeyFrame(width, height));
+      camera.lookAt(new Vector3(...(shot.target as [number, number, number])));
+      camera.updateMatrixWorld();
+      const landmark = new Vector3(...journeyLandmarks[i]).project(camera);
+      assert.ok(
+        Math.abs(landmark.x) < 0.9 && Math.abs(landmark.y) < 0.8,
+        `chapter ${i} at ${width}px`,
+      );
+      if (width > 900)
+        assert.ok(landmark.x > -0.3, `chapter ${i} behind desktop copy`);
+    });
+  }
 });

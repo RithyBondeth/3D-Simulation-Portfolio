@@ -63,12 +63,41 @@ export function journeyCarPose(progress: number) {
   return { x, z, yaw: Math.atan2(-dx, -dz), distance: p * journeyLength };
 }
 
-/** Orbit from outside the bend so the car remains on the visible side of the island. */
+/** Chapter landmarks receive a short, smoothly eased camera emphasis. */
+export const journeyLandmarks = [
+  [-15, 16, 12],
+  [23, 7, 5],
+  [0, 15, -20],
+  [0, 11, -17],
+  [0, 9, 2],
+  [32, 10, 39],
+] as const;
+
+/** Orbit outside the bend; chapter emphasis preserves the car in the foreground. */
 export function journeyShot(progress: number) {
   const car = journeyCarPose(progress);
   const angle = Math.atan2(car.x, (car.z + 4) * 1.3) + 0.22;
+  const p = Math.max(0, Math.min(1, progress));
+  const target = [car.x * 0.12, 3, car.z * 0.12 - 2];
+  let emphasis = 0;
+  journeyStops.forEach((stop, i) => {
+    // Keep the opening wide, then move closer as visitors reach each chapter.
+    const distance = Math.min(1, Math.abs(p - stop) / 0.11);
+    const weight =
+      (1 - distance * distance * (3 - 2 * distance)) * (i === 0 ? 0.2 : 1);
+    emphasis += weight;
+    journeyLandmarks[i].forEach((value, axis) => {
+      target[axis] +=
+        (value - target[axis]) * weight * (axis === 1 ? 0.06 : 0.22);
+    });
+  });
+  const distance = 124 * (1 - emphasis * 0.09);
   return {
-    camera: [Math.sin(angle) * 124, 88, Math.cos(angle) * 124 - 4],
-    target: [car.x * 0.12, 3, car.z * 0.12 - 2],
+    camera: [
+      Math.sin(angle) * distance,
+      88 * (1 - emphasis * 0.06),
+      Math.cos(angle) * distance - 4,
+    ],
+    target,
   };
 }
