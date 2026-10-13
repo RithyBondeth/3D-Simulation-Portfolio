@@ -6,8 +6,8 @@
   --ink: #28504a;
   --muted: #6c8071;
   --line: #cdd0c3;
-  --coral: #c96b4d;
-  --coral-soft: #f1dfd1;
+  --accent: var(--brand-accent);
+  --accent-soft: var(--brand-accent-soft);
   --sage-soft: #e1e5d6;
   --button: #315f55;
   --button-text: #fbf7e9;
@@ -21,8 +21,8 @@
   --ink: #eeeee0;
   --muted: #aebbb0;
   --line: #405248;
-  --coral: #e5ab86;
-  --coral-soft: #473e31;
+  --accent: var(--brand-accent);
+  --accent-soft: var(--brand-accent-soft);
   --button: #cfdbbc;
   --button-text: #273b30;
   --glass: #263b32e8;
@@ -77,7 +77,7 @@
 }
 .pavilion-app .header-nav button:hover {
   background: transparent;
-  color: var(--coral);
+  color: var(--accent);
 }
 .pavilion-app .header-actions {
   gap: 20px;
@@ -98,7 +98,7 @@
   padding: 12px 17px;
 }
 .pavilion-app .contact-button:hover {
-  background: var(--coral);
+  background: var(--accent);
   color: var(--surface);
 }
 .pavilion-app .pavilion-main {
@@ -142,7 +142,7 @@
   align-items: center;
   gap: 9px;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.025em;
   color: var(--muted);
 }
@@ -150,10 +150,10 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--coral);
+  background: var(--accent);
 }
 .pavilion-hero h1 {
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   font-size: clamp(65px, 6.7vw, 112px);
   font-weight: 460;
   line-height: 1.05;
@@ -165,12 +165,12 @@
   display: block;
 }
 .name-dot {
-  color: var(--coral);
+  color: var(--accent);
 }
 .pavilion-role {
   font-size: clamp(13px, 1.2vw, 17px);
   line-height: 1.6;
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: -0.02em;
   margin: 0 0 17px;
 }
@@ -202,10 +202,10 @@
   color: var(--button-text);
   border-radius: 6px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
 }
 .pavilion-work-button:hover {
-  background: var(--coral);
+  background: var(--accent);
   transform: translateY(-2px);
 }
 .pavilion-about-button {
@@ -217,7 +217,7 @@
   font-size: 11px;
 }
 .pavilion-about-button:hover {
-  color: var(--coral);
+  color: var(--accent);
   gap: 22px;
 }
 .pavilion-links {
@@ -232,7 +232,7 @@
   color: var(--muted);
 }
 .pavilion-links button:hover {
-  color: var(--coral);
+  color: var(--accent);
 }
 .pavilion-links > span {
   color: var(--line);
@@ -284,7 +284,7 @@
   pointer-events: none;
 }
 .scene-index {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   font-size: 7px;
   letter-spacing: 0.08em;
   color: var(--muted);
@@ -292,7 +292,7 @@
 .pavilion-scene-note p {
   font-size: 15px;
   letter-spacing: -0.04em;
-  font-weight: 600;
+  font-weight: 700;
   margin: 7px 0 10px;
 }
 .pavilion-scene-note p em {
@@ -347,7 +347,7 @@
   border-radius: 4px;
   box-shadow: 0 3px 16px #263f3117;
   font-size: 9px;
-  font-weight: 600;
+  font-weight: 700;
   backdrop-filter: blur(10px);
 }
 .pavilion-label:hover {
@@ -378,14 +378,14 @@
   font-size: 8px;
 }
 .featured-heading h2 {
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   font-size: 24px;
   font-weight: 450;
   letter-spacing: -0.06em;
   margin: 9px 0 13px;
 }
 .featured-heading h2 span {
-  color: var(--coral);
+  color: var(--accent);
 }
 .featured-heading > button {
   display: inline-flex;
@@ -396,7 +396,7 @@
   color: var(--muted);
 }
 .featured-heading > button:hover {
-  color: var(--coral);
+  color: var(--accent);
 }
 .featured-list {
   display: grid;
@@ -433,7 +433,7 @@
   position: absolute;
   bottom: 5px;
   left: 5px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   font-size: 7px;
   padding: 3px 4px;
   background: #f0ebdfdd;
@@ -453,7 +453,7 @@
 .featured-copy h3 {
   margin: 5px 0 5px;
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: -0.03em;
 }
 .featured-copy p {
@@ -469,7 +469,7 @@
   color: var(--muted);
 }
 .featured-project:hover .featured-arrow {
-  color: var(--coral);
+  color: var(--accent);
   transform: translate(2px, -2px);
 }
 .pavilion-app .site-footer {
@@ -512,7 +512,7 @@
   font-size: 10px;
 }
 .pavilion-app .loading-model {
-  color: var(--coral);
+  color: var(--accent);
 }
 .pavilion-app .drawer-top {
   font-size: 8px;
@@ -579,10 +579,10 @@
 }
 .coastal-drive-status > span:first-child {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
 }
 .coastal-drive-status strong {
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   font-size: 25px;
   font-weight: 450;
   font-variant-numeric: tabular-nums;
@@ -1227,7 +1227,7 @@
   margin-top: 22px;
 }
 .journey-title {
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   font-size: clamp(43px, 4.4vw, 74px);
   font-weight: 450;
   line-height: 1.15;
@@ -1255,7 +1255,7 @@
   height: 100%;
   width: 100%;
   transform-origin: left;
-  background: var(--coral);
+  background: var(--accent);
 }
 .journey-chapters {
   display: flex;
@@ -1273,12 +1273,12 @@
   white-space: nowrap;
 }
 .journey-chapters button > span:first-child {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   font-size: 8px;
 }
 .journey-chapters button[aria-current],
 .journey-chapters button:hover {
-  color: var(--coral);
+  color: var(--accent);
 }
 .journey-scroll {
   display: flex;
@@ -1657,6 +1657,6 @@
   cursor: default;
 }
 .world-tools .icon-button[aria-pressed="true"] {
-  background: var(--coral-soft);
-  color: var(--coral);
+  background: var(--accent-soft);
+  color: var(--accent);
 }

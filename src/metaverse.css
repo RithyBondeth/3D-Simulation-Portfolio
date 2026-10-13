@@ -9,8 +9,8 @@ body {
   --ink: #273e35;
   --muted: #68786c;
   --line: #294d3524;
-  --coral: #b85f3e;
-  --coral-soft: #e7c9b9;
+  --accent: var(--brand-accent);
+  --accent-soft: var(--brand-accent-soft);
   --button: #294d3c;
   --button-text: #f6f6e8;
   --glass: #f8faeff0;
@@ -27,8 +27,8 @@ body {
   --ink: #eff2df;
   --muted: #adc5bb;
   --line: #d5ebd42b;
-  --coral: #efba8e;
-  --coral-soft: #594a3d;
+  --accent: var(--brand-accent);
+  --accent-soft: var(--brand-accent-soft);
   --button: #d9e9bd;
   --button-text: #263f34;
   --glass: #19383ee8;
@@ -56,14 +56,14 @@ body {
   font-size: 27px;
 }
 .metaverse-app .brand-mark > span {
-  color: #edbb8c;
+  color: var(--accent);
 }
 .metaverse-app .brand-separator {
   padding: 0 13px;
   color: #9ca996;
 }
 .metaverse-app .brand-studio {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   font-size: 9px;
 }
 .metaverse-app .header-nav {
@@ -124,22 +124,22 @@ body {
   pointer-events: none;
 }
 .metaverse-app .pavilion-eyebrow {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   color: var(--muted);
   font-size: 9px;
   letter-spacing: 0.01em;
   font-weight: 400;
 }
 .metaverse-app .pavilion-eyebrow > span:first-child {
-  background: var(--coral);
+  background: var(--accent);
   box-shadow: none;
   width: 6px;
   height: 6px;
 }
 .metaverse-app .pavilion-hero h1 {
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-ui);
   font-size: clamp(64px, 6.3vw, 104px);
-  font-weight: 550;
+  font-weight: 500;
   line-height: 1.03;
   letter-spacing: -0.075em;
   margin: 25px 0 24px;
@@ -147,12 +147,12 @@ body {
   text-shadow: none;
 }
 .metaverse-app .name-dot {
-  color: var(--coral);
+  color: var(--accent);
 }
 .metaverse-app .pavilion-role {
   font-size: 13px;
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 16px;
 }
 .metaverse-app .pavilion-role > span {
@@ -188,7 +188,7 @@ body {
   gap: 7px;
 }
 .metaverse-app .pavilion-about-button:hover {
-  color: var(--coral);
+  color: var(--accent);
 }
 .metaverse-app .pavilion-links {
   gap: 13px;
@@ -199,7 +199,7 @@ body {
   color: var(--muted);
 }
 .metaverse-app .pavilion-links button:hover {
-  color: var(--coral);
+  color: var(--accent);
 }
 .metaverse-app .pavilion-location {
   display: flex;
@@ -212,10 +212,10 @@ body {
   background: #6e9b70;
 }
 .metaverse-app .journey-title {
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-ui);
   font-size: clamp(42px, 4.3vw, 74px);
   line-height: 1.1;
-  font-weight: 550;
+  font-weight: 500;
   letter-spacing: -0.065em;
   margin: 30px 0 25px;
 }
@@ -248,12 +248,12 @@ body {
   gap: 8px;
   pointer-events: none;
   color: var(--muted);
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   font-size: 8px;
   letter-spacing: 0.14em;
 }
 .island-caption > span:last-child {
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-ui);
   font-size: 10px;
   letter-spacing: 0;
   opacity: 0.8;
@@ -269,7 +269,7 @@ body {
   background: var(--line);
 }
 .metaverse-app .journey-progress > span {
-  background: var(--coral);
+  background: var(--accent);
 }
 .metaverse-app .journey-chapters {
   gap: 13px;
@@ -285,7 +285,7 @@ body {
 }
 .metaverse-app .journey-chapters button[aria-current],
 .metaverse-app .journey-chapters button:hover {
-  color: var(--coral);
+  color: var(--accent);
 }
 .metaverse-app .journey-scroll {
   font-size: 10px;
@@ -294,7 +294,7 @@ body {
   gap: 10px;
 }
 .metaverse-app .journey-scroll > svg {
-  color: var(--coral);
+  color: var(--accent);
   animation: scroll-nudge 2.5s ease-in-out infinite;
 }
 @keyframes scroll-nudge {
@@ -321,7 +321,7 @@ body {
 }
 .metaverse-app .pavilion-drive-button:hover {
   background: var(--surface);
-  border-color: var(--coral);
+  border-color: var(--accent);
   transform: translateY(-3px);
 }
 .route-map {
@@ -341,14 +341,14 @@ body {
 }
 .route-map > div > span:last-child {
   margin-left: auto;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   font-size: 8px;
 }
 .route-status {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--coral);
+  background: var(--accent);
 }
 .route-map svg {
   display: block;
@@ -372,7 +372,7 @@ body {
   opacity: 0.45;
 }
 .route-map svg .map-car {
-  fill: var(--coral);
+  fill: var(--accent);
   stroke: var(--bg);
   stroke-width: 1.5;
 }
@@ -400,14 +400,14 @@ body {
   font-size: 8px;
 }
 .metaverse-app .featured-heading h2 {
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-ui);
   font-size: 19px;
   letter-spacing: -0.05em;
   margin: 5px 0 8px;
-  font-weight: 650;
+  font-weight: 700;
 }
 .metaverse-app .featured-heading h2 > span {
-  color: var(--coral);
+  color: var(--accent);
 }
 .metaverse-app .featured-heading > button {
   font-size: 9px;
@@ -415,7 +415,7 @@ body {
   color: var(--muted);
 }
 .metaverse-app .featured-heading > button:hover {
-  color: var(--coral);
+  color: var(--accent);
 }
 .metaverse-app .featured-list {
   display: grid;
@@ -432,21 +432,21 @@ body {
   transition: transform 200ms;
 }
 .featured-number {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   font-size: 10px;
-  color: var(--coral);
+  color: var(--accent);
   align-self: flex-start;
   margin-top: 3px;
 }
 .metaverse-app .featured-copy > span {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   font-size: 7px;
   color: var(--muted);
 }
 .metaverse-app .featured-copy h3 {
   color: var(--ink);
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 700;
   margin: 7px 0 4px;
   letter-spacing: -0.03em;
 }
@@ -465,11 +465,11 @@ body {
   transition: transform 200ms;
 }
 .metaverse-app .featured-project:hover .featured-arrow {
-  color: var(--coral);
+  color: var(--accent);
   transform: translate(2px, -2px);
 }
 .metaverse-app .featured-project:hover .featured-copy h3 {
-  color: var(--coral);
+  color: var(--accent);
 }
 .metaverse-app .site-footer {
   padding: 18px clamp(24px, 3.5vw, 64px);
@@ -482,7 +482,7 @@ body {
   background: var(--bg);
 }
 .metaverse-app .loading-model {
-  color: var(--coral);
+  color: var(--accent);
 }
 .metaverse-app .pavilion-label,
 .metaverse-app .world-marker {
@@ -492,7 +492,7 @@ body {
   box-shadow: 0 5px 20px #36523c12;
   backdrop-filter: blur(16px);
   border-radius: 8px;
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-ui);
 }
 .metaverse-app .pavilion-label.car-label {
   background: var(--button);
@@ -512,7 +512,7 @@ body {
   gap: 4px;
   padding: 10px 14px;
   font-size: 11px;
-  font-weight: 650;
+  font-weight: 700;
   white-space: nowrap;
 }
 .world-marker > span:last-child {
@@ -522,7 +522,7 @@ body {
 }
 .world-marker:hover {
   transform: translateY(-3px);
-  border-color: var(--coral);
+  border-color: var(--accent);
 }
 .world-marker.portal-marker {
   flex-direction: row;
@@ -533,7 +533,7 @@ body {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--coral);
+  background: var(--accent);
 }
 .project-landmark {
   position: relative;
@@ -554,7 +554,7 @@ body {
   transition:
     transform 220ms,
     box-shadow 220ms;
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-ui);
 }
 .project-landmark::after {
   content: "";
@@ -567,7 +567,7 @@ body {
   opacity: 0.25;
 }
 .landmark-meta {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   color: var(--muted);
   font-size: 7px;
 }
@@ -582,7 +582,7 @@ body {
 }
 .project-landmark strong > span {
   margin-left: auto;
-  color: var(--coral);
+  color: var(--accent);
   font-size: 16px;
   transition: transform 220ms;
 }
@@ -600,7 +600,7 @@ body {
     margin 220ms;
 }
 .landmark-detail > span {
-  color: var(--coral);
+  color: var(--accent);
   font-size: 8px;
   margin-top: 6px;
 }
@@ -620,7 +620,7 @@ body {
 }
 .metaverse-app button:focus-visible,
 .metaverse-app a:focus-visible {
-  outline: 2px solid var(--coral);
+  outline: 2px solid var(--accent);
   outline-offset: 5px;
 }
 .metaverse-app .drive-mode-bar > button,
@@ -1104,8 +1104,7 @@ body {
 }
 .all-projects-button > span {
   font:
-    9px "JetBrains Mono",
-    monospace;
+    9px var(--font-ui);
   padding: 4px 6px;
   border-radius: 4px;
   background: var(--surface-subtle);
@@ -1131,7 +1130,7 @@ body {
   color: var(--muted);
 }
 .district-browser-heading > span {
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   font-size: 8px;
 }
 .district-follow {
@@ -1145,7 +1144,7 @@ body {
   color: var(--ink);
 }
 .district-follow[aria-pressed="true"] svg {
-  color: var(--coral);
+  color: var(--accent);
 }
 .district-all {
   display: flex;
@@ -1197,7 +1196,7 @@ body {
 }
 .district-option strong {
   display: block;
-  font-weight: 650;
+  font-weight: 700;
   font-size: 14px;
 }
 .district-option small {
@@ -1209,8 +1208,7 @@ body {
 .district-count {
   margin-left: auto;
   font:
-    10px "JetBrains Mono",
-    monospace;
+    10px var(--font-ui);
   color: var(--muted);
 }
 .district-option-arrow {
@@ -1258,8 +1256,7 @@ body {
 }
 .landmark-pagination > span {
   font:
-    8px "JetBrains Mono",
-    monospace;
+    8px var(--font-ui);
   color: var(--muted);
   margin-right: 5px;
 }
@@ -1284,13 +1281,13 @@ body {
   margin-left: auto;
   font-size: 9px;
   padding: 0 5px;
-  color: var(--coral);
+  color: var(--accent);
 }
 .district-landmark:hover {
   transform: none;
 }
 .district-landmark .landmark-project:hover strong {
-  color: var(--coral);
+  color: var(--accent);
 }
 .district-landmark .landmark-project:focus-visible {
   outline-offset: 3px;

@@ -4,6 +4,12 @@
 
 Project previews, Rithy Bondeth's portrait, and the resume were copied from the user's existing portfolio source. Previews were resized to at most 1100 × 740 pixels and encoded as WebP. The original source files were left unchanged.
 
+## Brand identity and typography
+
+The identity follows [bondeth.dev's source](https://github.com/RithyBondeth/Bondeth-Professional-Portfolio) at commit `83e7b7b3acaab7de319a47ae68dc90b3118ebd6a`. Byte's head uses the original 34 × 26 pixel geometry from `components/mascot/robot-geometry.ts`, with the Ubuntu wordmark and four-pixel trail from `components/utils/icons/logo.tsx`. The favicon is adapted from `app/icon.svg`. The robot and pixel trail use the 3D portfolio’s forest green accent, with a pale green accent in dark mode; the artwork geometry and typography stay consistent with the main portfolio. The interface, footer, workshop artwork, and social preview reuse this identity.
+
+Ubuntu is the shared heading, body, navigation, and label face; JetBrains Mono is reserved for code, matching the source portfolio's `--font-ui` and `--font-code` roles. Fonts are hosted locally through Fontsource. `npm run assets:social` outlines the local Ubuntu glyphs and uses the shared Byte geometry to produce self-contained SVG and PNG previews.
+
 ## BMW M4 Competition M Package
 
 - Author: [SRT Performance](https://sketchfab.com/TheRealSRT).

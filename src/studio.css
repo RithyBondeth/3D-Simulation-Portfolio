@@ -1,14 +1,6 @@
-/* Studio refresh: native CSS, Sora display + Manrope body, coral accent.
+/* Studio refresh: native CSS, Ubuntu typography, forest green accent.
    Pills for navigation/actions; 20px panel shells; 12px cards; 8px inputs.
    The scene rests when idle; CSS motion explains entry, focus and interaction. */
-@font-face {
-  font-family: "Sora Variable";
-  font-style: normal;
-  font-weight: 100 800;
-  font-display: swap;
-  src: url("@fontsource-variable/sora/files/sora-latin-wght-normal.woff2")
-    format("woff2-variations");
-}
 :root {
   color: var(--ink);
   background: var(--bg);
@@ -18,10 +10,10 @@
   --ink: #262c28;
   --muted: #616a62;
   --line: #d4d8cf;
-  --coral: #ae472e;
-  --coral-soft: #f5ddd2;
+  --accent: var(--brand-accent);
+  --accent-soft: var(--brand-accent-soft);
   --sage-soft: #e0e5da;
-  --button: #ae472e;
+  --button: #294d3c;
   --button-text: #fff9f5;
   --glass: #f6f7f0d9;
   --scene-glow: #c7bea051;
@@ -34,11 +26,11 @@
   --ink: #f1f2eb;
   --muted: #a5aea5;
   --line: #3a403b;
-  --coral: #f19577;
-  --coral-soft: #3d302a;
+  --accent: var(--brand-accent);
+  --accent-soft: var(--brand-accent-soft);
   --sage-soft: #303830;
-  --button: #f19577;
-  --button-text: #261c18;
+  --button: #d9e9bd;
+  --button-text: #263f34;
   --glass: #242925dc;
   --scene-glow: #84947725;
   --shadow: 0 18px 60px #080e0b33;
@@ -79,7 +71,7 @@ a {
   border-color: var(--muted);
 }
 .brand-studio {
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-ui);
   font-size: 13px;
 }
 .brand-separator {
@@ -153,7 +145,7 @@ a {
   color: var(--ink);
   text-transform: none;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0;
   margin-bottom: 27px;
 }
@@ -174,15 +166,15 @@ a {
   font-weight: 450;
 }
 .hero-copy h1 {
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   font-size: clamp(58px, 5.6vw, 89px);
-  font-weight: 650;
+  font-weight: 700;
   line-height: 1.07;
   letter-spacing: -0.072em;
   margin-bottom: 25px;
 }
 .hero-copy h1 > span {
-  color: var(--coral);
+  color: var(--accent);
 }
 .hero-copy > p {
   max-width: 350px;
@@ -202,7 +194,7 @@ a {
   padding: 7px 8px 7px 23px;
   gap: 27px;
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 700;
 }
 .explore-arrow {
   width: 38px;
@@ -288,7 +280,7 @@ a {
   border-radius: 50%;
   background: #3c463a;
   color: #e5e9dd;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   font-size: 10px;
   transition:
     background 0.2s,
@@ -356,7 +348,7 @@ a {
   border-radius: 30px;
 }
 .world-loading strong {
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   font-size: 16px;
 }
 .world-loading > span {
@@ -417,10 +409,10 @@ a {
   align-items: center;
   gap: 12px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
 }
 .work-teaser:hover strong {
-  color: var(--coral);
+  color: var(--accent);
 }
 .studio-bottom {
   left: 50%;
@@ -442,7 +434,7 @@ a {
 }
 .exploration-progress {
   gap: 10px !important;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   font-size: 9px !important;
 }
 .progress-marks {
@@ -456,7 +448,7 @@ a {
   border-radius: 1px;
 }
 .progress-marks i.visited {
-  background: var(--coral);
+  background: var(--accent);
 }
 .destination-dock {
   padding: 6px;
@@ -488,7 +480,7 @@ a {
 }
 .destination-copy strong {
   font-size: 11px;
-  font-weight: 550;
+  font-weight: 500;
 }
 .destination-copy > span {
   display: none;
@@ -506,7 +498,7 @@ a {
 }
 .destination-dock > button:hover .destination-icon,
 .destination-dock > button.active .destination-icon {
-  color: var(--coral);
+  color: var(--accent);
 }
 .site-footer {
   min-height: 51px;
@@ -557,10 +549,10 @@ kbd {
   margin-bottom: 15px;
 }
 .exploring .explore-hint h1 {
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   letter-spacing: -0.05em;
   font-size: 22px;
-  font-weight: 550;
+  font-weight: 500;
   margin-bottom: 8px;
 }
 .exploring .explore-hint > p {
@@ -601,9 +593,9 @@ kbd {
   backdrop-filter: blur(12px);
 }
 .explore-hint h2 {
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   font-size: 24px;
-  font-weight: 550;
+  font-weight: 500;
 }
 .explore-hint > button {
   margin-bottom: 23px;
@@ -645,9 +637,9 @@ dialog::backdrop {
 .drawer-heading h2,
 .simple-heading h1,
 .help-dialog h2 {
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   letter-spacing: -0.055em;
-  font-weight: 550;
+  font-weight: 500;
 }
 .drawer-heading h2 {
   font-size: 42px;
@@ -702,9 +694,9 @@ dialog::backdrop {
   padding: 17px 2px 9px;
 }
 .project-card h3 {
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   font-size: 17px;
-  font-weight: 550;
+  font-weight: 500;
   letter-spacing: -0.04em;
   margin: 8px 0 10px;
 }
@@ -720,10 +712,10 @@ dialog::backdrop {
   transform: translateY(-5px);
 }
 .project-card:hover h3 {
-  color: var(--coral);
+  color: var(--accent);
 }
 .project-detail h3 {
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   letter-spacing: -0.05em;
 }
 .project-detail p,
@@ -735,11 +727,11 @@ dialog::backdrop {
   border-color: transparent;
 }
 .lab-hero {
-  background: var(--coral-soft);
+  background: var(--accent-soft);
 }
 .help-icon {
-  color: var(--coral);
-  background: var(--coral-soft);
+  color: var(--accent);
+  background: var(--accent-soft);
 }
 .simple-main {
   max-width: 1220px;
@@ -758,7 +750,7 @@ dialog::backdrop {
   border-radius: 50px;
 }
 .simple-content > h2 {
-  font-family: "Sora Variable", sans-serif;
+  font-family: var(--font-heading);
   font-weight: 500;
   letter-spacing: -0.04em;
 }

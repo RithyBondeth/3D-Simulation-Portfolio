@@ -3,25 +3,61 @@
   display: none;
 }
 .metaverse-app .brand {
-  font-family: "Manrope Variable", sans-serif;
-  font-weight: 750;
-  letter-spacing: -0.055em;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  letter-spacing: -0.045em;
   gap: 10px;
 }
 .bondeth-mark {
   display: block;
-  width: 38px;
-  height: 38px;
+  width: 37px;
+  height: 28px;
   flex: 0 0 auto;
 }
-.bondeth-mark-tile {
-  fill: var(--button);
+.byte-ink {
+  fill: var(--byte-ink);
 }
-.bondeth-mark-letter {
-  stroke: var(--button-text);
+.byte-face {
+  fill: var(--byte-face);
 }
-.bondeth-mark-dot {
-  fill: #e5ad82;
+.byte-shade {
+  fill: var(--byte-shade);
+}
+.byte-accent {
+  fill: var(--brand-pixel);
+}
+.brand-pixel-trail {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 4px;
+  margin-top: 2px;
+}
+.brand-pixel-trail > span {
+  width: 16px;
+  height: 4px;
+  background: var(--brand-pixel);
+}
+.brand-pixel-trail > span:nth-child(2) {
+  width: 10px;
+  background: var(--muted);
+  opacity: 0.7;
+}
+.brand-pixel-trail > span:nth-child(3) {
+  width: 6px;
+  background: var(--muted);
+  opacity: 0.45;
+}
+.brand-pixel-trail > span:nth-child(4) {
+  width: 4px;
+  background: var(--muted);
+  opacity: 0.25;
+}
+.brand-copy {
+  display: grid;
+  gap: 2px;
+  line-height: 1;
+  letter-spacing: -0.045em;
 }
 .metaverse-app .brand-studio {
   letter-spacing: 0;
@@ -65,7 +101,7 @@
 }
 .district-landmark .landmark-project strong {
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 700;
   margin: 7px 0 3px;
   gap: 8px;
 }
@@ -152,7 +188,7 @@
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: var(--font-ui);
   font-size: 9px;
   color: var(--muted);
   letter-spacing: 0.015em;
@@ -161,18 +197,18 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--coral);
+  background: var(--accent);
 }
 .portfolio-intro h1 {
   font-size: clamp(42px, 5.2vw, 76px);
-  font-weight: 550;
+  font-weight: 500;
   line-height: 1.08;
   letter-spacing: -0.065em;
   margin: 24px 0;
   text-wrap: balance;
 }
 .portfolio-intro h1 > span {
-  color: var(--coral);
+  color: var(--accent);
 }
 .portfolio-intro-copy > p {
   max-width: 405px;
@@ -227,8 +263,7 @@
   justify-content: space-between;
   gap: 12px;
   font:
-    7px "JetBrains Mono",
-    monospace;
+    7px var(--font-ui);
   letter-spacing: 0.08em;
   border-bottom: 1px solid #33534530;
   padding-bottom: 14px;
@@ -253,6 +288,10 @@
 .studio-monogram .bondeth-mark {
   width: 132px;
   height: 132px;
+  --byte-ink: #335345;
+  --byte-face: #faf9f5;
+  --byte-shade: #e0e8da;
+  --brand-pixel: #38664e;
   --button: #335345;
   --button-text: #e9eddd;
 }
@@ -276,15 +315,14 @@
   top: 18px;
   left: 0;
   font:
-    8px/1.7 "JetBrains Mono",
-    monospace;
+    8px/1.7 var(--font-ui);
   opacity: 0.6;
 }
 .studio-art-spark {
   position: absolute;
   top: 35px;
   right: 5px;
-  color: #aa6548;
+  color: #38664e;
   font-size: 48px;
   line-height: 1;
 }
@@ -295,8 +333,7 @@
   border: 1px solid #33534525;
   border-radius: 3px;
   font:
-    8px "JetBrains Mono",
-    monospace;
+    8px var(--font-ui);
   z-index: 3;
 }
 .studio-art-label-one {
@@ -308,7 +345,7 @@
   right: 0;
   bottom: 15px;
   transform: rotate(4deg);
-  background: #e2c7b1;
+  background: #ceddc6;
 }
 .studio-card-bottom {
   border-top: 1px solid #33534530;
@@ -330,8 +367,7 @@
 }
 .studio-card-bottom > div > span {
   font:
-    8px/1.5 "JetBrains Mono",
-    monospace;
+    8px/1.5 var(--font-ui);
   max-width: 70px;
 }
 .studio-card-bottom p {
@@ -361,18 +397,18 @@
   border-radius: 0;
   gap: 8px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--muted);
   border-bottom: 2px solid transparent;
   white-space: nowrap;
 }
 .simple-mode .simple-nav button.active {
   color: var(--ink);
-  border-bottom-color: var(--coral);
+  border-bottom-color: var(--accent);
   background: none;
 }
 .simple-mode .simple-nav button:hover {
-  color: var(--coral);
+  color: var(--accent);
   background: none;
 }
 .simple-mode .simple-nav button svg {
@@ -387,20 +423,19 @@
 }
 .portfolio-section-index {
   font:
-    8px "JetBrains Mono",
-    monospace;
+    8px var(--font-ui);
   color: var(--muted);
   letter-spacing: 0.1em;
 }
 .portfolio-section-heading h2 {
   font-size: clamp(29px, 3vw, 40px);
-  font-weight: 550;
+  font-weight: 500;
   letter-spacing: -0.055em;
   margin: 10px 0 0;
   line-height: 1.2;
 }
 .portfolio-section-heading h2 > span {
-  color: var(--coral);
+  color: var(--accent);
 }
 .simple-content .section-intro {
   font-size: 13px;
@@ -434,8 +469,7 @@
 .simple-content .result-count {
   margin: 24px 0 18px;
   font:
-    9px "JetBrains Mono",
-    monospace;
+    9px var(--font-ui);
 }
 .simple-content .project-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -461,13 +495,12 @@
 }
 .simple-content .project-category {
   font:
-    8px "JetBrains Mono",
-    monospace;
-  color: var(--coral);
+    8px var(--font-ui);
+  color: var(--accent);
 }
 .simple-content .project-card h3 {
   font-size: 21px;
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: -0.045em;
   margin: 10px 0 9px;
 }
@@ -490,7 +523,7 @@
   border-radius: 50%;
 }
 .simple-content .project-card:hover h3 {
-  color: var(--coral);
+  color: var(--accent);
 }
 .simple-content .project-card:focus-visible {
   outline-offset: 8px;
@@ -531,7 +564,7 @@
 }
 .simple-content .about-content > h3 {
   font-size: 32px;
-  font-weight: 550;
+  font-weight: 500;
   letter-spacing: -0.05em;
   margin-top: 12px;
 }
@@ -571,9 +604,8 @@
 }
 .simple-content .skill-index {
   font:
-    10px "JetBrains Mono",
-    monospace;
-  color: var(--coral);
+    10px var(--font-ui);
+  color: var(--accent);
 }
 .simple-content .tags {
   gap: 7px;
@@ -599,7 +631,7 @@
 }
 .simple-content .timeline h3 {
   font-size: 23px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.045em;
   margin-top: 10px;
 }
@@ -613,8 +645,7 @@
 }
 .simple-content .timeline-period {
   font:
-    10px "JetBrains Mono",
-    monospace;
+    10px var(--font-ui);
 }
 .simple-content .education {
   max-width: 850px;
@@ -1111,17 +1142,16 @@
 }
 .selected-work-heading h2 {
   font-size: 21px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.045em;
   margin: 0;
 }
 .selected-work-heading h2 > span {
-  color: var(--coral);
+  color: var(--accent);
 }
 .selected-work-heading > span {
   font:
-    11px "JetBrains Mono",
-    monospace;
+    11px var(--font-ui);
   color: var(--muted);
 }
 .swipe-hint {
@@ -1178,7 +1208,7 @@
 }
 .selected-work-copy h3 {
   font-size: 18px;
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: -0.035em;
   margin: 5px 0;
 }
@@ -1211,18 +1241,18 @@
 }
 .selected-work-card:focus-visible,
 .metaverse-app select:focus-visible {
-  outline: 2px solid var(--coral);
+  outline: 2px solid var(--accent);
   outline-offset: 5px;
 }
 
 /* One settings entry point leaves the scene visible at every viewport size. */
 .metaverse-app {
   --muted: #536659;
-  --coral: #a24f33;
+  --accent: var(--brand-accent);
 }
 [data-theme="dark"] .metaverse-app {
   --muted: #b8cdc2;
-  --coral: #efba8e;
+  --accent: var(--brand-accent);
 }
 .metaverse-app .world-tools {
   padding: 4px;
@@ -1349,7 +1379,7 @@
   display: block;
   width: 35%;
   height: 100%;
-  background: var(--coral);
+  background: var(--accent);
   animation: arrival-progress 1.4s ease-in-out infinite alternate;
 }
 @keyframes arrival-progress {
@@ -1770,11 +1800,11 @@
 }
 .metaverse-app .brand-copy strong {
   font-size: 19px;
-  font-weight: 750;
+  font-weight: 700;
 }
 .metaverse-app .brand-studio {
   display: block;
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-ui);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0;
@@ -1887,7 +1917,7 @@
   font-size: 12px;
 }
 .footer-links a:hover {
-  color: var(--coral);
+  color: var(--accent);
 }
 .footer-links button {
   border: 1px solid var(--line);
@@ -2102,7 +2132,7 @@
 .story-facts li::before {
   content: "·";
   margin-right: 5px;
-  color: var(--coral);
+  color: var(--accent);
 }
 .portfolio-destinations {
   position: absolute;
@@ -2144,7 +2174,7 @@
 }
 .portfolio-destinations nav > button strong {
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 700;
 }
 .portfolio-destinations nav > button span {
   font-size: 9px;

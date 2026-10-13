@@ -93,7 +93,7 @@ function Label({
     ctx.fillStyle = dark ? "#202c31" : "#dcdcd2";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = dark ? "#eeeae0" : "#27383d";
-    ctx.font = `500 ${canvas.height * 0.48}px 'Sora Variable', sans-serif`;
+    ctx.font = `500 ${canvas.height * 0.48}px 'Ubuntu', sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(text, 512, canvas.height / 2, 970);

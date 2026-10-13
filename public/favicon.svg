@@ -1,1 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none"><rect width="64" height="64" rx="18" fill="#294d3c"/><path d="M19 16v32h14c7 0 12-3 12-8s-5-8-12-8H19m0 0h13c6 0 10-3 10-8s-4-8-10-8h-5" stroke="#f6f6e8" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="49" cy="50" r="3.5" fill="#e5ad82"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" shape-rendering="crispEdges">
+<style>
+  .bg{fill:#FAF9F5}.ink{fill:#294d3c}.face{fill:#FAF9F5}.shade{fill:#e0e8da}.accent{fill:#38664e}.light{fill:#34D399}
+  @media (prefers-color-scheme: dark){.bg{fill:#294d3c}.ink{fill:#FAF9F5}.face{fill:#1F1F1E}.shade{fill:#304e40}.accent{fill:#b6d9ab}}
+</style>
+<rect class="bg" width="32" height="32" rx="7"/>
+<g transform="translate(2.560 5.722) scale(0.7906)"><rect class="ink" x="1" y="12" width="4" height="8"/><rect class="accent" x="2" y="13" width="2" height="6"/><rect class="ink" x="29" y="12" width="4" height="8"/><rect class="accent" x="30" y="13" width="2" height="6"/><rect class="ink" x="16" y="3" width="2" height="4"/><rect class="accent" x="14" y="0" width="6" height="3"/><rect class="ink" x="4" y="7" width="26" height="18"/><rect class="face" x="6" y="9" width="22" height="14"/><rect class="shade" x="6" y="21" width="22" height="2"/><rect class="shade" x="26" y="9" width="2" height="12"/><rect class="ink" x="10" y="12" width="4" height="4"/><rect class="face" x="11" y="13" width="1" height="1"/><rect class="ink" x="20" y="12" width="4" height="4"/><rect class="face" x="21" y="13" width="1" height="1"/><rect class="accent" x="12" y="18" width="2" height="2"/><rect class="accent" x="16" y="18" width="2" height="2"/><rect class="accent" x="20" y="18" width="2" height="2"/></g>
+</svg>

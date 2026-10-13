@@ -90,16 +90,28 @@ function Sign({
     const c = document.createElement("canvas");
     c.width = 1024;
     c.height = 160;
-    const ctx = c.getContext("2d")!;
-    ctx.fillStyle = color;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.font = "600 86px sans-serif";
-    ctx.fillText(text, 512, 84, 980);
     const map = new T.CanvasTexture(c);
     map.colorSpace = T.SRGBColorSpace;
     return map;
-  }, [text, color]);
+  }, []);
+  useEffect(() => {
+    let active = true;
+    const paint = () => {
+      if (!active) return;
+      const ctx = (texture.image as HTMLCanvasElement).getContext("2d")!;
+      ctx.clearRect(0, 0, 1024, 160);
+      ctx.fillStyle = color;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "700 86px Ubuntu, sans-serif";
+      ctx.fillText(text, 512, 84, 980);
+      texture.needsUpdate = true;
+    };
+    paint();
+    // Canvas does not repaint when a web font arrives, unlike DOM text.
+    void document.fonts.load("700 86px Ubuntu").then(paint, () => {});
+    return () => { active = false; };
+  }, [texture, text, color]);
   useEffect(() => () => texture.dispose(), [texture]);
   return (
     <mesh position={at}>
