@@ -2,8 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import data from "./src/content.json" with { type: "json" };
-import { projectDocument } from "./src/lib/project-document.ts";
+import data from "./src/data/portfolio/content.json" with { type: "json" };
+import { projectDocument } from "./src/infrastructure/build/project-document.ts";
 
 function projectPages() {
   let output = "";

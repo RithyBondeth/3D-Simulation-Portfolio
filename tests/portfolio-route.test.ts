@@ -5,8 +5,8 @@ import {
   readPortfolioRoute,
   portfolioURL,
   projectHref,
-} from "../src/lib/portfolio-route.ts";
-import { projectDocument } from "../src/lib/project-document.ts";
+} from "../src/domain/portfolio/portfolio-route.ts";
+import { projectDocument } from "../src/infrastructure/build/project-document.ts";
 
 const ids = ["bondex-notch", "apsara-agentic"];
 test("legacy island links remain recognisable and project links point to the main portfolio", () => {

@@ -1,0 +1,6 @@
+{
+  "$schema": "https://unpkg.com/knip/schema.json",
+  "entry": ["tests/*.test.ts", "scripts/*.mjs"],
+  "project": ["src/**/*.{ts,tsx}", "tests/**/*.ts", "scripts/**/*.mjs"],
+  "ignoreDependencies": ["@fontsource/ubuntu", "@fontsource/jetbrains-mono"]
+}

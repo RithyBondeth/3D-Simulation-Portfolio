@@ -1,8 +1,8 @@
 import {
-  DRIVE_LIMIT,
+  MAIN_ISLAND_DRIVE_LIMIT,
   shoreline,
-  pavilionFootprints,
-} from "../src/lib/pavilion-layout.ts";
+  landmarkFootprints,
+} from "../src/domain/world/island-layout.ts";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -12,7 +12,8 @@ import {
   spawnCar,
   type CarState,
   type DriveInput,
-} from "../src/lib/driving.ts";
+} from "../src/domain/world/driving.ts";
+
 const coast: DriveInput = { throttle: 0, steer: 0, brake: false };
 function simulate(car: CarState, input: DriveInput, seconds: number) {
   let state = car;
@@ -76,7 +77,7 @@ test("the retreat boundary stops cars before the scenery edge", () => {
     { ...coast, throttle: 1 },
     2,
   );
-  assert.ok(next.x <= DRIVE_LIMIT - 1.2);
+  assert.ok(next.x <= MAIN_ISLAND_DRIVE_LIMIT - 1.2);
   assert.equal(blocked(next.x, next.z), false);
 });
 test("off-road driving has a lower speed limit than asphalt", () => {
@@ -123,8 +124,8 @@ test("the coastal loop is continuous through straight roads and every bend", () 
         );
       }
 });
-test("all pavilion buildings and the reflecting pool block the car", () => {
-  for (const b of pavilionFootprints) assert.equal(blocked(b.x, b.z), true);
+test("all island buildings and the reflecting pool block the car", () => {
+  for (const b of landmarkFootprints) assert.equal(blocked(b.x, b.z), true);
   assert.equal(blocked(0, 2), true, "courtyard reflecting pool");
   assert.equal(
     blocked(spawnCar().x, spawnCar().z),
