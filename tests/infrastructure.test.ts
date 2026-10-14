@@ -9,8 +9,13 @@ import {
   innovationBuildings,
   innovationIsland,
   nearestPathPoint,
-} from "../src/lib/infrastructure.ts";
-import { onRoad, blocked, advanceCar, spawnCar } from "../src/lib/driving.ts";
+} from "../src/domain/world/infrastructure.ts";
+import {
+  onRoad,
+  blocked,
+  advanceCar,
+  spawnCar,
+} from "../src/domain/world/driving.ts";
 import {
   railPose,
   railLength,
@@ -19,8 +24,8 @@ import {
   railStations,
   transitObstacles,
   trainSchedule,
-} from "../src/lib/sky-rail.ts";
-import { fleet, vesselPose } from "../src/lib/maritime.ts";
+} from "../src/domain/world/sky-rail.ts";
+import { fleet, vesselPose } from "../src/domain/world/maritime.ts";
 
 test("bridge and annex loop are connected asphalt with safe collision clearance", () => {
   assert.ok(

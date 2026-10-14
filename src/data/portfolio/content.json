@@ -1,0 +1,317 @@
+{
+  "projects": [
+    {
+      "id": "bondex-notch",
+      "title": "Bondex Notch",
+      "description": "A native macOS utility that turns the notch into a live view of your music, coding agents, running tasks, downloads, and system status.",
+      "tags": ["Swift", "SwiftUI", "macOS", "Apple Events"],
+      "category": "macOS",
+      "domains": ["Developer Tools"],
+      "image": "/images/bondex-notch.webp"
+    },
+    {
+      "id": "apsara-talent",
+      "title": "Apsara Talent",
+      "description": "A recruitment platform for Cambodia - semantic matching between candidates and companies, a full hiring pipeline, chat, interviews, and an AI resume builder - on seven NestJS services.",
+      "tags": [
+        "TypeScript",
+        "Next.js",
+        "NestJS",
+        "Microservices",
+        "PostgreSQL",
+        "pgvector"
+      ],
+      "category": "Web",
+      "domains": ["Recruitment"],
+      "image": "/images/apsara-talent.webp"
+    },
+    {
+      "id": "apsara-assistant",
+      "title": "Apsara Assistant",
+      "description": "An AI sales assistant for Cambodian shops - it answers customers on Messenger and Telegram from the seller's own catalogue, in Khmer, English, or romanized Khmer, and can take an order and a payment while the seller sleeps.",
+      "tags": [
+        "Python",
+        "FastAPI",
+        "PostgreSQL",
+        "LLM APIs",
+        "Next.js",
+        "TypeScript"
+      ],
+      "category": "Web",
+      "domains": ["AI"],
+      "image": "/images/apsara-assistant.webp"
+    },
+    {
+      "id": "apsara-agentic",
+      "title": "Apsara Agentic",
+      "description": "A local, bring-your-own-key coding agent for the terminal - it reads and edits a real repository, runs checks, and asks before every change. No Apsara server in the loop.",
+      "tags": [
+        "Python",
+        "LiteLLM",
+        "MCP",
+        "Tree-sitter",
+        "Next.js",
+        "TypeScript"
+      ],
+      "category": "Web",
+      "domains": ["AI"],
+      "image": "/images/apsara-agentic.webp"
+    },
+    {
+      "id": "apsara-elearning",
+      "title": "Apsara Elearning",
+      "description": "A bilingual learning platform for Cambodian students from Grade 1 to university, with Apsara AI - a tutor that explains in Khmer, grounded in the lesson the student is on.",
+      "tags": [
+        "TypeScript",
+        "Next.js",
+        "NestJS",
+        "RabbitMQ",
+        "PostgreSQL",
+        "LLM APIs"
+      ],
+      "category": "Web",
+      "domains": ["AI", "Education"],
+      "image": "/images/apsara-elearning.webp"
+    },
+    {
+      "id": "apsara-wallet",
+      "title": "Apsara Wallet",
+      "description": "A personal finance app for Cambodia - wallets in riel and dollars, receipt scanning on the phone, budgets, savings goals, and spending insights, in Khmer and English.",
+      "tags": [
+        "Flutter",
+        "Dart",
+        "NestJS",
+        "PostgreSQL",
+        "Drizzle ORM",
+        "Riverpod"
+      ],
+      "category": "Mobile",
+      "domains": ["Fintech"],
+      "image": "/images/apsara-wallet.webp"
+    },
+    {
+      "id": "romlerk",
+      "title": "Romlerk",
+      "description": "A Flutter to-do and notes app with an AI assistant that helps turn everyday thoughts into tasks and reminders.",
+      "tags": ["Flutter", "Dart"],
+      "category": "Mobile",
+      "domains": ["Productivity", "AI"],
+      "image": "/images/romlerk.webp"
+    },
+    {
+      "id": "pdfflow",
+      "title": "PDFlow",
+      "description": "Private PDF tools that forget you were here - merge, split, compress, convert, protect, and watermark documents with no account, no tracking, and files deleted within 30 minutes.",
+      "tags": [
+        "TypeScript",
+        "Nuxt.js",
+        "FastAPI",
+        "Celery",
+        "Redis",
+        "PostgreSQL"
+      ],
+      "category": "Web",
+      "domains": ["Productivity"],
+      "image": "/images/pdfflow.webp"
+    },
+    {
+      "id": "reahu-generator",
+      "title": "Reahu Generator",
+      "description": "A GitHub profile README builder - compose a profile from 17 blocks or 12 templates, preview it exactly as GitHub will render it, and export the Markdown. No account, no backend.",
+      "tags": ["TypeScript", "Nuxt.js", "Vue.js", "Tailwind CSS"],
+      "category": "Web",
+      "domains": ["Developer Tools"],
+      "image": "/images/reahu-generator.webp"
+    },
+    {
+      "id": "debc-website",
+      "title": "DEBC Website",
+      "description": "The official website of Cambodia's Digital Economy and Business Committee, publishing policy, news, and government services.",
+      "tags": [
+        "TypeScript",
+        "Next.js",
+        "NestJS",
+        "Supabase",
+        "PostgreSQL",
+        "AWS"
+      ],
+      "category": "Web",
+      "domains": ["GovTech"],
+      "image": "/images/debc-website.webp"
+    },
+    {
+      "id": "informal-economy",
+      "title": "Informal Economy",
+      "description": "A national registration platform for Cambodia's informal economy workers, built with the Ministry of Economy and Finance.",
+      "tags": [
+        "TypeScript",
+        "Next.js",
+        "NestJS",
+        "Microservices",
+        "Kubernetes",
+        "AWS"
+      ],
+      "category": "Web",
+      "domains": ["GovTech"],
+      "image": "/images/informal-economy.webp"
+    },
+    {
+      "id": "cambodia-investment-platform",
+      "title": "Cambodia Investment Platform",
+      "description": "The landing site for Cambodia Investment Platform, connecting startups, MSMEs, investors, and the public to digital financing.",
+      "tags": ["TypeScript", "Next.js", "Tailwind CSS", "Vercel"],
+      "category": "Web",
+      "domains": ["GovTech", "Fintech"],
+      "image": "/images/cambodia-investment-platform.webp"
+    },
+    {
+      "id": "code-hub",
+      "title": "Code Hub",
+      "description": "A developer community platform from my freelance years, with Google, Facebook, and GitHub SSO for discovering and sharing projects.",
+      "tags": ["TypeScript", "React.js", "NestJS", "PostgreSQL", "Firebase"],
+      "category": "Web",
+      "domains": ["Community"],
+      "image": "/images/code-hub.webp"
+    },
+    {
+      "id": "apple-clone",
+      "title": "Apple Clone",
+      "description": "A front-end rebuild of Apple's product pages - full-screen model showcases, scroll-driven sections, and navigation.",
+      "tags": ["TypeScript", "React.js", "Tailwind CSS", "Vercel"],
+      "category": "Web",
+      "domains": [],
+      "image": "/images/apple-clone.webp"
+    },
+    {
+      "id": "tesla-clone",
+      "title": "Tesla Clone",
+      "description": "A front-end rebuild of Tesla's site - full-screen model showcases, smooth scroll sections, and navigation.",
+      "tags": ["TypeScript", "React.js", "Tailwind CSS", "Vercel"],
+      "category": "Web",
+      "domains": [],
+      "image": "/images/tesla-clone.webp"
+    },
+    {
+      "id": "sabynews-clone",
+      "title": "Sabynews Clone",
+      "description": "A pixel-faithful rebuild of the Sabay News portal - dense Khmer-language grids and category navigation.",
+      "tags": ["TypeScript", "React.js", "Tailwind CSS", "Vercel"],
+      "category": "Web",
+      "domains": [],
+      "image": "/images/sabynews-clone.webp"
+    },
+    {
+      "id": "bondeth-vlog",
+      "title": "Bondeth Vlog",
+      "description": "My first personal site - blog posts, projects, and skills behind an animated 3D logo.",
+      "tags": ["TypeScript", "React.js", "Tailwind CSS", "Vercel"],
+      "category": "Web",
+      "domains": [],
+      "image": "/images/bondeth-vlog.webp"
+    }
+  ],
+  "experience": [
+    {
+      "role": "Software Engineer",
+      "company": "Digital Economy and Business Committee",
+      "period": "2025 - Present",
+      "description": "Working as a Software Engineer, specializing in web and mobile app development. Building and maintaining production applications.",
+      "tags": [
+        "Next.js",
+        "NestJS",
+        "PostgreSQL",
+        "Flutter",
+        "FastAPI",
+        "Docker"
+      ]
+    },
+    {
+      "role": "Full Stack Developer",
+      "company": "Mango-Byte",
+      "period": "2024 - 2025",
+      "description": "Working as a junior Full Stack Developer, specializing in web and mobile app development. Building and maintaining production applications across the full stack.",
+      "tags": ["React", "Next.js", "NestJS", "PostgreSQL", "Flutter"]
+    },
+    {
+      "role": "Developer (Freelance Team Collaboration)",
+      "company": "Freelance",
+      "period": "2023 - 2024",
+      "description": "Collaborated with a freelancing team on web and mobile app development projects. Delivered multiple client projects including e-commerce and service platforms.",
+      "tags": ["Vue.js", "NestJS", "PostgreSQL", "Flutter"]
+    },
+    {
+      "role": "Web Developer Internship",
+      "company": "ALLWEB IT Company Co., Ltd.",
+      "period": "Jun 2022 - Sep 2022",
+      "description": "Built an attendance management system and contributed to both frontend and backend development. Gained hands-on experience with enterprise web frameworks.",
+      "tags": ["Angular", "Symfony", "PHP", "MySQL"]
+    },
+    {
+      "role": "IT Supporter",
+      "company": "Pailin Province Hall",
+      "period": "2020 - 2021",
+      "description": "Provided IT support including hardware/software troubleshooting and system installation and configuration for government offices.",
+      "tags": ["Hardware", "Networking", "Windows"]
+    },
+    {
+      "role": "IDT Coding Instructor",
+      "company": "Cambodia Academy of Digital Technology",
+      "period": "Feb 2020 - May 2020",
+      "description": "Volunteered in the IDT Encoding Program, teaching high school students how to code using C/C++ fundamentals.",
+      "tags": ["C", "C++", "Teaching"]
+    }
+  ],
+  "skills": [
+    {
+      "category": "Frontend",
+      "items": [
+        "TypeScript",
+        "React.js",
+        "Next.js",
+        "Vue.js",
+        "Nuxt.js",
+        "Tailwind CSS"
+      ]
+    },
+    {
+      "category": "Backend",
+      "items": ["Python", "Node.js", "NestJS", "FastAPI", "GraphQL"]
+    },
+    {
+      "category": "Databases",
+      "items": ["PostgreSQL", "MongoDB", "Redis"]
+    },
+    {
+      "category": "AI & ML",
+      "items": [
+        "OpenAI",
+        "Anthropic",
+        "Gemini",
+        "LangChain",
+        "LangGraph",
+        "Ollama",
+        "Hugging Face"
+      ]
+    },
+    {
+      "category": "Mobile",
+      "items": ["Flutter", "Swift", "Kotlin"]
+    },
+    {
+      "category": "Cloud",
+      "items": ["Vercel", "Netlify", "DigitalOcean", "AWS", "GCP", "Cloudflare"]
+    },
+    {
+      "category": "DevOps & Tools",
+      "items": ["Docker", "Nginx", "GitHub Actions", "Git", "GitHub", "Linux"]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Bachelor of Computer Science",
+      "institution": "Cambodia Academy of Digital Technology",
+      "period": "2020 - 2024",
+      "award": "Techo Scholar"
+    }
+  ]
+}

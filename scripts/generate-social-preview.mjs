@@ -1,26 +1,49 @@
 import sharp from "sharp";
 import { readFile, writeFile } from "node:fs/promises";
-
 import opentype from "opentype.js";
-import { byteHead, byteEyes, byteMouth, byteLightPalette } from "../src/lib/brand.ts";
+import {
+  byteHead,
+  byteEyes,
+  byteMouth,
+  byteLightPalette,
+} from "../src/domain/brand/byte.ts";
 
 // Outline local Ubuntu glyphs so SVG and PNG use the same font on every machine.
-const fonts = await Promise.all([400, 700].map(async (weight) => {
-  const bytes = await readFile(`node_modules/@fontsource/ubuntu/files/ubuntu-latin-${weight}-normal.woff`);
-  return opentype.parse(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
-}));
+const fonts = await Promise.all(
+  [400, 700].map(async (weight) => {
+    const bytes = await readFile(
+      `node_modules/@fontsource/ubuntu/files/ubuntu-latin-${weight}-normal.woff`,
+    );
+    return opentype.parse(
+      bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
+    );
+  }),
+);
 const text = (value, x, y, size, color, bold = false, spacing = 0) => {
   const font = fonts[bold ? 1 : 0];
   let cursor = x;
-  return `<g aria-label="${value.replaceAll("&", "&amp;").replaceAll('"', "&quot;")}" fill="${color}">${font.stringToGlyphs(value).map((glyph, index, glyphs) => {
-    const path = glyph.getPath(cursor, y, size).toPathData(2);
-    cursor += (glyph.advanceWidth + (glyphs[index + 1] ? font.getKerningValue(glyph, glyphs[index + 1]) : 0)) * size / font.unitsPerEm + spacing;
-    return `<path d="${path}"/>`;
-  }).join("")}</g>`;
+  return `<g aria-label="${value.replaceAll("&", "&amp;").replaceAll('"', "&quot;")}" fill="${color}">${font
+    .stringToGlyphs(value)
+    .map((glyph, index, glyphs) => {
+      const path = glyph.getPath(cursor, y, size).toPathData(2);
+      cursor +=
+        ((glyph.advanceWidth +
+          (glyphs[index + 1]
+            ? font.getKerningValue(glyph, glyphs[index + 1])
+            : 0)) *
+          size) /
+          font.unitsPerEm +
+        spacing;
+      return `<path d="${path}"/>`;
+    })
+    .join("")}</g>`;
 };
-const byte = [...byteHead, ...byteEyes, ...byteMouth].map(([x, y, width, height, paint]) =>
-  `<rect x="${x}" y="${y}" width="${width}" height="${height}" fill="${byteLightPalette[paint]}"/>`
-).join("");
+const byte = [...byteHead, ...byteEyes, ...byteMouth]
+  .map(
+    ([x, y, width, height, paint]) =>
+      `<rect x="${x}" y="${y}" width="${width}" height="${height}" fill="${byteLightPalette[paint]}"/>`,
+  )
+  .join("");
 
 // Original vector artwork; the PNG is committed so production needs no image service.
 const buildings = [

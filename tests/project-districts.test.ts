@@ -7,11 +7,14 @@ import {
   nearbyDistrict,
   projectDistricts,
   routeDistrict,
-} from "../src/lib/project-districts.ts";
-import type { Project } from "../src/types.ts";
+} from "../src/domain/portfolio/project-districts.ts";
+import type { Project } from "../src/domain/portfolio/types.ts";
 
 const projects = JSON.parse(
-  readFileSync(new URL("../src/content.json", import.meta.url), "utf8"),
+  readFileSync(
+    new URL("../src/data/portfolio/content.json", import.meta.url),
+    "utf8",
+  ),
 ).projects as Project[];
 
 test("every portfolio project has one island home and the matching gallery filter", () => {
