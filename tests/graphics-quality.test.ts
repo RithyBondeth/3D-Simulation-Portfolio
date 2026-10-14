@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {
   chooseGraphicsQuality,
   shouldReduceQuality,
-} from "../src/lib/graphics-quality.ts";
+} from "../src/domain/world/graphics-quality.ts";
 
 test("automatic graphics use device capabilities while explicit preferences always win", () => {
   assert.equal(chooseGraphicsQuality("auto", { compact: true }), "low");

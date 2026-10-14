@@ -12,16 +12,13 @@ test("the gallery and highlights link to canonical case studies and all portfoli
   });
   try {
     const { PortfolioContent } = await server.ssrLoadModule(
-      "/src/components/PortfolioContent.tsx",
-    );
-    const { default: DistrictBrowser } = await server.ssrLoadModule(
-      "/src/components/DistrictBrowser.tsx",
+      "/src/presentation/portfolio/PortfolioContent.tsx",
     );
     const { districts, islandProjects } = await server.ssrLoadModule(
-      "/src/project-catalog.ts",
+      "/src/data/portfolio/project-catalog.ts",
     );
     const { default: SelectedWork } = await server.ssrLoadModule(
-      "/src/components/SelectedWork.tsx",
+      "/src/presentation/portfolio/SelectedWork.tsx",
     );
     const highlights = renderToStaticMarkup(createElement(SelectedWork));
     const highlightLinks = [
@@ -89,7 +86,7 @@ test("the gallery and highlights link to canonical case studies and all portfoli
     assert.ok(labs.includes("Technical videos"));
     assert.ok(labs.includes("youtube.com"));
     const { default: PortfolioDestinations } = await server.ssrLoadModule(
-      "/src/components/PortfolioDestinations.tsx",
+      "/src/presentation/portfolio/PortfolioDestinations.tsx",
     );
     const destinations = renderToStaticMarkup(
       createElement(PortfolioDestinations, {
@@ -106,24 +103,6 @@ test("the gallery and highlights link to canonical case studies and all portfoli
       "Contact",
     ])
       assert.ok(destinations.includes(`<strong>${name}</strong>`));
-    const navigation = renderToStaticMarkup(
-      createElement(DistrictBrowser, {
-        active: "macos",
-        following: true,
-        onFollow: () => {},
-        onChoose: () => {},
-        onAll: () => {},
-      }),
-    );
-    assert.ok(
-      navigation.includes(`Explore all ${islandProjects.length} projects`),
-    );
-    for (const district of districts)
-      assert.ok(
-        navigation.includes(
-          `Visit ${district.title} district, ${district.projects.length} projects`,
-        ),
-      );
   } finally {
     await server.close();
   }

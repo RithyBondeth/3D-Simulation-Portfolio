@@ -1,6 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { fleet, vesselPose, vesselWakePoint } from "../src/lib/maritime.ts";
+import {
+  fleet,
+  vesselPose,
+  vesselWakePoint,
+} from "../src/domain/world/maritime.ts";
 
 test("the fleet completes continuous circuits outside the island and marina", () => {
   for (const vessel of fleet) {
