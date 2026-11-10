@@ -2,6 +2,24 @@
 
 Explore Rithy Bondeth’s portfolio at [3d.bondeth.dev](https://3d.bondeth.dev/). Scrolling drives the BMW M4 through six chapters, across the bridge and around Innovation island. Manual driving, elevated trains, project districts, night lighting and the waterfront share one world. Simple view provides the complete portfolio without WebGL. Full case studies open on [bondeth.dev](https://www.bondeth.dev/en).
 
+<!-- product-images:start -->
+
+## Product preview
+
+<p align="center">
+  <img src="docs/product-images/hero.png" alt="Bondeth World — Drive through the work, across the bridge, and around Innovation island." width="100%">
+</p>
+
+<table>
+<tr>
+  <td width="33%"><img src="docs/product-images/feature-01.png" alt="Take the scenic route. — Scroll through six chapters or explore the island with manual driving." width="100%"></td>
+  <td width="33%"><img src="docs/product-images/feature-02.png" alt="A different kind of night shift. — Night lighting, trains, project districts, and the waterfront share one world." width="100%"></td>
+  <td width="33%"><img src="docs/product-images/feature-03.png" alt="Another way to see the work. — Simple view keeps the portfolio accessible without WebGL." width="100%"></td>
+</tr>
+</table>
+
+<!-- product-images:end -->
+
 ## Development
 
 Node.js 22.18 or newer is required. No API keys or environment variables are needed.
